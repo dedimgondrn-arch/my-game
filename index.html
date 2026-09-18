@@ -47,6 +47,9 @@
     .stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
     .stat b { color: var(--text); font-size: 15px; }
 
+    .progress-bar-bg { background: rgba(255,255,255,0.1); border-radius: 10px; height: 10px; width: 100%; overflow: hidden; margin-top: 4px; }
+    .progress-bar-fill { background: linear-gradient(90deg, var(--primary), var(--purple)); height: 100%; width: 0%; transition: width 0.3s; }
+
     .btn {
       background: linear-gradient(135deg, var(--primary), var(--primary-hover));
       color: white;
@@ -69,7 +72,8 @@
     .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); }
     .btn-purple { background: linear-gradient(135deg, #a855f7, #7e22ce); box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25); }
     .btn-gold { background: linear-gradient(135deg, #fbbf24, #d97706); color: #000; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); }
-    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
 
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
     .grid-btn {
@@ -128,40 +132,65 @@
   <!-- Шапка Игрока -->
   <div class="card">
     <div class="stat"><span>Игрок:</span> <span><b id="nickname">Игрок</b> <span class="badge" onclick="changeNickname()">✏️</span></span></div>
-    <div class="stat"><span>Баланс:</span> <b id="money" style="color:var(--success); font-size:18px;">$0</b></div>
+    <div class="stat"><span>Уровень:</span> <b id="level-display" style="color:var(--purple);">1 LvL</b></div>
+    <div class="stat" style="flex-direction:column; align-items:flex-start; gap:4px;">
+      <div style="display:flex; justify-content:space-between; width:100%;">
+        <span>Опыт (XP):</span> <b id="xp-text" style="font-size:12px;">0 / 100</b>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="xp-bar"></div></div>
+    </div>
+    <div class="stat" style="margin-top:8px;"><span>Баланс:</span> <b id="money" style="color:var(--success); font-size:18px;">$0</b></div>
     <div class="stat"><span>Энергия:</span> <b id="energy" style="color:#38bdf8">100/100</b></div>
     <div class="stat"><span>Розыск:</span> <span id="wanted" class="wanted-stars">☆☆☆☆☆</span></div>
-    <div class="stat"><span>Куплено бизнесов:</span> <b id="biz-count">0</b></div>
-    <div class="stat"><span>Гараж:</span> <b id="garage-count">0 авто</b></div>
   </div>
 
-  <!-- Основные действия -->
-  <button class="btn" onclick="work()">💼 Работать (+$25 | -5⚡)</button>
+  <!-- Быстрые действия -->
   <button class="btn btn-warning" onclick="openEnergyGame()">⚡ Мини-игра: Накачать Энергию</button>
   <button class="btn btn-danger" onclick="commitCrime()">🚨 Ограбление (Опасно!)</button>
 
   <!-- Разделы -->
   <div class="grid">
+    <div class="grid-btn" onclick="openWorkList()">💼 Работы</div>
     <div class="grid-btn" onclick="openBusinessList()">🏢 Бизнесы</div>
+    <div class="grid-btn" onclick="openRealtyList()">🏠 Недвижимость</div>
     <div class="grid-btn" onclick="openAutoMarket()">🚗 Авторынок</div>
     <div class="grid-btn" onclick="openGarage()">🏎️ Мой Гараж</div>
     <div class="grid-btn" style="background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2)); border-color: var(--purple);" onclick="openCasino()">🎰 Казино</div>
   </div>
 
-  <!-- Кнопка Трейда -->
   <button class="btn btn-purple" style="margin-top:12px;" onclick="openTradeHub()">🤝 P2P Трейд & Обмен</button>
   <button class="btn btn-danger" style="margin-top:8px; opacity:0.6; font-size:12px; padding:8px;" onclick="resetGameData()">🔄 Сбросить весь прогресс</button>
+
+  <!-- Модалка Работ -->
+  <div id="work-modal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--primary); margin-top:0;">💼 Биржа Труда</h3>
+      <p style="font-size:12px; color:var(--text-muted);">Чем сложнее работа, тем больше энергии она требует, но и платят выше!</p>
+      <div id="work-list"></div>
+      <button class="btn btn-danger" onclick="closeModal('work-modal')">Закрыть</button>
+    </div>
+  </div>
 
   <!-- Модалка Бизнесов -->
   <div id="business-modal" class="modal">
     <div class="modal-content">
       <h3 style="color:var(--primary); margin-top:0;">🏢 Бизнес Империя</h3>
-      <p style="font-size:12px; color:var(--text-muted);">Покупай предприятия и собирай прибыль!</p>
+      <p style="font-size:12px; color:var(--text-muted);">Сбор прибыли доступен каждые 30 секунд!</p>
       
-      <button class="btn btn-success" style="margin-bottom:15px;" onclick="collectAllIncome()">💵 Собрать прибыль со всех предприятий</button>
+      <button class="btn btn-success" id="collect-btn" style="margin-bottom:15px;" onclick="collectAllIncome()">💵 Собрать прибыль</button>
       <div id="business-list"></div>
       
       <button class="btn btn-danger" onclick="closeModal('business-modal')">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Модалка Недвижимости -->
+  <div id="realty-modal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--gold); margin-top:0;">🏠 Недвижимость</h3>
+      <p style="font-size:12px; color:var(--text-muted);">Собственное жилье увеличивает ваш макс. запас энергии!</p>
+      <div id="realty-list"></div>
+      <button class="btn btn-danger" onclick="closeModal('realty-modal')">Закрыть</button>
     </div>
   </div>
 
@@ -214,7 +243,7 @@
       </div>
       <div class="item-card">
         <b style="color:var(--success);">Твоё предложение:</b>
-        <select id="trade-my-car"><option value="">-- Выбери Авто --</option></select>
+        <select id="trade-my-car"><option value="">-- Без Авто --</option></select>
         <input type="number" id="trade-my-money" placeholder="+ Доплата $">
       </div>
       <div class="item-card">
@@ -288,20 +317,38 @@
     // --- СОХРАНЕНИЕ ДАННЫХ ---
     let money = parseInt(localStorage.getItem('money')) || 800;
     let energy = parseInt(localStorage.getItem('energy')) || 100;
-    let maxEnergy = 100;
+    let level = parseInt(localStorage.getItem('level')) || 1;
+    let xp = parseInt(localStorage.getItem('xp')) || 0;
     let nickname = localStorage.getItem('nickname') || "Игрок";
     let wantedStars = parseInt(localStorage.getItem('wantedStars')) || 0;
     let myGarage = JSON.parse(localStorage.getItem('myGarage')) || ["VAZ 2107"];
     let myBusinesses = JSON.parse(localStorage.getItem('myBusinesses')) || [];
+    let myRealty = JSON.parse(localStorage.getItem('myRealty')) || [];
+    let lastCollectTime = parseInt(localStorage.getItem('lastCollectTime')) || 0;
 
-    // База доступных бизнесов
+    const works = [
+      { id: 1, name: "🧹 Уборщик Улиц", minLvl: 1, energy: 10, xp: 8, pay: 25 },
+      { id: 2, name: "📦 Грузчик на Складе", minLvl: 1, energy: 15, xp: 12, pay: 45 },
+      { id: 3, name: "🍕 Курьер Пиццы", minLvl: 2, energy: 20, xp: 18, pay: 90 },
+      { id: 4, name: "🏗️ Строитель", minLvl: 3, energy: 30, xp: 25, pay: 200 },
+      { id: 5, name: "🚕 Таксист", minLvl: 4, energy: 25, xp: 22, pay: 320 },
+      { id: 6, name: "💼 IT-Менеджер", minLvl: 5, energy: 10, xp: 35, pay: 650 }
+    ];
+
     const availableBusinesses = [
-      { id: 1, name: "🥙 Шаурмичная у Вахида", cost: 150, income: 15 },
-      { id: 2, name: "🏪 Магазин «24/7»", cost: 800, income: 60 },
-      { id: 3, name: "☕ Кофейня «Street Coffee»", cost: 2500, income: 180 },
-      { id: 4, name: "🚗 Детейлинг & Автомойка", cost: 7000, income: 500 },
-      { id: 5, name: "💻 Компьютерный Клуб", cost: 20000, income: 1400 },
-      { id: 6, name: "🍾 Ночной Клуб «Neon»", cost: 60000, income: 4500 }
+      { id: 1, name: "🥙 Шаурмичная у Вахида", cost: 150, income: 30 },
+      { id: 2, name: "🏪 Магазин «24/7»", cost: 800, income: 120 },
+      { id: 3, name: "☕ Кофейня «Street Coffee»", cost: 2500, income: 350 },
+      { id: 4, name: "🚗 Детейлинг & Автомойка", cost: 7000, income: 950 },
+      { id: 5, name: "💻 Компьютерный Клуб", cost: 20000, income: 2800 },
+      { id: 6, name: "🍾 Ночной Клуб «Neon»", cost: 60000, income: 8500 }
+    ];
+
+    const realtyList = [
+      { id: 1, name: "🚪 Квартира-Студия", cost: 1200, energyBonus: 20 },
+      { id: 2, name: "🏙️ Двушка в центре", cost: 5000, energyBonus: 50 },
+      { id: 3, name: "🏙️ Пентхаус с видом", cost: 25000, energyBonus: 100 },
+      { id: 4, name: "🏰 Загородная Вилла", cost: 100000, energyBonus: 250 }
     ];
 
     const carsList = [
@@ -311,13 +358,26 @@
       { id: 4, name: "Nissan Skyline GT-R", basePrice: 8000 }
     ];
 
+    function getMaxEnergy() {
+      let maxE = 100;
+      myRealty.forEach(id => {
+        const house = realtyList.find(h => h.id === id);
+        if (house) maxE += house.energyBonus;
+      });
+      return maxE;
+    }
+
     function saveData() {
       localStorage.setItem('money', money);
       localStorage.setItem('energy', energy);
+      localStorage.setItem('level', level);
+      localStorage.setItem('xp', xp);
       localStorage.setItem('nickname', nickname);
       localStorage.setItem('wantedStars', wantedStars);
       localStorage.setItem('myGarage', JSON.stringify(myGarage));
       localStorage.setItem('myBusinesses', JSON.stringify(myBusinesses));
+      localStorage.setItem('myRealty', JSON.stringify(myRealty));
+      localStorage.setItem('lastCollectTime', lastCollectTime);
     }
 
     function resetGameData() {
@@ -327,12 +387,28 @@
       }
     }
 
+    function addXP(amount) {
+      xp += amount;
+      let requiredXp = level * 100;
+      if (xp >= requiredXp) {
+        xp -= requiredXp;
+        level++;
+        alert(`🎉 ПОЗДРАВЛЯЕМ! Вы достигли ${level} уровня!`);
+      }
+    }
+
     function updateUI() {
+      let maxE = getMaxEnergy();
+      if (energy > maxE) energy = maxE;
+
       document.getElementById('money').innerText = '$' + money;
-      document.getElementById('energy').innerText = energy + '/' + maxEnergy;
+      document.getElementById('energy').innerText = energy + '/' + maxE;
       document.getElementById('nickname').innerText = nickname;
-      document.getElementById('garage-count').innerText = myGarage.length + ' авто';
-      document.getElementById('biz-count').innerText = myBusinesses.length;
+      document.getElementById('level-display').innerText = level + " LvL";
+
+      let reqXp = level * 100;
+      document.getElementById('xp-text').innerText = `${xp} / ${reqXp}`;
+      document.getElementById('xp-bar').style.width = Math.min(100, (xp / reqXp) * 100) + '%';
       
       let starsText = "";
       for (let i = 0; i < 5; i++) { starsText += i < wantedStars ? "★" : "☆"; }
@@ -341,14 +417,69 @@
       saveData();
     }
 
-    function work() {
-      if (energy >= 5) { money += 25; energy -= 5; updateUI(); }
-      else { alert('⚡ Мало энергии! Пройди мини-игру.'); }
-    }
-
     function changeNickname() {
       let newName = prompt("Введите никнейм:");
       if (newName) { nickname = newName; updateUI(); }
+    }
+
+    // --- РАБОТЫ ---
+    function openWorkList() {
+      const container = document.getElementById('work-list');
+      container.innerHTML = '';
+      works.forEach(w => {
+        const locked = level < w.minLvl;
+        container.innerHTML += `
+          <div class="item-card" style="${locked ? 'opacity:0.5;' : ''}">
+            <b>${w.name}</b> ${locked ? `<span style="color:var(--danger); font-size:11px;">[Нужен ${w.minLvl} LvL]</span>` : ''}<br>
+            <span style="font-size:12px; color:var(--text-muted);">Расход: -${w.energy}⚡ | Награда: +${w.xp} XP</span><br>
+            <b style="color:var(--success); font-size:13px;">Зарплата: +$${w.pay}</b><br>
+            <button class="btn btn-success" style="padding:6px; font-size:12px; margin-top:6px;" ${locked ? 'disabled' : ''} onclick="doWork(${w.id})">Работать</button>
+          </div>
+        `;
+      });
+      document.getElementById('work-modal').style.display = 'flex';
+    }
+
+    function doWork(id) {
+      const w = works.find(item => item.id === id);
+      if (energy < w.energy) { alert("⚡ Мало энергии! Отдохните или воспользуйтесь генератором."); return; }
+      energy -= w.energy;
+      money += w.pay;
+      addXP(w.xp);
+      updateUI();
+      openWorkList();
+    }
+
+    // --- НЕДВИЖИМОСТЬ ---
+    function openRealtyList() {
+      const container = document.getElementById('realty-list');
+      container.innerHTML = '';
+      realtyList.forEach(house => {
+        const owned = myRealty.includes(house.id);
+        container.innerHTML += `
+          <div class="item-card">
+            <b>${house.name}</b><br>
+            <span style="font-size:12px; color:var(--text-muted);">Бонус: +${house.energyBonus} к макс. Энергии</span><br>
+            <b style="color:var(--success); font-size:13px;">Цена: $${house.cost}</b><br>
+            ${owned 
+              ? `<span style="color:var(--gold); font-weight:bold; font-size:12px;">✅ Куплено</span>`
+              : `<button class="btn btn-gold" style="padding:6px; font-size:12px; margin-top:6px;" onclick="buyRealty(${house.id})">Купить дом</button>`
+            }
+          </div>
+        `;
+      });
+      document.getElementById('realty-modal').style.display = 'flex';
+    }
+
+    function buyRealty(id) {
+      const house = realtyList.find(h => h.id === id);
+      if (money >= house.cost) {
+        money -= house.cost;
+        myRealty.push(house.id);
+        alert(`🎉 Поздравляем с покупкой "${house.name}"! Твоя макс. энергия выросла!`);
+        openRealtyList();
+        updateUI();
+      } else { alert("❌ Не хватает денег!"); }
     }
 
     // --- БИЗНЕС СИСТЕМА ---
@@ -361,7 +492,7 @@
         container.innerHTML += `
           <div class="item-card">
             <b>${biz.name}</b><br>
-            <span style="font-size:12px; color:var(--text-muted);">Прибыль: +$${biz.income}/сбор</span><br>
+            <span style="font-size:12px; color:var(--text-muted);">Прибыль: +$${biz.income} / 30 сек</span><br>
             <b style="color:var(--success); font-size:13px;">Цена: $${biz.cost}</b><br>
             ${owned 
               ? `<span style="color:var(--gold); font-weight:bold; font-size:12px;">✅ Уже куплено</span>`
@@ -371,6 +502,7 @@
         `;
       });
 
+      updateCollectButton();
       document.getElementById('business-modal').style.display = 'flex';
     }
 
@@ -385,22 +517,99 @@
       } else { alert('❌ Не хватает денег на покупку!'); }
     }
 
-    function collectAllIncome() {
-      if (myBusinesses.length === 0) {
-        alert("❌ У вас нет купленных бизнесов!");
-        return;
+    function updateCollectButton() {
+      const btn = document.getElementById('collect-btn');
+      if (!btn) return;
+
+      const now = Date.now();
+      const diff = Math.ceil((lastCollectTime + 30000 - now) / 1000);
+
+      if (diff > 0) {
+        btn.disabled = true;
+        btn.innerText = `⏳ Заберите прибыль через ${diff} сек`;
+      } else {
+        btn.disabled = false;
+        btn.innerText = `💵 Собрать прибыль с предприятий`;
       }
+    }
+
+    setInterval(updateCollectButton, 1000);
+
+    function collectAllIncome() {
+      if (myBusinesses.length === 0) { alert("❌ У вас нет купленных бизнесов!"); return; }
+      const now = Date.now();
+      if (now - lastCollectTime < 30000) { alert("❌ Прибыль еще не накопилась! Подождите."); return; }
+
       let total = 0;
       myBusinesses.forEach(id => {
         const biz = availableBusinesses.find(b => b.id === id);
         if (biz) total += biz.income;
       });
+
       money += total;
-      alert(`💵 Вы собрали +$${total} прибыли со своих предприятий!`);
+      lastCollectTime = now;
+      alert(`💵 Вы собрали +$${total} прибыли со всех предприятий!`);
+      updateCollectButton();
       updateUI();
     }
 
-    // --- СИСТЕМА РОЗЫСКА И ПРЕСТУПЛЕНИЙ ---
+    // --- ИСПРАВЛЕННЫЙ P2P ТРЕЙД ---
+    let currentPartnerOffer = null;
+    function openTradeHub() {
+      const select = document.getElementById('trade-my-car');
+      select.innerHTML = '<option value="">-- Без авто --</option>';
+      myGarage.forEach((car, i) => select.innerHTML += `<option value="${i}">${car}</option>`);
+      generatePartnerOffer();
+      document.getElementById('trade-modal').style.display = 'flex';
+    }
+
+    function generatePartnerOffer() {
+      const partner = document.getElementById('trade-partner').value;
+      const text = document.getElementById('partner-offer-text');
+      if (partner === 'Sanya_Drift') { 
+        currentPartnerOffer = { reqCar: true, reqMoney: 0, giveMoney: 1400, giveCar: null }; 
+        text.innerText = "💰 Предлагает $1,400 за твоё авто!"; 
+      }
+      else if (partner === 'Pasha_Investor') { 
+        currentPartnerOffer = { reqCar: true, reqMoney: 200, giveMoney: 0, giveCar: "BMW E36" }; 
+        text.innerText = "🏎️ Хочет твоё авто + $200 доплаты взамен на BMW E36!"; 
+      }
+      else { 
+        currentPartnerOffer = { reqCar: true, reqMoney: 3000, giveMoney: 0, giveCar: "Nissan Skyline GT-R" }; 
+        text.innerText = "🔥 Хочет твоё авто + $3,000 взамен на Skyline GT-R!"; 
+      }
+    }
+
+    function executeTrade() {
+      const carIndex = document.getElementById('trade-my-car').value;
+      const extraMoney = parseInt(document.getElementById('trade-my-money').value) || 0;
+
+      // ПРОВЕРКИ НА ЧЕСТНОСТЬ СДЕЛКИ
+      if (currentPartnerOffer.reqCar && carIndex === "") {
+        alert("❌ Партнёр согласен на сделку только если вы предложите свой автомобиль!");
+        return;
+      }
+      if (extraMoney < currentPartnerOffer.reqMoney) {
+        alert(`❌ Партнёр требует доплату минимум $${currentPartnerOffer.reqMoney}!`);
+        return;
+      }
+      if (extraMoney > money) {
+        alert("❌ У вас нет столько денег для доплаты!");
+        return;
+      }
+
+      // Проведение сделки
+      money -= extraMoney;
+      if (carIndex !== "") myGarage.splice(parseInt(carIndex), 1);
+      if (currentPartnerOffer.giveMoney) money += currentPartnerOffer.giveMoney;
+      if (currentPartnerOffer.giveCar) myGarage.push(currentPartnerOffer.giveCar);
+
+      alert("🎉 Сделка успешно совершена!");
+      closeModal('trade-modal');
+      updateUI();
+    }
+
+    // --- ПРЕСТУПЛЕНИЯ ---
     function commitCrime() {
       if (energy < 20) { alert("⚡ Нужно 20 энергии!"); return; }
       energy -= 20;
@@ -408,7 +617,8 @@
       if (Math.random() > 0.4) {
         let reward = Math.floor(Math.random() * 500) + 200;
         money += reward;
-        alert(`🤑 Успешное ограбление! Куш: +$${reward}`);
+        addXP(15);
+        alert(`🤑 Успешное ограбление! Куш: +$${reward} и +15 XP`);
       } else {
         wantedStars = Math.min(5, wantedStars + 1);
         alert(`🚨 Полиция заметила вас! Розыск: ${wantedStars}★`);
@@ -477,44 +687,11 @@
       document.getElementById('energy-clicks').innerText = energyClicks;
       if (energyClicks >= 5) {
         clearInterval(energyTimer);
-        energy = maxEnergy;
-        alert("🎉 Энергия восстановлена на 100%!");
+        energy = getMaxEnergy();
+        alert("🎉 Энергия полностью восстановлена!");
         closeModal('energy-modal');
         updateUI();
       }
-    }
-
-    // --- P2P ТРЕЙД ---
-    let currentPartnerOffer = null;
-    function openTradeHub() {
-      const select = document.getElementById('trade-my-car');
-      select.innerHTML = '<option value="">-- Без авто --</option>';
-      myGarage.forEach((car, i) => select.innerHTML += `<option value="${i}">${car}</option>`);
-      generatePartnerOffer();
-      document.getElementById('trade-modal').style.display = 'flex';
-    }
-
-    function generatePartnerOffer() {
-      const partner = document.getElementById('trade-partner').value;
-      const text = document.getElementById('partner-offer-text');
-      if (partner === 'Sanya_Drift') { currentPartnerOffer = { money: 1400, car: null }; text.innerText = "💰 Предлагает: $1,400 за любое авто!"; }
-      else if (partner === 'Pasha_Investor') { currentPartnerOffer = { money: 500, car: "BMW E36" }; text.innerText = "🏎️ Предлагает: BMW E36 + $500!"; }
-      else { currentPartnerOffer = { money: 0, car: "Nissan Skyline GT-R" }; text.innerText = "🔥 Предлагает: Skyline GT-R!"; }
-    }
-
-    function executeTrade() {
-      const carIndex = document.getElementById('trade-my-car').value;
-      const extraMoney = parseInt(document.getElementById('trade-my-money').value) || 0;
-      if (extraMoney > money) { alert("❌ Нет денег!"); return; }
-
-      money -= extraMoney;
-      if (carIndex !== "") myGarage.splice(parseInt(carIndex), 1);
-      if (currentPartnerOffer.money) money += currentPartnerOffer.money;
-      if (currentPartnerOffer.car) myGarage.push(currentPartnerOffer.car);
-
-      alert("🎉 Обмен завершен!");
-      closeModal('trade-modal');
-      updateUI();
     }
 
     // --- КАЗИНО ---
@@ -599,7 +776,10 @@
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     // Авто-восстановление энергии раз в 5 сек
-    setInterval(() => { if (energy < maxEnergy) { energy += 1; updateUI(); } }, 5000);
+    setInterval(() => { 
+      let maxE = getMaxEnergy();
+      if (energy < maxE) { energy += 1; updateUI(); } 
+    }, 5000);
 
     updateUI();
     Telegram.WebApp.ready();
