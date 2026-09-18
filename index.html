@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -47,7 +48,7 @@
     .stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
     .stat b { color: var(--text); font-size: 15px; }
 
-    .progress-bar-bg { background: rgba(255,255,255,0.1); border-radius: 10px; height: 10px; width: 100%; overflow: hidden; margin-top: 4px; }
+    .progress-bar-bg { background: rgba(255,255,255,0.1); border-radius: 10px; height: 8px; width: 100%; overflow: hidden; margin-top: 4px; }
     .progress-bar-fill { background: linear-gradient(90deg, var(--primary), var(--purple)); height: 100%; width: 0%; transition: width 0.3s; }
 
     .btn {
@@ -105,8 +106,12 @@
 
     .item-card {
       background: rgba(15, 23, 42, 0.6);
-      padding: 12px 14px; border-radius: 14px; margin-bottom: 10px;
+      padding: 12px 14px; border-radius: 14px; margin-bottom: 12px;
       border: 1px solid var(--card-border); text-align: left;
+      overflow: hidden;
+    }
+    .car-img {
+      width: 100%; height: 140px; object-fit: cover; border-radius: 10px; margin-bottom: 8px;
     }
     .badge { background: rgba(255, 255, 255, 0.1); padding: 4px 8px; border-radius: 8px; font-size: 11px; cursor: pointer; color: var(--gold); }
     input, select {
@@ -115,15 +120,6 @@
       color: white; margin-bottom: 10px; font-size: 14px; text-align: center; outline: none;
     }
 
-    .slots-display {
-      display: flex; justify-content: center; gap: 10px;
-      background: #0f172a; padding: 15px; border-radius: 16px;
-      border: 2px solid var(--gold); margin: 15px 0; font-size: 38px;
-    }
-    .slot-box { background: #1e293b; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
-    .casino-tabs { display: flex; gap: 6px; margin-bottom: 15px; }
-    .tab-btn { flex: 1; padding: 10px; background: #0f172a; border: 1px solid var(--card-border); color: var(--text-muted); border-radius: 10px; font-size: 12px; cursor: pointer; font-weight: 600; }
-    .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
     .wanted-stars { color: var(--gold); font-size: 16px; letter-spacing: 2px; }
   </style>
 </head>
@@ -151,21 +147,29 @@
   <!-- Разделы -->
   <div class="grid">
     <div class="grid-btn" onclick="openWorkList()">💼 Работы</div>
+    <div class="grid-btn" onclick="openTaxiMenu()">🚕 Работа Такси</div>
     <div class="grid-btn" onclick="openBusinessList()">🏢 Бизнесы</div>
     <div class="grid-btn" onclick="openRealtyList()">🏠 Недвижимость</div>
     <div class="grid-btn" onclick="openAutoMarket()">🚗 Авторынок</div>
     <div class="grid-btn" onclick="openGarage()">🏎️ Мой Гараж</div>
-    <div class="grid-btn" style="background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2)); border-color: var(--purple);" onclick="openCasino()">🎰 Казино</div>
   </div>
 
-  <button class="btn btn-purple" style="margin-top:12px;" onclick="openTradeHub()">🤝 P2P Трейд & Обмен</button>
-  <button class="btn btn-danger" style="margin-top:8px; opacity:0.6; font-size:12px; padding:8px;" onclick="resetGameData()">🔄 Сбросить весь прогресс</button>
+  <button class="btn btn-danger" style="margin-top:12px; opacity:0.6; font-size:12px; padding:8px;" onclick="resetGameData()">🔄 Сбросить весь прогресс</button>
+
+  <!-- Модалка Такси -->
+  <div id="taxi-modal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--warning); margin-top:0;">🚕 Таксопарк</h3>
+      <p style="font-size:12px; color:var(--text-muted);">Выполняйте заказы на своём автомобиле! После поездки машине нужен ремонт.</p>
+      <div id="taxi-car-select"></div>
+      <button class="btn btn-danger" onclick="closeModal('taxi-modal')">Закрыть</button>
+    </div>
+  </div>
 
   <!-- Модалка Работ -->
   <div id="work-modal" class="modal">
     <div class="modal-content">
       <h3 style="color:var(--primary); margin-top:0;">💼 Биржа Труда</h3>
-      <p style="font-size:12px; color:var(--text-muted);">Чем сложнее работа, тем больше энергии она требует, но и платят выше!</p>
       <div id="work-list"></div>
       <button class="btn btn-danger" onclick="closeModal('work-modal')">Закрыть</button>
     </div>
@@ -175,7 +179,7 @@
   <div id="business-modal" class="modal">
     <div class="modal-content">
       <h3 style="color:var(--primary); margin-top:0;">🏢 Бизнес Империя</h3>
-      <p style="font-size:12px; color:var(--text-muted);">Сбор прибыли доступен каждые 30 секунд!</p>
+      <p style="font-size:12px; color:var(--text-muted);">Закупайте продукты для работы предприятий и прокачивайте уровень бизнеса!</p>
       
       <button class="btn btn-success" id="collect-btn" style="margin-bottom:15px;" onclick="collectAllIncome()">💵 Собрать прибыль</button>
       <div id="business-list"></div>
@@ -188,13 +192,30 @@
   <div id="realty-modal" class="modal">
     <div class="modal-content">
       <h3 style="color:var(--gold); margin-top:0;">🏠 Недвижимость</h3>
-      <p style="font-size:12px; color:var(--text-muted);">Собственное жилье увеличивает ваш макс. запас энергии!</p>
       <div id="realty-list"></div>
       <button class="btn btn-danger" onclick="closeModal('realty-modal')">Закрыть</button>
     </div>
   </div>
 
-  <!-- Модалка Мини-Игры за Энергию -->
+  <!-- Модалка Авторынка -->
+  <div id="market-modal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--primary); margin-top:0;">🚗 Авторынок</h3>
+      <div id="cars-list"></div>
+      <button class="btn btn-danger" onclick="closeModal('market-modal')">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Модалка Гаража -->
+  <div id="garage-modal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--purple); margin-top:0;">🏎️ Мой Гараж</h3>
+      <div id="garage-list"></div>
+      <button class="btn btn-danger" onclick="closeModal('garage-modal')">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Модалка Энергии -->
   <div id="energy-modal" class="modal">
     <div class="modal-content">
       <h3 style="color:var(--warning); margin-top:0;">⚡ Генератор Энергии</h3>
@@ -206,122 +227,17 @@
     </div>
   </div>
 
-  <!-- Модалка Тюрьмы -->
-  <div id="jail-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--danger); margin-top:0;">🚔 ВЫ АРЕСТОВАНЫ!</h3>
-      <p style="font-size:13px; color:var(--text-muted);">Вас поймал спецназ за нелегальные дела!</p>
-      <div class="item-card">
-        <button class="btn btn-warning" onclick="payBribe()">💰 Дать взятку ($500)</button>
-        <button class="btn btn-purple" onclick="startEscapeGame()">🔐 Устроить побег (Мини-игра)</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Модалка Побега -->
-  <div id="escape-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--purple); margin-top:0;">🔐 Взлом Замка</h3>
-      <p style="font-size:12px; color:var(--text-muted);">Угадай цифру замка от 1 до 5!</p>
-      <input type="number" id="escape-code-input" placeholder="Цифра (1-5)">
-      <button class="btn btn-success" onclick="checkEscapeCode()">Открыть замок</button>
-      <p id="escape-status" style="font-size:13px; font-weight:bold; color:var(--warning);"></p>
-    </div>
-  </div>
-
-  <!-- Модалка Трейда -->
-  <div id="trade-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--purple); margin-top:0;">🤝 P2P Трейд Рынок</h3>
-      <div class="item-card">
-        <b>Партнер:</b>
-        <select id="trade-partner" onchange="generatePartnerOffer()">
-          <option value="Sanya_Drift">Саня_Дрифт</option>
-          <option value="Pasha_Investor">Паша_Инвестор</option>
-          <option value="Major_777">Мажор_777</option>
-        </select>
-      </div>
-      <div class="item-card">
-        <b style="color:var(--success);">Твоё предложение:</b>
-        <select id="trade-my-car"><option value="">-- Без Авто --</option></select>
-        <input type="number" id="trade-my-money" placeholder="+ Доплата $">
-      </div>
-      <div class="item-card">
-        <b style="color:#38bdf8;">Предложение партнёра:</b>
-        <p id="partner-offer-text" style="font-size:13px; font-weight:bold; color:var(--gold); margin:6px 0 0 0;"></p>
-      </div>
-      <button class="btn btn-success" onclick="executeTrade()">✅ Совершить Сделку</button>
-      <button class="btn btn-danger" onclick="closeModal('trade-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Модалка Казино -->
-  <div id="casino-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--gold); margin-top:0;">🎰 Казино Royale</h3>
-      <div class="casino-tabs">
-        <button class="tab-btn active" id="tab-slots" onclick="switchCasinoGame('slots')">🎰 Слоты</button>
-        <button class="tab-btn" id="tab-coin" onclick="switchCasinoGame('coin')">🪙 Монетка</button>
-        <button class="tab-btn" id="tab-dice" onclick="switchCasinoGame('dice')">🎲 Кости</button>
-      </div>
-      <input type="number" id="casino-bet" value="50" min="10" placeholder="Ставка ($)">
-      
-      <div id="game-slots">
-        <div class="slots-display">
-          <div class="slot-box" id="slot1">🎰</div>
-          <div class="slot-box" id="slot2">🎰</div>
-          <div class="slot-box" id="slot3">🎰</div>
-        </div>
-        <button class="btn btn-gold" id="spin-btn" onclick="spinSlots()">КРУТИТЬ СЛОТЫ</button>
-      </div>
-
-      <div id="game-coin" style="display:none;">
-        <div style="font-size:50px; margin:15px 0;" id="coin-icon">🪙</div>
-        <div style="display:flex; gap:10px;">
-          <button class="btn" onclick="playCoin('Орёл')">Орёл (x2)</button>
-          <button class="btn" onclick="playCoin('Решка')">Решка (x2)</button>
-        </div>
-      </div>
-
-      <div id="game-dice" style="display:none;">
-        <div style="font-size:45px; margin:15px 0;" id="dice-icon">🎲</div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-success" onclick="playDice('low')">Меньше 4</button>
-          <button class="btn btn-warning" onclick="playDice('high')">Больше 3</button>
-        </div>
-      </div>
-
-      <p id="casino-status" style="font-size:13px; font-weight:bold; margin-top:12px; color:#38bdf8;">Делайте ваши ставки!</p>
-      <button class="btn btn-danger" onclick="closeModal('casino-modal')">Выйти</button>
-    </div>
-  </div>
-
-  <!-- Модалки Авторынка и Гаража -->
-  <div id="market-modal" class="modal">
-    <div class="modal-content">
-      <h3>🚗 Авторынок</h3>
-      <div id="cars-list"></div>
-      <button class="btn btn-danger" onclick="closeModal('market-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <div id="garage-modal" class="modal">
-    <div class="modal-content">
-      <h3>🏎️ Мой Гараж</h3>
-      <div id="garage-list"></div>
-      <button class="btn btn-danger" onclick="closeModal('garage-modal')">Закрыть</button>
-    </div>
-  </div>
-
   <script>
     // --- СОХРАНЕНИЕ ДАННЫХ ---
-    let money = parseInt(localStorage.getItem('money')) || 800;
+    let money = parseInt(localStorage.getItem('money')) || 1000;
     let energy = parseInt(localStorage.getItem('energy')) || 100;
     let level = parseInt(localStorage.getItem('level')) || 1;
     let xp = parseInt(localStorage.getItem('xp')) || 0;
     let nickname = localStorage.getItem('nickname') || "Игрок";
     let wantedStars = parseInt(localStorage.getItem('wantedStars')) || 0;
-    let myGarage = JSON.parse(localStorage.getItem('myGarage')) || ["VAZ 2107"];
+    let myGarage = JSON.parse(localStorage.getItem('myGarage')) || [
+      { id: 'vaz2107', name: 'VAZ 2107', condition: 100, stage: 0, price: 500, img: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=500&q=80' }
+    ];
     let myBusinesses = JSON.parse(localStorage.getItem('myBusinesses')) || [];
     let myRealty = JSON.parse(localStorage.getItem('myRealty')) || [];
     let lastCollectTime = parseInt(localStorage.getItem('lastCollectTime')) || 0;
@@ -331,17 +247,15 @@
       { id: 2, name: "📦 Грузчик на Складе", minLvl: 1, energy: 15, xp: 12, pay: 45 },
       { id: 3, name: "🍕 Курьер Пиццы", minLvl: 2, energy: 20, xp: 18, pay: 90 },
       { id: 4, name: "🏗️ Строитель", minLvl: 3, energy: 30, xp: 25, pay: 200 },
-      { id: 5, name: "🚕 Таксист", minLvl: 4, energy: 25, xp: 22, pay: 320 },
-      { id: 6, name: "💼 IT-Менеджер", minLvl: 5, energy: 10, xp: 35, pay: 650 }
+      { id: 5, name: "💼 IT-Менеджер", minLvl: 5, energy: 10, xp: 35, pay: 650 }
     ];
 
     const availableBusinesses = [
-      { id: 1, name: "🥙 Шаурмичная у Вахида", cost: 150, income: 30 },
-      { id: 2, name: "🏪 Магазин «24/7»", cost: 800, income: 120 },
-      { id: 3, name: "☕ Кофейня «Street Coffee»", cost: 2500, income: 350 },
-      { id: 4, name: "🚗 Детейлинг & Автомойка", cost: 7000, income: 950 },
-      { id: 5, name: "💻 Компьютерный Клуб", cost: 20000, income: 2800 },
-      { id: 6, name: "🍾 Ночной Клуб «Neon»", cost: 60000, income: 8500 }
+      { id: 1, name: "🥙 Шаурмичная у Вахида", baseCost: 300, baseIncome: 40, supplyCost: 50 },
+      { id: 2, name: "🏪 Магазин «24/7»", baseCost: 1200, baseIncome: 150, supplyCost: 150 },
+      { id: 3, name: "☕ Кофейня «Street Coffee»", baseCost: 3500, baseIncome: 420, supplyCost: 400 },
+      { id: 4, name: "🚗 Автомойка & Детейлинг", baseCost: 10000, baseIncome: 1200, supplyCost: 1000 },
+      { id: 5, name: "💻 Компьютерный Клуб", baseCost: 30000, baseIncome: 3500, supplyCost: 2500 }
     ];
 
     const realtyList = [
@@ -352,10 +266,10 @@
     ];
 
     const carsList = [
-      { id: 1, name: "VAZ 2107", basePrice: 300 },
-      { id: 2, name: "BMW E36", basePrice: 1200 },
-      { id: 3, name: "Mercedes W124", basePrice: 2500 },
-      { id: 4, name: "Nissan Skyline GT-R", basePrice: 8000 }
+      { id: 'vaz2107', name: "VAZ 2107", price: 500, img: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=500&q=80" },
+      { id: 'bmwe36', name: "BMW E36 Drift", price: 2000, img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=500&q=80" },
+      { id: 'w124', name: "Mercedes W124", price: 4500, img: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=500&q=80" },
+      { id: 'skyline', name: "Nissan Skyline GT-R", price: 12000, img: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500&q=80" }
     ];
 
     function getMaxEnergy() {
@@ -422,7 +336,7 @@
       if (newName) { nickname = newName; updateUI(); }
     }
 
-    // --- РАБОТЫ ---
+    // --- РАБОТЫ И ТАКСИ ---
     function openWorkList() {
       const container = document.getElementById('work-list');
       container.innerHTML = '';
@@ -442,7 +356,7 @@
 
     function doWork(id) {
       const w = works.find(item => item.id === id);
-      if (energy < w.energy) { alert("⚡ Мало энергии! Отдохните или воспользуйтесь генератором."); return; }
+      if (energy < w.energy) { alert("⚡ Мало энергии!"); return; }
       energy -= w.energy;
       money += w.pay;
       addXP(w.xp);
@@ -450,10 +364,269 @@
       openWorkList();
     }
 
+    function openTaxiMenu() {
+      const container = document.getElementById('taxi-car-select');
+      container.innerHTML = '';
+      if (myGarage.length === 0) {
+        container.innerHTML = '<p style="color:var(--danger);">У вас нет автомобиля для работы в такси! Купите его на авторынке.</p>';
+      } else {
+        myGarage.forEach((car, index) => {
+          let pay = Math.round((car.price * 0.15) + (car.stage * 40));
+          container.innerHTML += `
+            <div class="item-card">
+              <img src="${car.img}" class="car-img">
+              <b>${car.name} (Stage ${car.stage})</b><br>
+              <span style="font-size:12px;">Прочность: ${car.condition}%</span><br>
+              <b style="color:var(--success);">Доход за заказ: ~$${pay}</b><br>
+              <button class="btn btn-warning" style="margin-top:6px;" onclick="driveTaxi(${index})">🚕 Выехать на заказ (-15⚡)</button>
+            </div>
+          `;
+        });
+      }
+      document.getElementById('taxi-modal').style.display = 'flex';
+    }
+
+    function driveTaxi(index) {
+      let car = myGarage[index];
+      if (energy < 15) { alert("⚡ Нужно 15 энергии!"); return; }
+      if (car.condition <= 10) { alert("🔧 Автомобиль слишком сломан! Отремонтируйте его в гараже."); return; }
+
+      energy -= 15;
+      let damage = Math.floor(Math.random() * 15) + 10;
+      car.condition = Math.max(0, car.condition - damage);
+      
+      let pay = Math.round((car.price * 0.15) + (car.stage * 40));
+      money += pay;
+      addXP(15);
+      alert(`🚕 Заказ выполнен! Получено +$${pay}. Износ машины: -${damage}%`);
+      updateUI();
+      openTaxiMenu();
+    }
+
+    // --- АВТОМОБИЛИ, ТЮНИНГ И РЕМОНТ ---
+    function openAutoMarket() {
+      const container = document.getElementById('cars-list'); container.innerHTML = '';
+      carsList.forEach(car => {
+        container.innerHTML += `
+          <div class="item-card">
+            <img src="${car.img}" class="car-img">
+            <b>${car.name}</b><br>
+            <b style="color:var(--success); font-size:15px;">$${car.price}</b>
+            <button class="btn btn-success" style="margin-top:6px;" onclick="buyCar('${car.id}')">Купить авто</button>
+          </div>
+        `;
+      });
+      document.getElementById('market-modal').style.display = 'flex';
+    }
+
+    function buyCar(id) {
+      const car = carsList.find(c => c.id === id);
+      if (money >= car.price) {
+        money -= car.price;
+        myGarage.push({
+          id: car.id,
+          name: car.name,
+          price: car.price,
+          img: car.img,
+          condition: 100,
+          stage: 0
+        });
+        alert(`🎉 Вы купили ${car.name}!`);
+        closeModal('market-modal');
+        updateUI();
+      } else { alert("❌ Не хватает денег!"); }
+    }
+
+    function openGarage() {
+      const container = document.getElementById('garage-list'); container.innerHTML = '';
+      if (myGarage.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);">В гараже пусто...</p>';
+      } else {
+        myGarage.forEach((car, index) => {
+          let repairCost = Math.round((100 - car.condition) * (car.price * 0.005));
+          let upgradeCost = Math.round(car.price * 0.5 * (car.stage + 1));
+          let sellPrice = Math.round(car.price * 0.7);
+
+          container.innerHTML += `
+            <div class="item-card">
+              <img src="${car.img}" class="car-img">
+              <b>${car.name}</b> <span class="badge">Stage ${car.stage}</span><br>
+              <span style="font-size:12px;">Состояние: ${car.condition}%</span><br>
+              
+              <button class="btn btn-warning" style="padding:8px; font-size:12px;" onclick="repairCar(${index}, ${repairCost})">🔧 Ремонт ($${repairCost})</button>
+              <button class="btn btn-purple" style="padding:8px; font-size:12px;" onclick="tuneCar(${index}, ${upgradeCost})">⚡ Тюнинг до Stage ${car.stage + 1} ($${upgradeCost})</button>
+              <button class="btn btn-danger" style="padding:8px; font-size:12px;" onclick="sellCar(${index}, ${sellPrice})">💰 Продать ($${sellPrice})</button>
+            </div>
+          `;
+        });
+      }
+      document.getElementById('garage-modal').style.display = 'flex';
+    }
+
+    function repairCar(index, cost) {
+      let car = myGarage[index];
+      if (car.condition >= 100) { alert("Машина в идеальном состоянии!"); return; }
+      if (money >= cost) {
+        money -= cost;
+        car.condition = 100;
+        alert("🔧 Автомобиль полностью отремонтирован!");
+        updateUI();
+        openGarage();
+      } else { alert("❌ Не хватает денег на ремонт!"); }
+    }
+
+    function tuneCar(index, cost) {
+      let car = myGarage[index];
+      if (money >= cost) {
+        money -= cost;
+        car.stage += 1;
+        car.price += Math.round(cost * 0.8);
+        alert(`⚡ Тюнинг установлен! Теперь у вас Stage ${car.stage}`);
+        updateUI();
+        openGarage();
+      } else { alert("❌ Не хватает денег на тюнинг!"); }
+    }
+
+    function sellCar(index, price) {
+      if (confirm(`Продать ${myGarage[index].name} за $${price}?`)) {
+        money += price;
+        myGarage.splice(index, 1);
+        alert("💰 Автомобиль продан!");
+        updateUI();
+        openGarage();
+      }
+    }
+
+    // --- БИЗНЕС СИСТЕМА (УЛУЧШЕНИЕ + ДОСТАВКА ПРОДУКТОВ) ---
+    function openBusinessList() {
+      const container = document.getElementById('business-list');
+      container.innerHTML = '';
+
+      availableBusinesses.forEach(biz => {
+        const ownedData = myBusinesses.find(b => b.id === biz.id);
+        if (ownedData) {
+          let currentIncome = biz.baseIncome * ownedData.level;
+          let upgradeCost = Math.round(biz.baseCost * 0.8 * ownedData.level);
+          let sellPrice = Math.round((biz.baseCost * 0.75) * ownedData.level);
+
+          container.innerHTML += `
+            <div class="item-card">
+              <b>${biz.name}</b> <span class="badge">Уровень ${ownedData.level}</span><br>
+              <span style="font-size:12px;">Прибыль: +$${currentIncome} / 30сек</span><br>
+              <span style="font-size:12px; color:${ownedData.supplies > 0 ? 'var(--success)' : 'var(--danger)'};">📦 Запас продуктов: ${ownedData.supplies} поставка(и)</span><br>
+
+              <button class="btn btn-gold" style="padding:6px; font-size:12px; margin-top:6px;" onclick="orderSupplies(${biz.id}, ${biz.supplyCost})">🚚 Заказать продукты ($${biz.supplyCost})</button>
+              <button class="btn btn-purple" style="padding:6px; font-size:12px;" onclick="upgradeBusiness(${biz.id}, ${upgradeCost})">⬆️ Улучшить до LvL ${ownedData.level + 1} ($${upgradeCost})</button>
+              <button class="btn btn-danger" style="padding:6px; font-size:12px;" onclick="sellBusiness(${biz.id}, ${sellPrice})">💰 Продать бизнес ($${sellPrice})</button>
+            </div>
+          `;
+        } else {
+          container.innerHTML += `
+            <div class="item-card">
+              <b>${biz.name}</b><br>
+              <span style="font-size:12px; color:var(--text-muted);">Базовый доход: +$${biz.baseIncome} / 30сек</span><br>
+              <b style="color:var(--success); font-size:13px;">Цена: $${biz.baseCost}</b><br>
+              <button class="btn btn-success" style="padding:6px; font-size:12px; margin-top:6px;" onclick="buyBusiness(${biz.id})">Купить бизнес</button>
+            </div>
+          `;
+        }
+      });
+
+      updateCollectButton();
+      document.getElementById('business-modal').style.display = 'flex';
+    }
+
+    function buyBusiness(id) {
+      const biz = availableBusinesses.find(b => b.id === id);
+      if (money >= biz.baseCost) {
+        money -= biz.baseCost;
+        myBusinesses.push({ id: biz.id, level: 1, supplies: 3 });
+        alert(`🎉 Вы успешно купили "${biz.name}"! Вам начислено 3 стартовых поставки продуктов.`);
+        openBusinessList();
+        updateUI();
+      } else { alert('❌ Не хватает денег на покупку!'); }
+    }
+
+    function orderSupplies(id, cost) {
+      let biz = myBusinesses.find(b => b.id === id);
+      if (money >= cost) {
+        money -= cost;
+        biz.supplies += 1;
+        alert("🚚 Продукты доставлены на склад бизнеса!");
+        openBusinessList();
+        updateUI();
+      } else { alert("❌ Не хватает денег на закупку!"); }
+    }
+
+    function upgradeBusiness(id, cost) {
+      let biz = myBusinesses.find(b => b.id === id);
+      if (money >= cost) {
+        money -= cost;
+        biz.level += 1;
+        alert(`⬆️ Бизнес улучшен до ${biz.level} уровня! Прибыль выросла.`);
+        openBusinessList();
+        updateUI();
+      } else { alert("❌ Не хватает денег!"); }
+    }
+
+    function sellBusiness(id, price) {
+      if (confirm(`Продать бизнес за $${price}?`)) {
+        money += price;
+        myBusinesses = myBusinesses.filter(b => b.id !== id);
+        alert("💰 Бизнес продан!");
+        openBusinessList();
+        updateUI();
+      }
+    }
+
+    function updateCollectButton() {
+      const btn = document.getElementById('collect-btn');
+      if (!btn) return;
+      const now = Date.now();
+      const diff = Math.ceil((lastCollectTime + 30000 - now) / 1000);
+      if (diff > 0) {
+        btn.disabled = true;
+        btn.innerText = `⏳ Заберите прибыль через ${diff} сек`;
+      } else {
+        btn.disabled = false;
+        btn.innerText = `💵 Собрать прибыль с предприятий`;
+      }
+    }
+    setInterval(updateCollectButton, 1000);
+
+    function collectAllIncome() {
+      if (myBusinesses.length === 0) { alert("❌ У вас нет бизнесов!"); return; }
+      const now = Date.now();
+      if (now - lastCollectTime < 30000) { alert("❌ Прибыль еще накопилась!"); return; }
+
+      let total = 0;
+      let activeBizCount = 0;
+
+      myBusinesses.forEach(b => {
+        const base = availableBusinesses.find(item => item.id === b.id);
+        if (base && b.supplies > 0) {
+          total += base.baseIncome * b.level;
+          b.supplies -= 1;
+          activeBizCount++;
+        }
+      });
+
+      if (activeBizCount === 0) {
+        alert("⚠️ Все ваши бизнесы простаивают без продуктов! Закажите доставку продуктов.");
+        return;
+      }
+
+      money += total;
+      lastCollectTime = now;
+      alert(`💵 Собрано +$${total} прибыли! Списано по 1 поставке продуктов.`);
+      updateCollectButton();
+      openBusinessList();
+      updateUI();
+    }
+
     // --- НЕДВИЖИМОСТЬ ---
     function openRealtyList() {
-      const container = document.getElementById('realty-list');
-      container.innerHTML = '';
+      const container = document.getElementById('realty-list'); container.innerHTML = '';
       realtyList.forEach(house => {
         const owned = myRealty.includes(house.id);
         container.innerHTML += `
@@ -476,144 +649,16 @@
       if (money >= house.cost) {
         money -= house.cost;
         myRealty.push(house.id);
-        alert(`🎉 Поздравляем с покупкой "${house.name}"! Твоя макс. энергия выросла!`);
+        alert(`🎉 Куплен дом "${house.name}"!`);
         openRealtyList();
         updateUI();
       } else { alert("❌ Не хватает денег!"); }
-    }
-
-    // --- БИЗНЕС СИСТЕМА ---
-    function openBusinessList() {
-      const container = document.getElementById('business-list');
-      container.innerHTML = '';
-
-      availableBusinesses.forEach(biz => {
-        const owned = myBusinesses.includes(biz.id);
-        container.innerHTML += `
-          <div class="item-card">
-            <b>${biz.name}</b><br>
-            <span style="font-size:12px; color:var(--text-muted);">Прибыль: +$${biz.income} / 30 сек</span><br>
-            <b style="color:var(--success); font-size:13px;">Цена: $${biz.cost}</b><br>
-            ${owned 
-              ? `<span style="color:var(--gold); font-weight:bold; font-size:12px;">✅ Уже куплено</span>`
-              : `<button class="btn btn-success" style="padding:6px; font-size:12px; margin-top:6px;" onclick="buyBusiness(${biz.id})">Купить бизнес</button>`
-            }
-          </div>
-        `;
-      });
-
-      updateCollectButton();
-      document.getElementById('business-modal').style.display = 'flex';
-    }
-
-    function buyBusiness(id) {
-      const biz = availableBusinesses.find(b => b.id === id);
-      if (money >= biz.cost) {
-        money -= biz.cost;
-        myBusinesses.push(biz.id);
-        alert(`🎉 Вы успешно купили "${biz.name}"!`);
-        openBusinessList();
-        updateUI();
-      } else { alert('❌ Не хватает денег на покупку!'); }
-    }
-
-    function updateCollectButton() {
-      const btn = document.getElementById('collect-btn');
-      if (!btn) return;
-
-      const now = Date.now();
-      const diff = Math.ceil((lastCollectTime + 30000 - now) / 1000);
-
-      if (diff > 0) {
-        btn.disabled = true;
-        btn.innerText = `⏳ Заберите прибыль через ${diff} сек`;
-      } else {
-        btn.disabled = false;
-        btn.innerText = `💵 Собрать прибыль с предприятий`;
-      }
-    }
-
-    setInterval(updateCollectButton, 1000);
-
-    function collectAllIncome() {
-      if (myBusinesses.length === 0) { alert("❌ У вас нет купленных бизнесов!"); return; }
-      const now = Date.now();
-      if (now - lastCollectTime < 30000) { alert("❌ Прибыль еще не накопилась! Подождите."); return; }
-
-      let total = 0;
-      myBusinesses.forEach(id => {
-        const biz = availableBusinesses.find(b => b.id === id);
-        if (biz) total += biz.income;
-      });
-
-      money += total;
-      lastCollectTime = now;
-      alert(`💵 Вы собрали +$${total} прибыли со всех предприятий!`);
-      updateCollectButton();
-      updateUI();
-    }
-
-    // --- ИСПРАВЛЕННЫЙ P2P ТРЕЙД ---
-    let currentPartnerOffer = null;
-    function openTradeHub() {
-      const select = document.getElementById('trade-my-car');
-      select.innerHTML = '<option value="">-- Без авто --</option>';
-      myGarage.forEach((car, i) => select.innerHTML += `<option value="${i}">${car}</option>`);
-      generatePartnerOffer();
-      document.getElementById('trade-modal').style.display = 'flex';
-    }
-
-    function generatePartnerOffer() {
-      const partner = document.getElementById('trade-partner').value;
-      const text = document.getElementById('partner-offer-text');
-      if (partner === 'Sanya_Drift') { 
-        currentPartnerOffer = { reqCar: true, reqMoney: 0, giveMoney: 1400, giveCar: null }; 
-        text.innerText = "💰 Предлагает $1,400 за твоё авто!"; 
-      }
-      else if (partner === 'Pasha_Investor') { 
-        currentPartnerOffer = { reqCar: true, reqMoney: 200, giveMoney: 0, giveCar: "BMW E36" }; 
-        text.innerText = "🏎️ Хочет твоё авто + $200 доплаты взамен на BMW E36!"; 
-      }
-      else { 
-        currentPartnerOffer = { reqCar: true, reqMoney: 3000, giveMoney: 0, giveCar: "Nissan Skyline GT-R" }; 
-        text.innerText = "🔥 Хочет твоё авто + $3,000 взамен на Skyline GT-R!"; 
-      }
-    }
-
-    function executeTrade() {
-      const carIndex = document.getElementById('trade-my-car').value;
-      const extraMoney = parseInt(document.getElementById('trade-my-money').value) || 0;
-
-      // ПРОВЕРКИ НА ЧЕСТНОСТЬ СДЕЛКИ
-      if (currentPartnerOffer.reqCar && carIndex === "") {
-        alert("❌ Партнёр согласен на сделку только если вы предложите свой автомобиль!");
-        return;
-      }
-      if (extraMoney < currentPartnerOffer.reqMoney) {
-        alert(`❌ Партнёр требует доплату минимум $${currentPartnerOffer.reqMoney}!`);
-        return;
-      }
-      if (extraMoney > money) {
-        alert("❌ У вас нет столько денег для доплаты!");
-        return;
-      }
-
-      // Проведение сделки
-      money -= extraMoney;
-      if (carIndex !== "") myGarage.splice(parseInt(carIndex), 1);
-      if (currentPartnerOffer.giveMoney) money += currentPartnerOffer.giveMoney;
-      if (currentPartnerOffer.giveCar) myGarage.push(currentPartnerOffer.giveCar);
-
-      alert("🎉 Сделка успешно совершена!");
-      closeModal('trade-modal');
-      updateUI();
     }
 
     // --- ПРЕСТУПЛЕНИЯ ---
     function commitCrime() {
       if (energy < 20) { alert("⚡ Нужно 20 энергии!"); return; }
       energy -= 20;
-
       if (Math.random() > 0.4) {
         let reward = Math.floor(Math.random() * 500) + 200;
         money += reward;
@@ -622,50 +667,14 @@
       } else {
         wantedStars = Math.min(5, wantedStars + 1);
         alert(`🚨 Полиция заметила вас! Розыск: ${wantedStars}★`);
-        if (wantedStars >= 5) {
-          document.getElementById('jail-modal').style.display = 'flex';
-        }
       }
       updateUI();
     }
 
-    function payBribe() {
-      if (money >= 500) {
-        money -= 500;
-        wantedStars = 0;
-        closeModal('jail-modal');
-        alert("👮 Вы дали взятку и свободны!");
-        updateUI();
-      } else { alert("❌ Нет $500 на взятку!"); }
-    }
-
-    let secretCode = 0;
-    function startEscapeGame() {
-      secretCode = Math.floor(Math.random() * 5) + 1;
-      document.getElementById('jail-modal').style.display = 'none';
-      document.getElementById('escape-modal').style.display = 'flex';
-    }
-
-    function checkEscapeCode() {
-      let input = parseInt(document.getElementById('escape-code-input').value);
-      if (input === secretCode) {
-        wantedStars = 0;
-        closeModal('escape-modal');
-        alert("🔓 Замок взломан! Вы сбежали!");
-        updateUI();
-      } else {
-        document.getElementById('escape-status').innerText = "❌ Неверный код!";
-      }
-    }
-
-    // --- МИНИ-ИГРА ЗА ЭНЕРГИЮ ---
-    let energyClicks = 0;
-    let energyTimer = null;
-    let timeLeft = 6.0;
-
+    // --- МИНИ-ИГРА ЭНЕРГИИ ---
+    let energyClicks = 0, energyTimer = null, timeLeft = 6.0;
     function openEnergyGame() {
-      energyClicks = 0;
-      timeLeft = 6.0;
+      energyClicks = 0; timeLeft = 6.0;
       document.getElementById('energy-clicks').innerText = energyClicks;
       document.getElementById('energy-timer').innerText = timeLeft.toFixed(2) + " сек";
       document.getElementById('energy-modal').style.display = 'flex';
@@ -674,11 +683,7 @@
       energyTimer = setInterval(() => {
         timeLeft -= 0.1;
         document.getElementById('energy-timer').innerText = Math.max(0, timeLeft).toFixed(2) + " сек";
-        if (timeLeft <= 0) {
-          clearInterval(energyTimer);
-          alert("❌ Время вышло!");
-          closeModal('energy-modal');
-        }
+        if (timeLeft <= 0) { clearInterval(energyTimer); alert("❌ Время вышло!"); closeModal('energy-modal'); }
       }, 100);
     }
 
@@ -688,94 +693,14 @@
       if (energyClicks >= 5) {
         clearInterval(energyTimer);
         energy = getMaxEnergy();
-        alert("🎉 Энергия полностью восстановлена!");
+        alert("🎉 Энергия восстановлена!");
         closeModal('energy-modal');
         updateUI();
       }
     }
 
-    // --- КАЗИНО ---
-    const slotSymbols = ["🍒", "🍋", "🔔", "💎", "7️⃣"];
-    function openCasino() { document.getElementById('casino-modal').style.display = 'flex'; }
-    function switchCasinoGame(game) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('game-slots').style.display = game === 'slots' ? 'block' : 'none';
-      document.getElementById('game-coin').style.display = game === 'coin' ? 'block' : 'none';
-      document.getElementById('game-dice').style.display = game === 'dice' ? 'block' : 'none';
-    }
-
-    function getBet() {
-      let bet = parseInt(document.getElementById('casino-bet').value);
-      if (!bet || bet < 10 || bet > money) { alert("Неверная ставка!"); return 0; }
-      return bet;
-    }
-
-    function spinSlots() {
-      let bet = getBet(); if (!bet) return;
-      money -= bet; updateUI();
-      let spins = 0;
-      let interval = setInterval(() => {
-        document.getElementById('slot1').innerText = slotSymbols[Math.floor(Math.random()*5)];
-        document.getElementById('slot2').innerText = slotSymbols[Math.floor(Math.random()*5)];
-        document.getElementById('slot3').innerText = slotSymbols[Math.floor(Math.random()*5)];
-        if (++spins > 10) {
-          clearInterval(interval);
-          let s1 = slotSymbols[Math.floor(Math.random()*5)], s2 = slotSymbols[Math.floor(Math.random()*5)], s3 = slotSymbols[Math.floor(Math.random()*5)];
-          document.getElementById('slot1').innerText = s1; document.getElementById('slot2').innerText = s2; document.getElementById('slot3').innerText = s3;
-          if (s1 === s2 && s2 === s3) { money += bet*5; document.getElementById('casino-status').innerText = `💥 ДЖЕКПОТ +$${bet*5}!`; }
-          else if (s1 === s2 || s2 === s3 || s1 === s3) { money += Math.round(bet*1.5); document.getElementById('casino-status').innerText = `🎉 Выигрыш +$${Math.round(bet*1.5)}!`; }
-          else { document.getElementById('casino-status').innerText = `❌ Мимо!`; }
-          updateUI();
-        }
-      }, 100);
-    }
-
-    function playCoin(choice) {
-      let bet = getBet(); if (!bet) return;
-      money -= bet;
-      let res = Math.random() > 0.5 ? 'Орёл' : 'Решка';
-      document.getElementById('coin-icon').innerText = res === 'Орёл' ? '🦅' : '🪙';
-      if (choice === res) { money += bet*2; document.getElementById('casino-status').innerText = `🎉 Выиграл +$${bet*2}!`; }
-      else { document.getElementById('casino-status').innerText = `❌ Проиграл!`; }
-      updateUI();
-    }
-
-    function playDice(type) {
-      let bet = getBet(); if (!bet) return;
-      money -= bet;
-      let d = Math.floor(Math.random()*6)+1;
-      document.getElementById('dice-icon').innerText = ["⚀","⚁","⚂","⚃","⚄","⚅"][d-1];
-      if ((type==='low' && d<=3) || (type==='high' && d>=4)) { money += bet*2; document.getElementById('casino-status').innerText = `🎉 Выиграл +$${bet*2}!`; }
-      else { document.getElementById('casino-status').innerText = `❌ Проиграл!`; }
-      updateUI();
-    }
-
-    // --- АВТОРЫНОК И ГАРАЖ ---
-    function openAutoMarket() {
-      const container = document.getElementById('cars-list'); container.innerHTML = '';
-      carsList.forEach(car => {
-        container.innerHTML += `<div class="item-card"><b>${car.name}</b><br><b style="color:var(--success);">$${car.basePrice}</b><button class="btn btn-success" style="padding:6px; font-size:12px; margin-top:6px;" onclick="buyCar('${car.name}', ${car.basePrice})">Купить</button></div>`;
-      });
-      document.getElementById('market-modal').style.display = 'flex';
-    }
-
-    function buyCar(name, price) {
-      if (money >= price) {
-        money -= price; myGarage.push(name);
-        alert('🎉 Куплен ' + name + '!');
-        closeModal('market-modal'); updateUI();
-      } else { alert('❌ Не хватает денег!'); }
-    }
-
-    function openGarage() {
-      const container = document.getElementById('garage-list');
-      container.innerHTML = myGarage.length === 0 ? '<p>Пусто</p>' : myGarage.map(car => `<div class="item-card">🏎️ <b>${car}</b></div>`).join('');
-      document.getElementById('garage-modal').style.display = 'flex';
-    }
-
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // Авто-восстановление энергии раз в 5 сек
     setInterval(() => { 
       let maxE = getMaxEnergy();
       if (energy < maxE) { energy += 1; updateUI(); } 
