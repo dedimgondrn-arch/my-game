@@ -3,88 +3,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Бизнес Симулятор: GTA City</title>
+  <title>Бизнес Симулятор: Neon City</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --accent: #3b82f6;
+      --bg: #090d16;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
       --gold: #fbbf24;
-      --purple: #8b5cf6;
+      --purple: #a855f7;
       --text: #f8fafc;
+      --text-muted: #94a3b8;
     }
-    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 15px; margin: 0; padding-bottom: 30px; user-select: none; }
-    .card { background: var(--card); padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #334155; }
-    .stat { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 15px; }
-    .btn { background: var(--accent); color: white; border: none; padding: 10px 14px; border-radius: 10px; width: 100%; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 6px; }
-    .btn-success { background: var(--success); }
-    .btn-warning { background: var(--warning); color: #000; }
-    .btn-danger { background: var(--danger); }
-    .btn-purple { background: var(--purple); }
-    .btn-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 800; }
-    .btn:active { opacity: 0.8; transform: scale(0.98); }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-    .grid-btn { background: var(--card); border: 1px solid #334155; padding: 12px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 500; cursor: pointer; }
-    
-    /* Модалки */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 100; }
-    .modal-content { background: var(--card); padding: 20px; border-radius: 16px; width: 85%; max-width: 380px; border: 1px solid #334155; max-height: 85vh; overflow-y: auto; text-align: center; }
-    .car-card { background: #0f172a; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #334155; text-align: left; }
-    .badge { background: #334155; padding: 2px 8px; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    input, select { width: 90%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; margin-bottom: 8px; font-size: 14px; text-align: center; }
 
-    /* Слоты казино */
-    .slots-display { display: flex; justify-content: center; gap: 10px; background: #0f172a; padding: 15px; border-radius: 12px; border: 2px solid var(--gold); margin: 15px 0; font-size: 38px; }
-    .slot-box { background: #1e293b; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #334155; }
-    .casino-tabs { display: flex; gap: 5px; margin-bottom: 15px; }
-    .tab-btn { flex: 1; padding: 8px; background: #0f172a; border: 1px solid #334155; color: #94a3b8; border-radius: 8px; font-size: 12px; cursor: pointer; }
-    .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+    * { box-sizing: border-box; transition: all 0.2s ease; }
+    body {
+      background: var(--bg);
+      background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 70%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 16px;
+      margin: 0;
+      padding-bottom: 40px;
+      user-select: none;
+    }
 
-    .trade-box { background: #0f172a; border-radius: 12px; padding: 10px; margin-bottom: 10px; border: 1px solid #334155; }
-    .wanted-stars { color: #f59e0b; font-size: 16px; }
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 16px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+    }
+
+    .stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
+    .stat b { color: var(--text); font-size: 15px; }
+
+    .btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 14px;
+      width: 100%;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-success { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); }
+    .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25); }
+    .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); }
+    .btn-purple { background: linear-gradient(135deg, #a855f7, #7e22ce); box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25); }
+    .btn-gold { background: linear-gradient(135deg, #fbbf24, #d97706); color: #000; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); }
+    .btn:active { transform: scale(0.97); }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .grid-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px 12px;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+    .grid-btn:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.05); }
+
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+      justify-content: center; align-items: center; z-index: 100;
+    }
+    .modal-content {
+      background: #111827;
+      padding: 22px; border-radius: 24px;
+      width: 90%; max-width: 400px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-height: 85vh; overflow-y: auto; text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+
+    .item-card {
+      background: rgba(15, 23, 42, 0.6);
+      padding: 12px 14px; border-radius: 14px; margin-bottom: 10px;
+      border: 1px solid var(--card-border); text-align: left;
+    }
+    .badge { background: rgba(255, 255, 255, 0.1); padding: 4px 8px; border-radius: 8px; font-size: 11px; cursor: pointer; color: var(--gold); }
+    input, select {
+      width: 100%; padding: 12px; border-radius: 12px;
+      border: 1px solid var(--card-border); background: #0f172a;
+      color: white; margin-bottom: 10px; font-size: 14px; text-align: center; outline: none;
+    }
+
+    .slots-display {
+      display: flex; justify-content: center; gap: 10px;
+      background: #0f172a; padding: 15px; border-radius: 16px;
+      border: 2px solid var(--gold); margin: 15px 0; font-size: 38px;
+    }
+    .slot-box { background: #1e293b; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+    .casino-tabs { display: flex; gap: 6px; margin-bottom: 15px; }
+    .tab-btn { flex: 1; padding: 10px; background: #0f172a; border: 1px solid var(--card-border); color: var(--text-muted); border-radius: 10px; font-size: 12px; cursor: pointer; font-weight: 600; }
+    .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .wanted-stars { color: var(--gold); font-size: 16px; letter-spacing: 2px; }
   </style>
 </head>
 <body>
 
   <!-- Шапка Игрока -->
   <div class="card">
-    <div class="stat"><span>Игрок:</span> <b id="nickname">Игрок</b> <span class="badge" onclick="changeNickname()">✏️ изм.</span></div>
-    <div class="stat"><span>Баланс:</span> <b id="money" style="color:#10b981">$0</b></div>
-    <div class="stat"><span>Энергия:</span> <b id="energy" style="color:#3b82f6">100/100</b></div>
+    <div class="stat"><span>Игрок:</span> <span><b id="nickname">Игрок</b> <span class="badge" onclick="changeNickname()">✏️</span></span></div>
+    <div class="stat"><span>Баланс:</span> <b id="money" style="color:var(--success); font-size:18px;">$0</b></div>
+    <div class="stat"><span>Энергия:</span> <b id="energy" style="color:#38bdf8">100/100</b></div>
     <div class="stat"><span>Розыск:</span> <span id="wanted" class="wanted-stars">☆☆☆☆☆</span></div>
-    <div class="stat"><span>Доход бизнеса:</span> <b id="income">+$0/сек</b></div>
+    <div class="stat"><span>Куплено бизнесов:</span> <b id="biz-count">0</b></div>
     <div class="stat"><span>Гараж:</span> <b id="garage-count">0 авто</b></div>
   </div>
 
   <!-- Основные действия -->
   <button class="btn" onclick="work()">💼 Работать (+$25 | -5⚡)</button>
-  <button class="btn btn-warning" onclick="openEnergyGame()">⚡ Мини-игра: Взлом Энергии</button>
-  <button class="btn btn-danger" onclick="commitCrime()">🚨 Совершить ограбление (Опасно!)</button>
+  <button class="btn btn-warning" onclick="openEnergyGame()">⚡ Мини-игра: Накачать Энергию</button>
+  <button class="btn btn-danger" onclick="commitCrime()">🚨 Ограбление (Опасно!)</button>
 
   <!-- Разделы -->
   <div class="grid">
-    <div class="grid-btn" onclick="buyBusiness()">🏢 Бизнес</div>
+    <div class="grid-btn" onclick="openBusinessList()">🏢 Бизнесы</div>
     <div class="grid-btn" onclick="openAutoMarket()">🚗 Авторынок</div>
-    <div class="grid-btn" onclick="openGarage()">🏎️ Гараж</div>
-    <div class="grid-btn" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6);" onclick="openCasino()">🎰 Казино</div>
+    <div class="grid-btn" onclick="openGarage()">🏎️ Мой Гараж</div>
+    <div class="grid-btn" style="background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2)); border-color: var(--purple);" onclick="openCasino()">🎰 Казино</div>
   </div>
 
   <!-- Кнопка Трейда -->
-  <button class="btn btn-purple" style="margin-top:10px;" onclick="openTradeHub()">🤝 P2P Трейд & Обмен</button>
-  <button class="btn btn-danger" style="margin-top:5px; background:#475569;" onclick="resetGameData()">🔄 Сбросить весь прогресс</button>
+  <button class="btn btn-purple" style="margin-top:12px;" onclick="openTradeHub()">🤝 P2P Трейд & Обмен</button>
+  <button class="btn btn-danger" style="margin-top:8px; opacity:0.6; font-size:12px; padding:8px;" onclick="resetGameData()">🔄 Сбросить весь прогресс</button>
+
+  <!-- Модалка Бизнесов -->
+  <div id="business-modal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--primary); margin-top:0;">🏢 Бизнес Империя</h3>
+      <p style="font-size:12px; color:var(--text-muted);">Покупай предприятия и собирай прибыль!</p>
+      
+      <button class="btn btn-success" style="margin-bottom:15px;" onclick="collectAllIncome()">💵 Собрать прибыль со всех предприятий</button>
+      <div id="business-list"></div>
+      
+      <button class="btn btn-danger" onclick="closeModal('business-modal')">Закрыть</button>
+    </div>
+  </div>
 
   <!-- Модалка Мини-Игры за Энергию -->
   <div id="energy-modal" class="modal">
     <div class="modal-content">
-      <h3 style="color:var(--warning); margin-top:0;">⚡ Взлом генератора</h3>
-      <p style="font-size:13px; color:#94a3b8;">Успей нажать на зеленую кнопку 5 раз за 6 секунд, чтобы восстановить энергию!</p>
-      <div style="font-size:24px; font-weight:bold; margin:15px 0;" id="energy-timer">06.00 сек</div>
-      <div style="font-size:18px; margin-bottom:15px;">Нажато: <b id="energy-clicks" style="color:var(--success)">0</b> / 5</div>
-      <button class="btn btn-success" id="energy-click-btn" style="padding:20px; font-size:18px;" onclick="clickEnergyMiniGame()">ЖМИ СЮДА!</button>
+      <h3 style="color:var(--warning); margin-top:0;">⚡ Генератор Энергии</h3>
+      <p style="font-size:13px; color:var(--text-muted);">Жми на кнопку 5 раз за 6 секунд!</p>
+      <div style="font-size:28px; font-weight:bold; margin:15px 0; color:var(--gold);" id="energy-timer">06.00 сек</div>
+      <div style="font-size:16px; margin-bottom:15px;">Кликов: <b id="energy-clicks" style="color:var(--success)">0</b> / 5</div>
+      <button class="btn btn-success" id="energy-click-btn" style="padding:18px; font-size:16px;" onclick="clickEnergyMiniGame()">ЖМИ СЮДА!</button>
       <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('energy-modal')">Сдаться</button>
     </div>
   </div>
@@ -93,9 +181,8 @@
   <div id="jail-modal" class="modal">
     <div class="modal-content">
       <h3 style="color:var(--danger); margin-top:0;">🚔 ВЫ АРЕСТОВАНЫ!</h3>
-      <p style="font-size:13px;">Полиция поймала вас за нелегальную деятельность!</p>
-      <div class="trade-box">
-        <p>Выбери вариант освобождения:</p>
+      <p style="font-size:13px; color:var(--text-muted);">Вас поймал спецназ за нелегальные дела!</p>
+      <div class="item-card">
         <button class="btn btn-warning" onclick="payBribe()">💰 Дать взятку ($500)</button>
         <button class="btn btn-purple" onclick="startEscapeGame()">🔐 Устроить побег (Мини-игра)</button>
       </div>
@@ -105,10 +192,10 @@
   <!-- Модалка Побега -->
   <div id="escape-modal" class="modal">
     <div class="modal-content">
-      <h3 style="color:var(--purple); margin-top:0;">🔐 Взлом Замка Тюрьмы</h3>
-      <p style="font-size:12px; color:#94a3b8;">Угадай случайный цифровой код от 1 до 5!</p>
-      <input type="number" id="escape-code-input" placeholder="Введите код (1-5)">
-      <button class="btn btn-success" onclick="checkEscapeCode()">Попробовать открыть</button>
+      <h3 style="color:var(--purple); margin-top:0;">🔐 Взлом Замка</h3>
+      <p style="font-size:12px; color:var(--text-muted);">Угадай цифру замка от 1 до 5!</p>
+      <input type="number" id="escape-code-input" placeholder="Цифра (1-5)">
+      <button class="btn btn-success" onclick="checkEscapeCode()">Открыть замок</button>
       <p id="escape-status" style="font-size:13px; font-weight:bold; color:var(--warning);"></p>
     </div>
   </div>
@@ -117,7 +204,7 @@
   <div id="trade-modal" class="modal">
     <div class="modal-content">
       <h3 style="color:var(--purple); margin-top:0;">🤝 P2P Трейд Рынок</h3>
-      <div class="trade-box">
+      <div class="item-card">
         <b>Партнер:</b>
         <select id="trade-partner" onchange="generatePartnerOffer()">
           <option value="Sanya_Drift">Саня_Дрифт</option>
@@ -125,14 +212,14 @@
           <option value="Major_777">Мажор_777</option>
         </select>
       </div>
-      <div class="trade-box">
-        <b style="color:#10b981;">Твоё предложение:</b>
-        <select id="trade-my-car"><option value="">-- Авто --</option></select>
+      <div class="item-card">
+        <b style="color:var(--success);">Твоё предложение:</b>
+        <select id="trade-my-car"><option value="">-- Выбери Авто --</option></select>
         <input type="number" id="trade-my-money" placeholder="+ Доплата $">
       </div>
-      <div class="trade-box">
+      <div class="item-card">
         <b style="color:#38bdf8;">Предложение партнёра:</b>
-        <p id="partner-offer-text" style="font-size:13px; font-weight:bold; color:#f59e0b;"></p>
+        <p id="partner-offer-text" style="font-size:13px; font-weight:bold; color:var(--gold); margin:6px 0 0 0;"></p>
       </div>
       <button class="btn btn-success" onclick="executeTrade()">✅ Совершить Сделку</button>
       <button class="btn btn-danger" onclick="closeModal('trade-modal')">Закрыть</button>
@@ -148,7 +235,7 @@
         <button class="tab-btn" id="tab-coin" onclick="switchCasinoGame('coin')">🪙 Монетка</button>
         <button class="tab-btn" id="tab-dice" onclick="switchCasinoGame('dice')">🎲 Кости</button>
       </div>
-      <input type="number" id="casino-bet" value="50" min="10">
+      <input type="number" id="casino-bet" value="50" min="10" placeholder="Ставка ($)">
       
       <div id="game-slots">
         <div class="slots-display">
@@ -156,7 +243,7 @@
           <div class="slot-box" id="slot2">🎰</div>
           <div class="slot-box" id="slot3">🎰</div>
         </div>
-        <button class="btn btn-gold" id="spin-btn" onclick="spinSlots()">КРУТИТЬ</button>
+        <button class="btn btn-gold" id="spin-btn" onclick="spinSlots()">КРУТИТЬ СЛОТЫ</button>
       </div>
 
       <div id="game-coin" style="display:none;">
@@ -175,12 +262,12 @@
         </div>
       </div>
 
-      <p id="casino-status" style="font-size:13px; font-weight:bold; margin-top:10px; color:#38bdf8;">Делайте ставки!</p>
+      <p id="casino-status" style="font-size:13px; font-weight:bold; margin-top:12px; color:#38bdf8;">Делайте ваши ставки!</p>
       <button class="btn btn-danger" onclick="closeModal('casino-modal')">Выйти</button>
     </div>
   </div>
 
-  <!-- Вспомогательные модалки -->
+  <!-- Модалки Авторынка и Гаража -->
   <div id="market-modal" class="modal">
     <div class="modal-content">
       <h3>🚗 Авторынок</h3>
@@ -198,24 +285,39 @@
   </div>
 
   <script>
-    // --- СОХРАНЕНИЕ В LOCALSTORAGE ---
+    // --- СОХРАНЕНИЕ ДАННЫХ ---
     let money = parseInt(localStorage.getItem('money')) || 800;
     let energy = parseInt(localStorage.getItem('energy')) || 100;
     let maxEnergy = 100;
     let nickname = localStorage.getItem('nickname') || "Игрок";
-    let bizIncome = parseInt(localStorage.getItem('bizIncome')) || 0;
-    let bizCost = parseInt(localStorage.getItem('bizCost')) || 100;
     let wantedStars = parseInt(localStorage.getItem('wantedStars')) || 0;
     let myGarage = JSON.parse(localStorage.getItem('myGarage')) || ["VAZ 2107"];
+    let myBusinesses = JSON.parse(localStorage.getItem('myBusinesses')) || [];
+
+    // База доступных бизнесов
+    const availableBusinesses = [
+      { id: 1, name: "🥙 Шаурмичная у Вахида", cost: 150, income: 15 },
+      { id: 2, name: "🏪 Магазин «24/7»", cost: 800, income: 60 },
+      { id: 3, name: "☕ Кофейня «Street Coffee»", cost: 2500, income: 180 },
+      { id: 4, name: "🚗 Детейлинг & Автомойка", cost: 7000, income: 500 },
+      { id: 5, name: "💻 Компьютерный Клуб", cost: 20000, income: 1400 },
+      { id: 6, name: "🍾 Ночной Клуб «Neon»", cost: 60000, income: 4500 }
+    ];
+
+    const carsList = [
+      { id: 1, name: "VAZ 2107", basePrice: 300 },
+      { id: 2, name: "BMW E36", basePrice: 1200 },
+      { id: 3, name: "Mercedes W124", basePrice: 2500 },
+      { id: 4, name: "Nissan Skyline GT-R", basePrice: 8000 }
+    ];
 
     function saveData() {
       localStorage.setItem('money', money);
       localStorage.setItem('energy', energy);
       localStorage.setItem('nickname', nickname);
-      localStorage.setItem('bizIncome', bizIncome);
-      localStorage.setItem('bizCost', bizCost);
       localStorage.setItem('wantedStars', wantedStars);
       localStorage.setItem('myGarage', JSON.stringify(myGarage));
+      localStorage.setItem('myBusinesses', JSON.stringify(myBusinesses));
     }
 
     function resetGameData() {
@@ -225,19 +327,12 @@
       }
     }
 
-    const carsList = [
-      { id: 1, name: "VAZ 2107", basePrice: 300 },
-      { id: 2, name: "BMW E36", basePrice: 1200 },
-      { id: 3, name: "Mercedes W124", basePrice: 2500 },
-      { id: 4, name: "Nissan Skyline GT-R", basePrice: 8000 }
-    ];
-
     function updateUI() {
       document.getElementById('money').innerText = '$' + money;
       document.getElementById('energy').innerText = energy + '/' + maxEnergy;
       document.getElementById('nickname').innerText = nickname;
-      document.getElementById('income').innerText = '+$' + bizIncome + '/сек';
       document.getElementById('garage-count').innerText = myGarage.length + ' авто';
+      document.getElementById('biz-count').innerText = myBusinesses.length;
       
       let starsText = "";
       for (let i = 0; i < 5; i++) { starsText += i < wantedStars ? "★" : "☆"; }
@@ -256,28 +351,67 @@
       if (newName) { nickname = newName; updateUI(); }
     }
 
-    function buyBusiness() {
-      if (money >= bizCost) {
-        money -= bizCost;
-        bizIncome += 10;
-        bizCost = Math.round(bizCost * 1.5);
-        alert('🎉 Бизнес куплен! Доход: +$' + bizIncome + '/сек');
+    // --- БИЗНЕС СИСТЕМА ---
+    function openBusinessList() {
+      const container = document.getElementById('business-list');
+      container.innerHTML = '';
+
+      availableBusinesses.forEach(biz => {
+        const owned = myBusinesses.includes(biz.id);
+        container.innerHTML += `
+          <div class="item-card">
+            <b>${biz.name}</b><br>
+            <span style="font-size:12px; color:var(--text-muted);">Прибыль: +$${biz.income}/сбор</span><br>
+            <b style="color:var(--success); font-size:13px;">Цена: $${biz.cost}</b><br>
+            ${owned 
+              ? `<span style="color:var(--gold); font-weight:bold; font-size:12px;">✅ Уже куплено</span>`
+              : `<button class="btn btn-success" style="padding:6px; font-size:12px; margin-top:6px;" onclick="buyBusiness(${biz.id})">Купить бизнес</button>`
+            }
+          </div>
+        `;
+      });
+
+      document.getElementById('business-modal').style.display = 'flex';
+    }
+
+    function buyBusiness(id) {
+      const biz = availableBusinesses.find(b => b.id === id);
+      if (money >= biz.cost) {
+        money -= biz.cost;
+        myBusinesses.push(biz.id);
+        alert(`🎉 Вы успешно купили "${biz.name}"!`);
+        openBusinessList();
         updateUI();
-      } else { alert('❌ Не хватает денег!'); }
+      } else { alert('❌ Не хватает денег на покупку!'); }
+    }
+
+    function collectAllIncome() {
+      if (myBusinesses.length === 0) {
+        alert("❌ У вас нет купленных бизнесов!");
+        return;
+      }
+      let total = 0;
+      myBusinesses.forEach(id => {
+        const biz = availableBusinesses.find(b => b.id === id);
+        if (biz) total += biz.income;
+      });
+      money += total;
+      alert(`💵 Вы собрали +$${total} прибыли со своих предприятий!`);
+      updateUI();
     }
 
     // --- СИСТЕМА РОЗЫСКА И ПРЕСТУПЛЕНИЙ ---
     function commitCrime() {
-      if (energy < 20) { alert("⚡ Нужно хотя бы 20 энергии!"); return; }
+      if (energy < 20) { alert("⚡ Нужно 20 энергии!"); return; }
       energy -= 20;
 
       if (Math.random() > 0.4) {
         let reward = Math.floor(Math.random() * 500) + 200;
         money += reward;
-        alert(`🤑 Ограбление прошло успешно! Куш: +$${reward}`);
+        alert(`🤑 Успешное ограбление! Куш: +$${reward}`);
       } else {
         wantedStars = Math.min(5, wantedStars + 1);
-        alert(`🚨 Вас заметила полиция! Уровень розыска повышен до ${wantedStars}★!`);
+        alert(`🚨 Полиция заметила вас! Розыск: ${wantedStars}★`);
         if (wantedStars >= 5) {
           document.getElementById('jail-modal').style.display = 'flex';
         }
@@ -290,7 +424,7 @@
         money -= 500;
         wantedStars = 0;
         closeModal('jail-modal');
-        alert("👮 Полицейский взял купоны и отпустил вас.");
+        alert("👮 Вы дали взятку и свободны!");
         updateUI();
       } else { alert("❌ Нет $500 на взятку!"); }
     }
@@ -310,7 +444,7 @@
         alert("🔓 Замок взломан! Вы сбежали!");
         updateUI();
       } else {
-        document.getElementById('escape-status').innerText = "❌ Неверный код! Замок заклинило!";
+        document.getElementById('escape-status').innerText = "❌ Неверный код!";
       }
     }
 
@@ -332,7 +466,7 @@
         document.getElementById('energy-timer').innerText = Math.max(0, timeLeft).toFixed(2) + " сек";
         if (timeLeft <= 0) {
           clearInterval(energyTimer);
-          alert("❌ Время вышло! Попробуй еще раз.");
+          alert("❌ Время вышло!");
           closeModal('energy-modal');
         }
       }, 100);
@@ -344,7 +478,7 @@
       if (energyClicks >= 5) {
         clearInterval(energyTimer);
         energy = maxEnergy;
-        alert("🎉 Взлом успешен! Энергия полностью восстановлена!");
+        alert("🎉 Энергия восстановлена на 100%!");
         closeModal('energy-modal');
         updateUI();
       }
@@ -378,7 +512,7 @@
       if (currentPartnerOffer.money) money += currentPartnerOffer.money;
       if (currentPartnerOffer.car) myGarage.push(currentPartnerOffer.car);
 
-      alert("🎉 Сделка прошла!");
+      alert("🎉 Обмен завершен!");
       closeModal('trade-modal');
       updateUI();
     }
@@ -425,7 +559,7 @@
       let res = Math.random() > 0.5 ? 'Орёл' : 'Решка';
       document.getElementById('coin-icon').innerText = res === 'Орёл' ? '🦅' : '🪙';
       if (choice === res) { money += bet*2; document.getElementById('casino-status').innerText = `🎉 Выиграл +$${bet*2}!`; }
-      else { document.getElementById('casino-status').innerText = `❌ Проиграл ну и лох!`; }
+      else { document.getElementById('casino-status').innerText = `❌ Проиграл!`; }
       updateUI();
     }
 
@@ -435,7 +569,7 @@
       let d = Math.floor(Math.random()*6)+1;
       document.getElementById('dice-icon').innerText = ["⚀","⚁","⚂","⚃","⚄","⚅"][d-1];
       if ((type==='low' && d<=3) || (type==='high' && d>=4)) { money += bet*2; document.getElementById('casino-status').innerText = `🎉 Выиграл +$${bet*2}!`; }
-      else { document.getElementById('casino-status').innerText = `❌ Проиграл ну и лох!`; }
+      else { document.getElementById('casino-status').innerText = `❌ Проиграл!`; }
       updateUI();
     }
 
@@ -443,7 +577,7 @@
     function openAutoMarket() {
       const container = document.getElementById('cars-list'); container.innerHTML = '';
       carsList.forEach(car => {
-        container.innerHTML += `<div class="car-card"><b>${car.name}</b><br><b style="color:#10b981;">$${car.basePrice}</b><button class="btn" onclick="buyCar('${car.name}', ${car.basePrice})">Купить</button></div>`;
+        container.innerHTML += `<div class="item-card"><b>${car.name}</b><br><b style="color:var(--success);">$${car.basePrice}</b><button class="btn btn-success" style="padding:6px; font-size:12px; margin-top:6px;" onclick="buyCar('${car.name}', ${car.basePrice})">Купить</button></div>`;
       });
       document.getElementById('market-modal').style.display = 'flex';
     }
@@ -458,14 +592,14 @@
 
     function openGarage() {
       const container = document.getElementById('garage-list');
-      container.innerHTML = myGarage.length === 0 ? '<p>Пусто</p>' : myGarage.map(car => `<div class="car-card">🏎️ <b>${car}</b></div>`).join('');
+      container.innerHTML = myGarage.length === 0 ? '<p>Пусто</p>' : myGarage.map(car => `<div class="item-card">🏎️ <b>${car}</b></div>`).join('');
       document.getElementById('garage-modal').style.display = 'flex';
     }
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    setInterval(() => { if (bizIncome > 0) { money += bizIncome; updateUI(); } }, 1000);
-    setInterval(() => { if (energy < maxEnergy) { energy += 1; updateUI(); } }, 3000);
+    // Авто-восстановление энергии раз в 5 сек
+    setInterval(() => { if (energy < maxEnergy) { energy += 1; updateUI(); } }, 5000);
 
     updateUI();
     Telegram.WebApp.ready();
