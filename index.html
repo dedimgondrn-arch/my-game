@@ -3,51 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Бизнес Игра</title>
+  <title>Бизнес Симулятор</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    body { background-color: #121824; color: white; font-family: sans-serif; padding: 20px; margin: 0; }
-    .card { background: #1a2232; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-    .stat { display: flex; justify-content: space-between; margin-bottom: 8px; }
-    .btn { background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; }
-    .btn:active { opacity: 0.8; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .grid-btn { background: #252f40; padding: 15px; border-radius: 10px; text-align: center; }
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f8fafc;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 15px; margin: 0; }
+    .card { background: var(--card); padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #334155; }
+    .stat { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 15px; }
+    .btn { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 6px; }
+    .btn-success { background: var(--success); }
+    .btn-warning { background: var(--warning); color: #000; }
+    .btn:active { opacity: 0.8; transform: scale(0.98); }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .grid-btn { background: var(--card); border: 1px solid #334155; padding: 12px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 500; }
+    input { width: 90%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; margin-bottom: 8px; }
+    .badge { background: #334155; padding: 2px 8px; border-radius: 6px; font-size: 12px; }
   </style>
 </head>
 <body>
-  <h2>Моя Жизнь</h2>
+
+  <!-- Шапка Игрока -->
   <div class="card">
-    <div class="stat"><span>Баланс:</span><b id="money">$0</b></div>
-    <div class="stat"><span>Энергия:</span><b id="energy">100/100</b></div>
-    <div class="stat"><span>Профессия:</span><b id="job">Дворник</b></div>
+    <div class="stat"><span>Игрок:</span> <b id="nickname">Игрок</b> <span class="badge" onclick="changeNickname()">✏️ изм.</span></div>
+    <div class="stat"><span>Баланс:</span> <b id="money" style="color:#10b981">$0</b></div>
+    <div class="stat"><span>Энергия:</span> <b id="energy" style="color:#3b82f6">100/100</b></div>
+    <div class="stat"><span>Бизнес доход:</span> <b id="income">+$0/сек</b></div>
   </div>
 
-  <button class="btn" onclick="work()">Работать (+$10)</button>
+  <!-- Действия -->
+  <button class="btn" onclick="work()">💼 Работать (+$25 | -5⚡)</button>
+  <button class="btn btn-warning" onclick="watchAd()">📺 Восстановить энергию (Скип)</button>
 
-  <h3>Разделы</h3>
+  <!-- Разделы -->
   <div class="grid">
-    <div class="grid-btn">💼 Работа</div>
-    <div class="grid-btn">🎓 Навыки</div>
-    <div class="grid-btn">🏪 Магазин</div>
-    <div class="grid-btn">🏢 Бизнес</div>
+    <div class="grid-btn" onclick="buyBusiness()">🏢 Бизнес (Купить)</div>
+    <div class="grid-btn" onclick="playCasino()">🎰 Казино</div>
+    <div class="grid-btn" onclick="alert('Авторынок появится в следующем обновлении!')">🚗 Авторынок</div>
+    <div class="grid-btn" onclick="alert('Трейд с игроками в разработке!')">🔄 Трейд</div>
   </div>
 
   <script>
     let money = 0;
     let energy = 100;
+    let nickname = "Игрок";
+    let bizIncome = 0;
+    let bizCost = 100;
+
+    // Запрещенные слова для ника
+    const badWords = ["дурак", "лох", "дебил", "быдло"];
+
+    function updateUI() {
+      document.getElementById('money').innerText = '$' + money;
+      document.getElementById('energy').innerText = energy + '/100';
+      document.getElementById('nickname').innerText = nickname;
+      document.getElementById('income').innerText = '+$' + bizIncome + '/сек';
+    }
 
     function work() {
-      if (energy >= 10) {
-        money += 10;
-        energy -= 10;
-        document.getElementById('money').innerText = '$' + money;
-        document.getElementById('energy').innerText = energy + '/100';
+      if (energy >= 5) {
+        money += 25;
+        energy -= 5;
+        updateUI();
       } else {
-        alert('Мало энергии! Отдохни.');
+        alert('⚡ Нет энергии! Посмотри рекламу или подожди.');
       }
     }
-    
+
+    function watchAd() {
+      alert('🎬 Просмотр рекламы... Энергия полностью восстановлена!');
+      energy = 100;
+      updateUI();
+    }
+
+    function changeNickname() {
+      let newName = prompt("Введите новый никнейм:");
+      if (!newName) return;
+      
+      let lower = newName.toLowerCase();
+      let hasBadWord = badWords.some(word => lower.includes(word));
+
+      if (hasBadWord) {
+        alert("❌ Такой никнейм использовать нельзя!");
+      } else {
+        nickname = newName;
+        updateUI();
+      }
+    }
+
+    function buyBusiness() {
+      if (money >= bizCost) {
+        money -= bizCost;
+        bizIncome += 10;
+        bizCost = Math.round(bizCost * 1.5);
+        alert('🎉 Бизнес куплен! Теперь дает +$' + bizIncome + '/сек');
+        updateUI();
+      } else {
+        alert('❌ Не хватает денег! Нужно: $' + bizCost);
+      }
+    }
+
+    function playCasino() {
+      if (money < 50) { alert("Минимальная ставка $50!"); return; }
+      money -= 50;
+      if (Math.random() > 0.5) {
+        money += 120;
+        alert("🎰 ВЫИГРЫШ! +$120");
+      } else {
+        alert("🎰 Проигрыш! Попробуй еще раз.");
+      }
+      updateUI();
+    }
+
+    // Пассивный доход от бизнеса каждые 1 сек
+    setInterval(() => {
+      if (bizIncome > 0) {
+        money += bizIncome;
+        updateUI();
+      }
+    }, 1000);
+
+    // Авто-восстановление энергии по 1 ед. каждые 3 сек
+    setInterval(() => {
+      if (energy < 100) {
+        energy += 1;
+        updateUI();
+      }
+    }, 3000);
+
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
   </script>
