@@ -213,12 +213,9 @@
   </div>
 
   <script>
-    // --- TELEGRAM WEBAPP INIT ---
+    // --- TELEGRAM WEBAPP ---
     const tg = window.Telegram?.WebApp;
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
+    if (tg) { tg.ready(); tg.expand(); }
 
     function triggerHaptic(type = 'light') {
       if (tg?.HapticFeedback) {
@@ -228,26 +225,55 @@
       }
     }
 
-    // --- ПЕРЕМЕННЫЕ ---
-    let money = parseInt(localStorage.getItem('money')) || 1000;
-    let energy = parseInt(localStorage.getItem('energy')) || 100;
-    let level = parseInt(localStorage.getItem('level')) || 1;
-    let xp = parseInt(localStorage.getItem('xp')) || 0;
-    let nickname = localStorage.getItem('nickname') || (tg?.initDataUnsafe?.user?.first_name || "Игрок");
-    let wantedStars = parseInt(localStorage.getItem('wantedStars')) || 0;
-    let lastCollectTime = parseInt(localStorage.getItem('lastCollectTime')) || 0;
-
+    // --- БАЗА АВТОМОБИЛЕЙ (12 Машин) ---
     const carsList = [
       { id: 'vaz2107', name: "ВАЗ 2107 (Семерка)", price: 600, img: "https://upload.wikimedia.org/wikipedia/commons/f/f0/LADA_2107_at_Autoexotica_2013_01.jpg" },
-      { id: 'golf4', name: "Volkswagen Golf IV", price: 1800, img: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600&q=80" },
-      { id: 'bmwe36', name: "BMW E36 Drift", price: 3500, img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80" },
-      { id: 'w124', name: "Mercedes-Benz W124", price: 7000, img: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=600&q=80" },
-      { id: 'skyline', name: "Nissan Skyline GT-R R34", price: 18000, img: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=600&q=80" }
+      { id: 'priora', name: "Lada Priora Black Edition", price: 1100, img: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600&q=80" },
+      { id: 'volga', name: "ГАЗ 24-10 Волга", price: 1400, img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&q=80" },
+      { id: 'golf4', name: "Volkswagen Golf IV GTI", price: 2200, img: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600&q=80" },
+      { id: 'bmwe36', name: "BMW E36 Drift Spec", price: 4200, img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80" },
+      { id: 'w124', name: "Mercedes-Benz W124 E500", price: 8500, img: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=600&q=80" },
+      { id: 'supra', name: "Toyota Supra A80 Twin Turbo", price: 16000, img: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=600&q=80" },
+      { id: 'skyline', name: "Nissan Skyline GT-R R34", price: 25000, img: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=600&q=80" },
+      { id: 'porsche', name: "Porsche 911 Turbo S", price: 55000, img: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=600&q=80" },
+      { id: 'lamborghini', name: "Lamborghini Huracán Evo", price: 110000, img: "https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?w=600&q=80" },
+      { id: 'bugatti', name: "Bugatti Chiron Sport", price: 300000, img: "https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?w=600&q=80" },
+      { id: 'cybertruck', name: "Cyber Truck EX-100", price: 750000, img: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&q=80" }
     ];
 
-    let myGarage = JSON.parse(localStorage.getItem('myGarage')) || [
-      { id: 'vaz2107', name: 'ВАЗ 2107 (Семерка)', condition: 100, stage: 0, price: 600, img: 'https://upload.wikimedia.org/wikipedia/commons/f/f0/LADA_2107_at_Autoexotica_2013_01.jpg' }
-    ];
+    // --- БЕЗОПАСНАЯ ИНИЦИАЛИЗАЦИЯ И ИСПРАВЛЕНИЕ NaN ---
+    let money = safeParse(localStorage.getItem('money'), 1000);
+    let energy = safeParse(localStorage.getItem('energy'), 100);
+    let level = safeParse(localStorage.getItem('level'), 1);
+    let xp = safeParse(localStorage.getItem('xp'), 0);
+    let nickname = localStorage.getItem('nickname') || (tg?.initDataUnsafe?.user?.first_name || "Игрок");
+    let wantedStars = safeParse(localStorage.getItem('wantedStars'), 0);
+    let lastCollectTime = safeParse(localStorage.getItem('lastCollectTime'), 0);
+
+    let rawGarage = JSON.parse(localStorage.getItem('myGarage')) || [];
+    let myGarage = sanitizeGarage(rawGarage);
+
+    function safeParse(val, defVal) {
+      let parsed = parseInt(val);
+      return isNaN(parsed) ? defVal : parsed;
+    }
+
+    function sanitizeGarage(garageArray) {
+      if (!Array.isArray(garageArray) || garageArray.length === 0) {
+        return [{ id: 'vaz2107', name: 'ВАЗ 2107 (Семерка)', condition: 100, stage: 0, price: 600, img: 'https://upload.wikimedia.org/wikipedia/commons/f/f0/LADA_2107_at_Autoexotica_2013_01.jpg' }];
+      }
+      return garageArray.map(car => {
+        let base = carsList.find(c => c.id === car.id) || carsList[0];
+        return {
+          id: car.id || base.id,
+          name: car.name || base.name,
+          price: safeParse(car.price, base.price),
+          condition: safeParse(car.condition, 100),
+          stage: safeParse(car.stage, 0),
+          img: car.img || base.img
+        };
+      });
+    }
 
     const realtyList = [
       { id: 1, name: "🛏️ Койка в хостеле", cost: 100, energyBonus: 5, img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80" },
@@ -287,16 +313,16 @@
     }
 
     function saveData() {
-      localStorage.setItem('money', money || 0);
-      localStorage.setItem('energy', energy || 100);
-      localStorage.setItem('level', level || 1);
-      localStorage.setItem('xp', xp || 0);
+      localStorage.setItem('money', isNaN(money) ? 0 : money);
+      localStorage.setItem('energy', isNaN(energy) ? 100 : energy);
+      localStorage.setItem('level', isNaN(level) ? 1 : level);
+      localStorage.setItem('xp', isNaN(xp) ? 0 : xp);
       localStorage.setItem('nickname', nickname);
-      localStorage.setItem('wantedStars', wantedStars || 0);
+      localStorage.setItem('wantedStars', isNaN(wantedStars) ? 0 : wantedStars);
       localStorage.setItem('myGarage', JSON.stringify(myGarage));
       localStorage.setItem('myBusinesses', JSON.stringify(myBusinesses));
       localStorage.setItem('myRealty', JSON.stringify(myRealty));
-      localStorage.setItem('lastCollectTime', lastCollectTime || 0);
+      localStorage.setItem('lastCollectTime', isNaN(lastCollectTime) ? 0 : lastCollectTime);
     }
 
     function resetGameData() {
@@ -307,7 +333,7 @@
     }
 
     function addXP(amount) {
-      xp += amount;
+      xp += safeParse(amount, 0);
       let reqXp = level * 100;
       if (xp >= reqXp) {
         xp -= reqXp;
@@ -318,6 +344,11 @@
     }
 
     function updateUI() {
+      money = isNaN(money) ? 0 : money;
+      energy = isNaN(energy) ? 100 : energy;
+      level = isNaN(level) ? 1 : level;
+      xp = isNaN(xp) ? 0 : xp;
+
       let maxE = getMaxEnergy();
       if (energy > maxE) energy = maxE;
 
@@ -342,7 +373,55 @@
       if (newName) { nickname = newName.trim(); updateUI(); }
     }
 
-    // --- РАБОТЫ И ТАКСИ ---
+    // --- ТАКСИ И РАБОТЫ ---
+    function openTaxiMenu() {
+      triggerHaptic('light');
+      const container = document.getElementById('taxi-car-select');
+      container.innerHTML = '';
+      if (!myGarage || myGarage.length === 0) {
+        container.innerHTML = '<p style="color:var(--danger); font-size:14px;">У вас нет автомобиля! Купите его в Автосалоне.</p>';
+      } else {
+        myGarage.forEach((car, index) => {
+          let carPrice = safeParse(car.price, 600);
+          let carStage = safeParse(car.stage, 0);
+          let pay = Math.round((carPrice * 0.12) + (carStage * 50));
+
+          container.innerHTML += `
+            <div class="item-card">
+              <img src="${car.img}" class="card-img">
+              <b>${car.name} (Stage ${carStage})</b><br>
+              <span style="font-size:12px;">Прочность: ${car.condition}%</span><br>
+              <b style="color:var(--success); font-size:14px;">Оплата за заказ: ~$${pay}</b><br>
+              <button class="btn btn-warning" style="margin-top:8px;" onclick="driveTaxi(${index})">🚕 Выехать на заказ (-15⚡)</button>
+            </div>
+          `;
+        });
+      }
+      document.getElementById('taxi-modal').style.display = 'flex';
+    }
+
+    function driveTaxi(index) {
+      let car = myGarage[index];
+      if (!car) return;
+      if (energy < 15) { triggerHaptic('error'); alert("⚡ Нужно 15 энергии!"); return; }
+      if (car.condition <= 10) { triggerHaptic('error'); alert("🔧 Автомобиль сломан! Отремонтируйте его в гараже."); return; }
+
+      triggerHaptic('medium');
+      energy -= 15;
+      let damage = Math.floor(Math.random() * 12) + 8;
+      car.condition = Math.max(0, car.condition - damage);
+      
+      let carPrice = safeParse(car.price, 600);
+      let carStage = safeParse(car.stage, 0);
+      let pay = Math.round((carPrice * 0.12) + (carStage * 50));
+      
+      money += pay;
+      addXP(15);
+      alert(`🚕 Заказ выполнен! Получено +$${pay}. Износ машины: -${damage}%`);
+      updateUI();
+      openTaxiMenu();
+    }
+
     function openWorkList() {
       triggerHaptic('light');
       const container = document.getElementById('work-list');
@@ -372,47 +451,6 @@
       openWorkList();
     }
 
-    function openTaxiMenu() {
-      triggerHaptic('light');
-      const container = document.getElementById('taxi-car-select');
-      container.innerHTML = '';
-      if (myGarage.length === 0) {
-        container.innerHTML = '<p style="color:var(--danger); font-size:14px;">У вас нет автомобиля! Купите его в Автосалоне.</p>';
-      } else {
-        myGarage.forEach((car, index) => {
-          let pay = Math.round((car.price * 0.12) + (car.stage * 50));
-          container.innerHTML += `
-            <div class="item-card">
-              <img src="${car.img}" class="card-img">
-              <b>${car.name} (Stage ${car.stage})</b><br>
-              <span style="font-size:12px;">Прочность: ${car.condition}%</span><br>
-              <b style="color:var(--success); font-size:14px;">Оплата за заказ: ~$${pay}</b><br>
-              <button class="btn btn-warning" style="margin-top:8px;" onclick="driveTaxi(${index})">🚕 Выехать на заказ (-15⚡)</button>
-            </div>
-          `;
-        });
-      }
-      document.getElementById('taxi-modal').style.display = 'flex';
-    }
-
-    function driveTaxi(index) {
-      let car = myGarage[index];
-      if (energy < 15) { triggerHaptic('error'); alert("⚡ Нужно 15 энергии!"); return; }
-      if (car.condition <= 10) { triggerHaptic('error'); alert("🔧 Автомобиль сломан! Отремонтируйте его в гараже."); return; }
-
-      triggerHaptic('medium');
-      energy -= 15;
-      let damage = Math.floor(Math.random() * 12) + 8;
-      car.condition = Math.max(0, car.condition - damage);
-      
-      let pay = Math.round((car.price * 0.12) + (car.stage * 50));
-      money += pay;
-      addXP(15);
-      alert(`🚕 Заказ выполнен! Получено +$${pay}. Износ машины: -${damage}%`);
-      updateUI();
-      openTaxiMenu();
-    }
-
     // --- АВТОСАЛОН И ГАРАЖ ---
     function openAutoMarket() {
       triggerHaptic('light');
@@ -423,7 +461,7 @@
           <div class="item-card">
             <img src="${car.img}" class="card-img">
             <b style="font-size:16px;">${car.name}</b><br>
-            <b style="color:var(--success); font-size:16px;">Цена: $${car.price}</b>
+            <b style="color:var(--success); font-size:16px;">Цена: $${car.price.toLocaleString()}</b>
             <button class="btn btn-success" style="margin-top:8px;" onclick="buyCar('${car.id}')">Купить авто</button>
           </div>
         `;
@@ -454,7 +492,7 @@
       triggerHaptic('light');
       const container = document.getElementById('garage-list');
       container.innerHTML = '';
-      if (myGarage.length === 0) {
+      if (!myGarage || myGarage.length === 0) {
         container.innerHTML = '<p style="color:var(--text-muted);">В гараже нет машин...</p>';
       } else {
         myGarage.forEach((car, index) => {
@@ -754,7 +792,7 @@
       document.getElementById(id).style.display = 'none'; 
     }
 
-    // Автоматическое восстановление энергии
+    // Восстановление энергии
     setInterval(() => { 
       let maxE = getMaxEnergy();
       if (energy < maxE) { 
