@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Бизнес Симулятор & Casino Royale</title>
+  <title>Бизнес Симулятор & Trade Royale</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -14,6 +14,7 @@
       --warning: #f59e0b;
       --danger: #ef4444;
       --gold: #fbbf24;
+      --purple: #8b5cf6;
       --text: #f8fafc;
     }
     body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 15px; margin: 0; padding-bottom: 30px; }
@@ -23,6 +24,7 @@
     .btn-success { background: var(--success); }
     .btn-warning { background: var(--warning); color: #000; }
     .btn-danger { background: var(--danger); }
+    .btn-purple { background: var(--purple); }
     .btn-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 800; }
     .btn:active { opacity: 0.8; transform: scale(0.98); }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
@@ -33,7 +35,7 @@
     .modal-content { background: var(--card); padding: 20px; border-radius: 16px; width: 85%; max-width: 380px; border: 1px solid #334155; max-height: 85vh; overflow-y: auto; text-align: center; }
     .car-card { background: #0f172a; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #334155; text-align: left; }
     .badge { background: #334155; padding: 2px 8px; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    input { width: 90%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; margin-bottom: 8px; font-size: 14px; text-align: center; }
+    input, select { width: 90%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; margin-bottom: 8px; font-size: 14px; text-align: center; }
 
     /* Слоты казино */
     .slots-display { display: flex; justify-content: center; gap: 10px; background: #0f172a; padding: 15px; border-radius: 12px; border: 2px solid var(--gold); margin: 15px 0; font-size: 38px; }
@@ -41,6 +43,9 @@
     .casino-tabs { display: flex; gap: 5px; margin-bottom: 15px; }
     .tab-btn { flex: 1; padding: 8px; background: #0f172a; border: 1px solid #334155; color: #94a3b8; border-radius: 8px; font-size: 12px; cursor: pointer; }
     .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+    /* Трейд Стили */
+    .trade-box { background: #0f172a; border: 1px border-radius: 12px; padding: 10px; margin-bottom: 10px; border: 1px solid #334155; }
   </style>
 </head>
 <body>
@@ -61,9 +66,45 @@
   <!-- Разделы -->
   <div class="grid">
     <div class="grid-btn" onclick="buyBusiness()">🏢 Бизнес</div>
-    <div class="grid-btn" onclick="openAutoMarket()">🚗 Б/У Авторынок</div>
-    <div class="grid-btn" onclick="openGarage()">🏎️ Мой Гараж</div>
-    <div class="grid-btn" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6);" onclick="openCasino()">🎰 Казино Royale</div>
+    <div class="grid-btn" onclick="openAutoMarket()">🚗 Авторынок</div>
+    <div class="grid-btn" onclick="openGarage()">🏎️ Гараж</div>
+    <div class="grid-btn" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6);" onclick="openCasino()">🎰 Казино</div>
+  </div>
+
+  <!-- Кнопка Трейд-Центра -->
+  <button class="btn btn-purple" style="margin-top:10px;" onclick="openTradeHub()">🤝 P2P Трейд & Обмен</button>
+
+  <!-- Модалка Трейда -->
+  <div id="trade-modal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--purple); margin-top:0;">🤝 P2P Трейд Рынок</h3>
+      <p style="font-size:12px; color:#94a3b8;">Предлагай авто и деньги другим игрокам или обменивайся!</p>
+
+      <div class="trade-box">
+        <b>Выбери своего игрока/партнера:</b>
+        <select id="trade-partner" onchange="generatePartnerOffer()">
+          <option value="Sanya_Drift">Саня_Дрифт (Ищет авто)</option>
+          <option value="Pasha_Investor">Паша_Инвестор (Много кеша)</option>
+          <option value="Major_777">Мажор_777 (Редкий автопарк)</option>
+        </select>
+      </div>
+
+      <div class="trade-box">
+        <b style="color:#10b981;">Твоё предложение:</b>
+        <select id="trade-my-car">
+          <option value="">-- Выбери авто для обмена --</option>
+        </select>
+        <input type="number" id="trade-my-money" placeholder="+ Доплата $ (опционально)">
+      </div>
+
+      <div class="trade-box">
+        <b style="color:#38bdf8;">Предложение партнёра:</b>
+        <p id="partner-offer-text" style="font-size:13px; font-weight:bold; color:#f59e0b;">Загрузка предложения...</p>
+      </div>
+
+      <button class="btn btn-success" onclick="executeTrade()">✅ Подтвердить Обмен</button>
+      <button class="btn btn-danger" onclick="closeModal('trade-modal')">Отмена</button>
+    </div>
   </div>
 
   <!-- Модалка Казино -->
@@ -71,20 +112,17 @@
     <div class="modal-content">
       <h3 style="color:var(--gold); margin-top:0;">🎰 Казино Royale</h3>
       
-      <!-- Вкладки игр -->
       <div class="casino-tabs">
         <button class="tab-btn active" id="tab-slots" onclick="switchCasinoGame('slots')">🎰 Слоты</button>
         <button class="tab-btn" id="tab-coin" onclick="switchCasinoGame('coin')">🪙 Монетка</button>
         <button class="tab-btn" id="tab-dice" onclick="switchCasinoGame('dice')">🎲 Кости</button>
       </div>
 
-      <!-- Выбор Ставки -->
       <div style="margin-bottom:10px;">
-        <span style="font-size:12px; color:#94a3b8;">Размер ставки ($):</span><br>
+        <span style="font-size:12px; color:#94a3b8;">Ставка ($):</span><br>
         <input type="number" id="casino-bet" value="50" min="10">
       </div>
 
-      <!-- Игра 1: СЛОТЫ -->
       <div id="game-slots">
         <div class="slots-display">
           <div class="slot-box" id="slot1">🎰</div>
@@ -94,16 +132,14 @@
         <button class="btn btn-gold" id="spin-btn" onclick="spinSlots()">КРУТИТЬ СЛОТЫ</button>
       </div>
 
-      <!-- Игра 2: МОНЕТКА -->
       <div id="game-coin" style="display:none;">
         <div style="font-size:50px; margin:20px 0;" id="coin-icon">🪙</div>
-        <div style="display:flex; gap:10px; margin-bottom:10px;">
+        <div style="display:flex; gap:10px;">
           <button class="btn" onclick="playCoin('Орёл')">Орёл (x2)</button>
           <button class="btn" onclick="playCoin('Решка')">Решка (x2)</button>
         </div>
       </div>
 
-      <!-- Игра 3: КОСТИ -->
       <div id="game-dice" style="display:none;">
         <div style="font-size:45px; margin:15px 0;" id="dice-icon">🎲</div>
         <div style="display:flex; gap:8px;">
@@ -112,8 +148,8 @@
         </div>
       </div>
 
-      <p id="casino-status" style="font-size:13px; font-weight:bold; margin-top:15px; color:#38bdf8;">Делайте ваши ставки!</p>
-      <button class="btn btn-danger" onclick="closeModal('casino-modal')">Выйти из казино</button>
+      <p id="casino-status" style="font-size:13px; font-weight:bold; margin-top:15px; color:#38bdf8;">Делайте ставки!</p>
+      <button class="btn btn-danger" onclick="closeModal('casino-modal')">Выйти</button>
     </div>
   </div>
 
@@ -128,7 +164,7 @@
 
   <div id="bargain-modal" class="modal">
     <div class="modal-content">
-      <h3 id="bargain-car-title">Торг за авто</h3>
+      <h3 id="bargain-car-title">Торг</h3>
       <p id="seller-dialog" style="background:#0f172a; padding:10px; border-radius:8px; font-size:13px; color:#38bdf8;"></p>
       <p style="font-size:13px;">Гос. цена: <b id="bargain-price">$0</b></p>
       <input type="number" id="bargain-offer" placeholder="Предложи цену ($)">
@@ -147,23 +183,23 @@
   </div>
 
   <script>
-    let money = 500;
+    let money = 800;
     let energy = 100;
     let maxEnergy = 100;
     let nickname = "Игрок";
     let bizIncome = 0;
     let bizCost = 100;
-    let myGarage = [];
+    let myGarage = ["VAZ 2107"];
 
     const carsList = [
       { id: 1, name: "VAZ 2107", basePrice: 300, mileage: "185,000 км", state: "Помято крыло" },
       { id: 2, name: "BMW E36", basePrice: 1200, mileage: "240,000 км", state: "Дрифт корч" },
-      { id: 3, name: "Mercedes W124", basePrice: 2500, mileage: "310,000 км", state: "Легенда, сел-поехал" },
-      { id: 4, name: "Toyota Camry 40", basePrice: 5000, mileage: "150,000 км", state: "Состояние идеал" }
+      { id: 3, name: "Mercedes W124", basePrice: 2500, mileage: "310,000 км", state: "Легенда" },
+      { id: 4, name: "Nissan Skyline GT-R", basePrice: 8000, mileage: "90,000 км", state: "Тюнинг" }
     ];
 
     let selectedCar = null;
-    const badWords = ["дурак", "лох", "дебил", "быдло"];
+    let currentPartnerOffer = null;
 
     function updateUI() {
       document.getElementById('money').innerText = '$' + money;
@@ -175,21 +211,18 @@
 
     function work() {
       if (energy >= 5) { money += 25; energy -= 5; updateUI(); }
-      else { alert('⚡ Нет энергии! Посмотри рекламу.'); }
+      else { alert('⚡ Нет энергии!'); }
     }
 
     function watchAd() {
-      alert('🎬 Энергия полностью восстановлена!');
+      alert('🎬 Энергия восстановлена!');
       energy = maxEnergy;
       updateUI();
     }
 
     function changeNickname() {
-      let newName = prompt("Введите новый никнейм:");
-      if (!newName) return;
-      let lower = newName.toLowerCase();
-      if (badWords.some(w => lower.includes(w))) { alert("❌ Запрещенный ник!"); }
-      else { nickname = newName; updateUI(); }
+      let newName = prompt("Введите никнейм:");
+      if (newName) { nickname = newName; updateUI(); }
     }
 
     function buyBusiness() {
@@ -199,148 +232,135 @@
         bizCost = Math.round(bizCost * 1.5);
         alert('🎉 Бизнес куплен! Доход: +$' + bizIncome + '/сек');
         updateUI();
-      } else { alert('❌ Не хватает денег! Нужно: $' + bizCost); }
+      } else { alert('❌ Не хватает денег!'); }
     }
 
-    // --- РЕАЛИСТИЧНОЕ КАЗИНО ---
+    // --- P2P ТРЕЙД СИСТЕМА ---
+    function openTradeHub() {
+      const select = document.getElementById('trade-my-car');
+      select.innerHTML = '<option value="">-- Без авто (только деньги) --</option>';
+      myGarage.forEach((car, index) => {
+        select.innerHTML += `<option value="${index}">${car}</option>`;
+      });
+
+      generatePartnerOffer();
+      document.getElementById('trade-modal').style.display = 'flex';
+    }
+
+    function generatePartnerOffer() {
+      const partner = document.getElementById('trade-partner').value;
+      const textElem = document.getElementById('partner-offer-text');
+
+      if (partner === 'Sanya_Drift') {
+        currentPartnerOffer = { type: 'buy', money: 1400, car: null };
+        textElem.innerText = "💰 Предлагает: $1,400 наличными за твоё любое авто!";
+      } else if (partner === 'Pasha_Investor') {
+        currentPartnerOffer = { type: 'exchange', money: 500, car: "BMW E36" };
+        textElem.innerText = "🏎️ Предлагает: BMW E36 + $500 доплаты со своей стороны!";
+      } else if (partner === 'Major_777') {
+        currentPartnerOffer = { type: 'car_for_car', money: 0, car: "Nissan Skyline GT-R" };
+        textElem.innerText = "🔥 Предлагает: Nissan Skyline GT-R (хочет достойный обмен + доплату кешем)!";
+      }
+    }
+
+    function executeTrade() {
+      const carIndex = document.getElementById('trade-my-car').value;
+      const extraMoney = parseInt(document.getElementById('trade-my-money').value) || 0;
+
+      if (extraMoney > money) { alert("❌ У тебя нет столько денег на доплату!"); return; }
+
+      // Проверка условий партнёра
+      if (currentPartnerOffer.type === 'buy' && carIndex === "") {
+        alert("❌ Саня_Дрифт хочет купить именно авто! Выбери машину из списка.");
+        return;
+      }
+
+      // Проведение обмена
+      money -= extraMoney;
+
+      if (carIndex !== "") {
+        let tradedCar = myGarage.splice(parseInt(carIndex), 1)[0];
+      }
+
+      if (currentPartnerOffer.money > 0) {
+        money += currentPartnerOffer.money;
+      }
+
+      if (currentPartnerOffer.car) {
+        myGarage.push(currentPartnerOffer.car);
+      }
+
+      alert("🎉 Сделка успешно состоялась!");
+      closeModal('trade-modal');
+      updateUI();
+    }
+
+    // --- КАЗИНО ---
     const slotSymbols = ["🍒", "🍋", "🔔", "💎", "7️⃣"];
-
-    function openCasino() {
-      document.getElementById('casino-modal').style.display = 'flex';
-    }
-
+    function openCasino() { document.getElementById('casino-modal').style.display = 'flex'; }
     function switchCasinoGame(game) {
       document.querySelectorAll('.casino-tabs .tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('game-slots').style.display = 'none';
       document.getElementById('game-coin').style.display = 'none';
       document.getElementById('game-dice').style.display = 'none';
 
-      if (game === 'slots') {
-        document.getElementById('tab-slots').classList.add('active');
-        document.getElementById('game-slots').style.display = 'block';
-      } else if (game === 'coin') {
-        document.getElementById('tab-coin').classList.add('active');
-        document.getElementById('game-coin').style.display = 'block';
-      } else if (game === 'dice') {
-        document.getElementById('tab-dice').classList.add('active');
-        document.getElementById('game-dice').style.display = 'block';
-      }
+      if (game === 'slots') { document.getElementById('tab-slots').classList.add('active'); document.getElementById('game-slots').style.display = 'block'; }
+      if (game === 'coin') { document.getElementById('tab-coin').classList.add('active'); document.getElementById('game-coin').style.display = 'block'; }
+      if (game === 'dice') { document.getElementById('tab-dice').classList.add('active'); document.getElementById('game-dice').style.display = 'block'; }
     }
 
     function getBet() {
       let bet = parseInt(document.getElementById('casino-bet').value);
-      if (!bet || bet < 10) { alert("Минимальная ставка $10!"); return 0; }
-      if (bet > money) { alert("❌ Недостаточно средств!"); return 0; }
+      if (!bet || bet < 10) { alert("Мин. ставка $10!"); return 0; }
+      if (bet > money) { alert("❌ Нет денег!"); return 0; }
       return bet;
     }
 
-    // 1. Слоты
     function spinSlots() {
-      let bet = getBet();
-      if (!bet) return;
-
-      money -= bet;
-      updateUI();
-
-      let btn = document.getElementById('spin-btn');
-      btn.disabled = true;
-      document.getElementById('casino-status').innerText = "Барабаны крутятся...";
-
+      let bet = getBet(); if (!bet) return;
+      money -= bet; updateUI();
       let spins = 0;
       let interval = setInterval(() => {
-        document.getElementById('slot1').innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
-        document.getElementById('slot2').innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
-        document.getElementById('slot3').innerText = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
-        spins++;
-
-        if (spins > 10) {
+        document.getElementById('slot1').innerText = slotSymbols[Math.floor(Math.random()*5)];
+        document.getElementById('slot2').innerText = slotSymbols[Math.floor(Math.random()*5)];
+        document.getElementById('slot3').innerText = slotSymbols[Math.floor(Math.random()*5)];
+        if (++spins > 10) {
           clearInterval(interval);
-          btn.disabled = false;
-
-          let s1 = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
-          let s2 = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
-          let s3 = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
-
-          document.getElementById('slot1').innerText = s1;
-          document.getElementById('slot2').innerText = s2;
-          document.getElementById('slot3').innerText = s3;
-
-          if (s1 === s2 && s2 === s3) {
-            let win = bet * 5;
-            money += win;
-            document.getElementById('casino-status').innerText = `💥 ДЖЕКПОТ! 3 в ряд! Выигрыш: +$${win}!`;
-          } else if (s1 === s2 || s2 === s3 || s1 === s3) {
-            let win = Math.round(bet * 1.5);
-            money += win;
-            document.getElementById('casino-status').innerText = `🎉 Две совпали! Выигрыш: +$${win}!`;
-          } else {
-            document.getElementById('casino-status').innerText = `❌ Ничего не совпало. Повезет в следующий раз!`;
-          }
+          let s1 = slotSymbols[Math.floor(Math.random()*5)], s2 = slotSymbols[Math.floor(Math.random()*5)], s3 = slotSymbols[Math.floor(Math.random()*5)];
+          document.getElementById('slot1').innerText = s1; document.getElementById('slot2').innerText = s2; document.getElementById('slot3').innerText = s3;
+          if (s1 === s2 && s2 === s3) { money += bet*5; document.getElementById('casino-status').innerText = `💥 ДЖЕКПОТ +$${bet*5}!`; }
+          else if (s1 === s2 || s2 === s3 || s1 === s3) { money += Math.round(bet*1.5); document.getElementById('casino-status').innerText = `🎉 Выигрыш +$${Math.round(bet*1.5)}!`; }
+          else { document.getElementById('casino-status').innerText = `❌ Мимо!`; }
           updateUI();
         }
       }, 100);
     }
 
-    // 2. Монетка
     function playCoin(choice) {
-      let bet = getBet();
-      if (!bet) return;
-
+      let bet = getBet(); if (!bet) return;
       money -= bet;
-      updateUI();
-
-      let result = Math.random() > 0.5 ? 'Орёл' : 'Решка';
-      document.getElementById('coin-icon').innerText = result === 'Орёл' ? '🦅' : '🪙';
-
-      if (choice === result) {
-        let win = bet * 2;
-        money += win;
-        document.getElementById('casino-status').innerText = `🎉 Выпал ${result}! Вы выиграли +$${win}!`;
-      } else {
-        document.getElementById('casino-status').innerText = `❌ Выпал ${result}. Ставка сгорела!`;
-      }
+      let res = Math.random() > 0.5 ? 'Орёл' : 'Решка';
+      document.getElementById('coin-icon').innerText = res === 'Орёл' ? '🦅' : '🪙';
+      if (choice === res) { money += bet*2; document.getElementById('casino-status').innerText = `🎉 Выиграл +$${bet*2}!`; }
+      else { document.getElementById('casino-status').innerText = `❌ Проиграл!`; }
       updateUI();
     }
 
-    // 3. Кости
     function playDice(type) {
-      let bet = getBet();
-      if (!bet) return;
-
+      let bet = getBet(); if (!bet) return;
       money -= bet;
-      updateUI();
-
-      let dice = Math.floor(Math.random() * 6) + 1;
-      const diceIcons = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
-      document.getElementById('dice-icon').innerText = diceIcons[dice - 1];
-
-      let win = false;
-      if (type === 'low' && dice <= 3) win = true;
-      if (type === 'high' && dice >= 4) win = true;
-
-      if (win) {
-        let prize = bet * 2;
-        money += prize;
-        document.getElementById('casino-status').innerText = `🎉 Выпало ${dice}! Вы выиграли +$${prize}!`;
-      } else {
-        document.getElementById('casino-status').innerText = `❌ Выпало ${dice}. Вы проиграли!`;
-      }
+      let d = Math.floor(Math.random()*6)+1;
+      document.getElementById('dice-icon').innerText = ["⚀","⚁","⚂","⚃","⚄","⚅"][d-1];
+      if ((type==='low' && d<=3) || (type==='high' && d>=4)) { money += bet*2; document.getElementById('casino-status').innerText = `🎉 Выиграл +$${bet*2}!`; }
+      else { document.getElementById('casino-status').innerText = `❌ Проиграл!`; }
       updateUI();
     }
 
     // --- АВТОРЫНОК И ГАРАЖ ---
     function openAutoMarket() {
-      const container = document.getElementById('cars-list');
-      container.innerHTML = '';
+      const container = document.getElementById('cars-list'); container.innerHTML = '';
       carsList.forEach(car => {
-        container.innerHTML += `
-          <div class="car-card">
-            <b>${car.name}</b><br>
-            <span style="font-size:12px; color:#cbd5e1;">Пробег: ${car.mileage} | ${car.state}</span><br>
-            <span style="color:#10b981; font-weight:bold;">Цена: $${car.basePrice}</span>
-            <button class="btn" style="padding:6px; font-size:12px;" onclick="startBargain(${car.id})">Торговаться / Купить</button>
-          </div>
-        `;
+        container.innerHTML += `<div class="car-card"><b>${car.name}</b><br><span>Пробег: ${car.mileage}</span><br><b style="color:#10b981;">$${car.basePrice}</b><button class="btn" onclick="startBargain(${car.id})">Купить</button></div>`;
       });
       document.getElementById('market-modal').style.display = 'flex';
     }
@@ -349,49 +369,30 @@
       selectedCar = carsList.find(c => c.id === carId);
       document.getElementById('bargain-car-title').innerText = selectedCar.name;
       document.getElementById('bargain-price').innerText = '$' + selectedCar.basePrice;
-      document.getElementById('seller-dialog').innerText = '"Здарова! Тачка огонь. За $' + selectedCar.basePrice + ' отдаю, ни центом меньше!"';
-      document.getElementById('bargain-offer').value = '';
+      document.getElementById('seller-dialog').innerText = '"За $' + selectedCar.basePrice + ' отдаю!"';
       document.getElementById('bargain-modal').style.display = 'flex';
     }
 
     function makeOffer() {
       let offer = parseInt(document.getElementById('bargain-offer').value);
-      if (!offer || offer <= 0) { alert("Введи адекватную сумму!"); return; }
-      let minPrice = Math.round(selectedCar.basePrice * 0.75);
-
-      if (offer >= selectedCar.basePrice) { buyCar(selectedCar, selectedCar.basePrice); }
-      else if (offer >= minPrice) {
-        document.getElementById('seller-dialog').innerText = '"Ладно, уговорил! За $' + offer + ' забирай!"';
-        setTimeout(() => buyCar(selectedCar, offer), 1200);
-      } else if (offer < minPrice && offer >= selectedCar.basePrice * 0.5) {
-        let counterOffer = Math.round((selectedCar.basePrice + offer) / 2);
-        document.getElementById('seller-dialog').innerText = '"Ты с ума сшел? Давай хотя бы за $' + counterOffer + '!"';
-      } else {
-        document.getElementById('seller-dialog').innerText = '"С такими предложениями иди пешком ходи! Пошел вон!"';
-      }
+      if (!offer) return;
+      if (offer >= selectedCar.basePrice * 0.8) { buyCar(selectedCar, offer); }
+      else { document.getElementById('seller-dialog').innerText = '"Слишком мало! Не согласен!"'; }
     }
 
     function buyDirectly() { buyCar(selectedCar, selectedCar.basePrice); }
 
     function buyCar(car, finalPrice) {
       if (money >= finalPrice) {
-        money -= finalPrice;
-        myGarage.push(car.name);
-        maxEnergy += 10;
-        alert('🎉 Поздравляем! Ты купил ' + car.name + ' за $' + finalPrice + '!');
-        closeModal('bargain-modal');
-        closeModal('market-modal');
-        updateUI();
-      } else { alert('❌ У тебя нет столько денег!'); }
+        money -= finalPrice; myGarage.push(car.name);
+        alert('🎉 Куплен ' + car.name + '!');
+        closeModal('bargain-modal'); closeModal('market-modal'); updateUI();
+      } else { alert('❌ Не хватает денег!'); }
     }
 
     function openGarage() {
       const container = document.getElementById('garage-list');
-      if (myGarage.length === 0) {
-        container.innerHTML = '<p style="font-size:13px; color:#94a3b8;">Гараж пуст. Купи авто на авторынке!</p>';
-      } else {
-        container.innerHTML = myGarage.map(car => `<div class="car-card">🏎️ <b>${car}</b></div>`).join('');
-      }
+      container.innerHTML = myGarage.length === 0 ? '<p>Пусто</p>' : myGarage.map(car => `<div class="car-card">🏎️ <b>${car}</b></div>`).join('');
       document.getElementById('garage-modal').style.display = 'flex';
     }
 
