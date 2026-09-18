@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Бизнес Игра</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { background-color: #121824; color: white; font-family: sans-serif; padding: 20px; margin: 0; }
+    .card { background: #1a2232; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+    .stat { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .btn { background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; }
+    .btn:active { opacity: 0.8; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-btn { background: #252f40; padding: 15px; border-radius: 10px; text-align: center; }
+  </style>
+</head>
+<body>
+  <h2>Моя Жизнь</h2>
+  <div class="card">
+    <div class="stat"><span>Баланс:</span><b id="money">$0</b></div>
+    <div class="stat"><span>Энергия:</span><b id="energy">100/100</b></div>
+    <div class="stat"><span>Профессия:</span><b id="job">Дворник</b></div>
+  </div>
+
+  <button class="btn" onclick="work()">Работать (+$10)</button>
+
+  <h3>Разделы</h3>
+  <div class="grid">
+    <div class="grid-btn">💼 Работа</div>
+    <div class="grid-btn">🎓 Навыки</div>
+    <div class="grid-btn">🏪 Магазин</div>
+    <div class="grid-btn">🏢 Бизнес</div>
+  </div>
+
+  <script>
+    let money = 0;
+    let energy = 100;
+
+    function work() {
+      if (energy >= 10) {
+        money += 10;
+        energy -= 10;
+        document.getElementById('money').innerText = '$' + money;
+        document.getElementById('energy').innerText = energy + '/100';
+      } else {
+        alert('Мало энергии! Отдохни.');
+      }
+    }
+    
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+  </script>
+</body>
+</html>
