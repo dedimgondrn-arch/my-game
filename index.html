@@ -110,6 +110,16 @@
     }
     .badge { background: rgba(255, 255, 255, 0.1); padding: 4px 8px; border-radius: 8px; font-size: 11px; cursor: pointer; color: var(--gold); }
     .wanted-stars { color: var(--gold); font-size: 16px; letter-spacing: 2px; }
+
+    /* UI Казино */
+    .slot-machine {
+      display: flex; justify-content: center; gap: 10px; font-size: 40px;
+      background: rgba(0,0,0,0.5); padding: 15px; border-radius: 16px; border: 2px solid var(--gold); margin: 15px 0;
+    }
+    .input-field {
+      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--card-border);
+      background: rgba(255,255,255,0.05); color: white; font-size: 14px; margin-top: 8px; text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -144,11 +154,76 @@
     <div class="grid-btn" onclick="openRealtyList()">🏠 Недвижимость</div>
     <div class="grid-btn" onclick="openAutoMarket()">🚗 Авторынок</div>
     <div class="grid-btn" onclick="openGarage()">🏎️ Мой Гараж</div>
+    <div class="grid-btn" style="border-color: var(--gold);" onclick="openCasinoMenu()">🎰 Казино Neon</div>
+    <div class="grid-btn" style="border-color: var(--purple);" onclick="openTradeMenu()">🔄 P2P Трейдинг</div>
+    <div class="grid-btn" onclick="openStatsModal()">📊 Статистика</div>
+    <div class="grid-btn" onclick="openLeaderboard()">🏆 Топ Лидеров</div>
   </div>
 
   <button class="btn btn-danger" style="margin-top:16px; opacity:0.6; font-size:12px; padding:8px;" onclick="resetGameData()">🔄 Сбросить весь прогресс</button>
 
   <!-- Модальные окна -->
+  <div id="casino-modal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--gold); margin-top:0;">🎰 Казино Neon Vegas</h3>
+      <input type="number" id="casino-bet" class="input-field" placeholder="Введите ставку ($)" value="100">
+      
+      <div class="slot-machine">
+        <span id="slot-1">🎰</span><span id="slot-2">🎰</span><span id="slot-3">🎰</span>
+      </div>
+      <button class="btn btn-gold" onclick="playSlots()">🎰 Вращать Слоты (x3)</button>
+      
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="btn btn-purple" onclick="playCoinFlip('heads')">🦅 Орёл (x2)</button>
+        <button class="btn btn-purple" onclick="playCoinFlip('tails')">🪙 Решка (x2)</button>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="btn btn-danger" onclick="playRoulette('red')">🔴 Красное (x2)</button>
+        <button class="btn" style="background:#1e293b;" onclick="playRoulette('black')">⚫ Чёрное (x2)</button>
+      </div>
+
+      <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('casino-modal')">Выйти из казино</button>
+    </div>
+  </div>
+
+  <div id="trade-modal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--purple); margin-top:0;">🔄 P2P Трейдинг</h3>
+      <p style="font-size:12px; color:var(--text-muted);">Передавайте деньги или машины другим игрокам через ссылку в Telegram!</p>
+      
+      <div style="text-align:left; margin-bottom:10px;">
+        <label style="font-size:12px;">Сумма перевода ($):</label>
+        <input type="number" id="trade-amount" class="input-field" placeholder="1000">
+        <button class="btn btn-success" onclick="createMoneyTrade()">✉️ Создать чек на деньги</button>
+      </div>
+      <hr style="border:0; border-top:1px solid var(--card-border); margin:15px 0;">
+      <div style="text-align:left;">
+        <label style="font-size:12px;">Выберите авто для подарка/продажи:</label>
+        <select id="trade-car-select" class="input-field" style="background:#1e293b;"></select>
+        <button class="btn btn-purple" onclick="createCarTrade()">🚗 Передать машину</button>
+      </div>
+
+      <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('trade-modal')">Закрыть</button>
+    </div>
+  </div>
+
+  <div id="stats-modal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--primary); margin-top:0;">📊 Игровая Статистика</h3>
+      <div id="stats-content" style="text-align:left; font-size:14px; line-height:1.8;"></div>
+      <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('stats-modal')">Закрыть</button>
+    </div>
+  </div>
+
+  <div id="leaderboard-modal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--gold); margin-top:0;">🏆 Зал Славы Neon City</h3>
+      <div id="leaderboard-list"></div>
+      <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('leaderboard-modal')">Закрыть</button>
+    </div>
+  </div>
+
   <div id="taxi-modal" class="modal">
     <div class="modal-content">
       <h3 style="color:var(--warning); margin-top:0;">🚕 Работа в Такси</h3>
@@ -225,6 +300,10 @@
       }
     }
 
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
     // --- БАЗА АВТОМОБИЛЕЙ (12 Машин) ---
     const carsList = [
       { id: 'vaz2107', name: "ВАЗ 2107 (Семерка)", price: 600, img: "https://upload.wikimedia.org/wikipedia/commons/f/f0/LADA_2107_at_Autoexotica_2013_01.jpg" },
@@ -241,7 +320,12 @@
       { id: 'cybertruck', name: "Cyber Truck EX-100", price: 750000, img: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&q=80" }
     ];
 
-    // --- БЕЗОПАСНАЯ ИНИЦИАЛИЗАЦИЯ И ИСПРАВЛЕНИЕ NaN ---
+    // --- БЕЗОПАСНАЯ ИНИЦИАЛИЗАЦИЯ ---
+    function safeParse(val, defVal) {
+      let parsed = parseInt(val);
+      return isNaN(parsed) ? defVal : parsed;
+    }
+
     let money = safeParse(localStorage.getItem('money'), 1000);
     let energy = safeParse(localStorage.getItem('energy'), 100);
     let level = safeParse(localStorage.getItem('level'), 1);
@@ -250,13 +334,16 @@
     let wantedStars = safeParse(localStorage.getItem('wantedStars'), 0);
     let lastCollectTime = safeParse(localStorage.getItem('lastCollectTime'), 0);
 
+    // Статистика
+    let stats = JSON.parse(localStorage.getItem('gameStats')) || {
+      crimesDone: 0,
+      taxiRides: 0,
+      casinoWins: 0,
+      casinoLosses: 0
+    };
+
     let rawGarage = JSON.parse(localStorage.getItem('myGarage')) || [];
     let myGarage = sanitizeGarage(rawGarage);
-
-    function safeParse(val, defVal) {
-      let parsed = parseInt(val);
-      return isNaN(parsed) ? defVal : parsed;
-    }
 
     function sanitizeGarage(garageArray) {
       if (!Array.isArray(garageArray) || garageArray.length === 0) {
@@ -323,6 +410,7 @@
       localStorage.setItem('myBusinesses', JSON.stringify(myBusinesses));
       localStorage.setItem('myRealty', JSON.stringify(myRealty));
       localStorage.setItem('lastCollectTime', isNaN(lastCollectTime) ? 0 : lastCollectTime);
+      localStorage.setItem('gameStats', JSON.stringify(stats));
     }
 
     function resetGameData() {
@@ -352,7 +440,7 @@
       let maxE = getMaxEnergy();
       if (energy > maxE) energy = maxE;
 
-      document.getElementById('money').innerText = '$' + money;
+      document.getElementById('money').innerText = '$' + money.toLocaleString();
       document.getElementById('energy').innerText = energy + '/' + maxE;
       document.getElementById('nickname').innerText = nickname;
       document.getElementById('level-display').innerText = level + " LvL";
@@ -371,6 +459,245 @@
     function changeNickname() {
       let newName = prompt("Введите никнейм:", nickname);
       if (newName) { nickname = newName.trim(); updateUI(); }
+    }
+
+    // --- ОГРАБЛЕНИЕ ---
+    function commitCrime() {
+      if (energy < 20) { triggerHaptic('error'); alert("⚡ Мало энергии! Нужно 20."); return; }
+      energy -= 20;
+      let success = Math.random() > 0.4;
+      stats.crimesDone++;
+      
+      if (success) {
+        let reward = Math.floor(Math.random() * 300) + 150;
+        money += reward;
+        addXP(20);
+        triggerHaptic('success');
+        alert(`🚨 Ограбление прошло успешно! Вы унесли +$${reward}`);
+      } else {
+        wantedStars = Math.min(5, wantedStars + 1);
+        triggerHaptic('error');
+        alert(`🚔 Полиция вас перехватила! Уровень розыска поднялся до ${wantedStars}★`);
+      }
+      updateUI();
+    }
+
+    // --- МИНИ-ИГРА НА ЭНЕРГИЮ ---
+    let energyClicks = 0;
+    let energyTimer = null;
+    let timeLeft = 6.0;
+
+    function openEnergyGame() {
+      energyClicks = 0;
+      timeLeft = 6.0;
+      document.getElementById('energy-clicks').innerText = energyClicks;
+      document.getElementById('energy-timer').innerText = "06.00 сек";
+      document.getElementById('energy-click-btn').disabled = false;
+      document.getElementById('energy-modal').style.display = 'flex';
+    }
+
+    function clickEnergyMiniGame() {
+      if (energyClicks === 0) {
+        energyTimer = setInterval(() => {
+          timeLeft -= 0.1;
+          document.getElementById('energy-timer').innerText = (timeLeft > 0 ? timeLeft : 0).toFixed(2) + " сек";
+          if (timeLeft <= 0) {
+            clearInterval(energyTimer);
+            document.getElementById('energy-click-btn').disabled = true;
+            triggerHaptic('error');
+            alert("⏰ Время вышло!");
+          }
+        }, 100);
+      }
+      
+      energyClicks++;
+      triggerHaptic('light');
+      document.getElementById('energy-clicks').innerText = energyClicks;
+
+      if (energyClicks >= 5 && timeLeft > 0) {
+        clearInterval(energyTimer);
+        triggerHaptic('success');
+        energy = getMaxEnergy();
+        alert("⚡ Энергия полностью восстановлена!");
+        closeModal('energy-modal');
+        updateUI();
+      }
+    }
+
+    // --- КАЗИНО НЕОН ---
+    function openCasinoMenu() {
+      triggerHaptic('light');
+      document.getElementById('casino-modal').style.display = 'flex';
+    }
+
+    function getBet() {
+      let bet = parseInt(document.getElementById('casino-bet').value);
+      if (isNaN(bet) || bet <= 0) { alert("Введите корректную ставку!"); return 0; }
+      if (bet > money) { alert("❌ Не хватает денег!"); return 0; }
+      return bet;
+    }
+
+    function playSlots() {
+      let bet = getBet();
+      if (!bet) return;
+      money -= bet;
+
+      const symbols = ['🍋', '🍒', '🔔', '💎', '7️⃣'];
+      let s1 = symbols[Math.floor(Math.random() * symbols.length)];
+      let s2 = symbols[Math.floor(Math.random() * symbols.length)];
+      let s3 = symbols[Math.floor(Math.random() * symbols.length)];
+
+      document.getElementById('slot-1').innerText = s1;
+      document.getElementById('slot-2').innerText = s2;
+      document.getElementById('slot-3').innerText = s3;
+
+      if (s1 === s2 && s2 === s3) {
+        let win = bet * 5;
+        money += win;
+        stats.casinoWins++;
+        triggerHaptic('success');
+        alert(`🎉 ДЖЕКПОТ! Вы выиграли $${win}!`);
+      } else if (s1 === s2 || s2 === s3 || s1 === s3) {
+        let win = Math.round(bet * 1.5);
+        money += win;
+        stats.casinoWins++;
+        triggerHaptic('success');
+        alert(`✨ Совпадение! Вы выиграли $${win}!`);
+      } else {
+        stats.casinoLosses++;
+        triggerHaptic('error');
+      }
+      updateUI();
+    }
+
+    function playCoinFlip(choice) {
+      let bet = getBet();
+      if (!bet) return;
+      money -= bet;
+
+      let result = Math.random() > 0.5 ? 'heads' : 'tails';
+      let resText = result === 'heads' ? 'Орёл' : 'Решка';
+
+      if (choice === result) {
+        let win = bet * 2;
+        money += win;
+        stats.casinoWins++;
+        triggerHaptic('success');
+        alert(`🪙 Выпал ${resText}! Вы выиграли $${win}!`);
+      } else {
+        stats.casinoLosses++;
+        triggerHaptic('error');
+        alert(`🪙 Выпал ${resText}! Вы проиграли.`);
+      }
+      updateUI();
+    }
+
+    function playRoulette(color) {
+      let bet = getBet();
+      if (!bet) return;
+      money -= bet;
+
+      let winColor = Math.random() > 0.5 ? 'red' : 'black';
+      if (color === winColor) {
+        let win = bet * 2;
+        money += win;
+        stats.casinoWins++;
+        triggerHaptic('success');
+        alert(`🔴⚫ Выпал ${winColor === 'red' ? 'Красный' : 'Чёрный'}! Победа $${win}`);
+      } else {
+        stats.casinoLosses++;
+        triggerHaptic('error');
+        alert(`🔴⚫ Выпал ${winColor === 'red' ? 'Красный' : 'Чёрный'}! Не повезло.`);
+      }
+      updateUI();
+    }
+
+    // --- ТРЕЙДИНГ И P2P ---
+    function openTradeMenu() {
+      triggerHaptic('light');
+      let select = document.getElementById('trade-car-select');
+      select.innerHTML = '';
+      if (myGarage.length === 0) {
+        select.innerHTML = '<option value="">У вас нет машин</option>';
+      } else {
+        myGarage.forEach((car, i) => {
+          select.innerHTML += `<option value="${i}">${car.name} (Stage ${car.stage})</option>`;
+        });
+      }
+      document.getElementById('trade-modal').style.display = 'flex';
+    }
+
+    function createMoneyTrade() {
+      let amount = parseInt(document.getElementById('trade-amount').value);
+      if (isNaN(amount) || amount <= 0 || amount > money) {
+        alert("❌ Недостаточно средств или некорректная сумма!");
+        return;
+      }
+      money -= amount;
+      updateUI();
+      triggerHaptic('success');
+      
+      let shareUrl = `https://t.me/share/url?url=Я%20передаю%20тебе%20$${amount}%20в%20игры%20Neon%20City!`;
+      if (tg) tg.openTelegramLink(shareUrl);
+      else window.open(shareUrl, '_blank');
+    }
+
+    function createCarTrade() {
+      let idx = document.getElementById('trade-car-select').value;
+      if (idx === "" || !myGarage[idx]) { alert("Выберите авто!"); return; }
+      
+      let carName = myGarage[idx].name;
+      myGarage.splice(idx, 1);
+      updateUI();
+      triggerHaptic('success');
+
+      let shareUrl = `https://t.me/share/url?url=Я%20подарил%20тебе%20автомобиль%20${encodeURIComponent(carName)}%20в%20игры%20Neon%20City!`;
+      if (tg) tg.openTelegramLink(shareUrl);
+      else window.open(shareUrl, '_blank');
+      closeModal('trade-modal');
+    }
+
+    // --- СТАТИСТИКА И ЛИДЕРБОРД ---
+    function openStatsModal() {
+      triggerHaptic('light');
+      let content = document.getElementById('stats-content');
+      content.innerHTML = `
+        👤 Никнейм: <b>${nickname}</b><br>
+        ⭐ Уровень: <b>${level}</b><br>
+        💰 Состояние: <b>$${money.toLocaleString()}</b><br>
+        🚗 Авто в гараже: <b>${myGarage.length}</b><br>
+        🏢 Бизнесов: <b>${myBusinesses.length}</b><br>
+        🚨 Ограблений выполнено: <b>${stats.crimesDone}</b><br>
+        🚕 Поездок в такси: <b>${stats.taxiRides}</b><br>
+        🎰 Побед в казино: <b>${stats.casinoWins}</b><br>
+        📉 Поражений в казино: <b>${stats.casinoLosses}</b>
+      `;
+      document.getElementById('stats-modal').style.display = 'flex';
+    }
+
+    function openLeaderboard() {
+      triggerHaptic('light');
+      let list = document.getElementById('leaderboard-list');
+      
+      // Симуляция динамических топ лидеров
+      let fakeLeaders = [
+        { name: "👑 CyberKing", wealth: 1500000 },
+        { name: "⚡ NeonRacer", wealth: 850000 },
+        { name: nickname + " (Вы)", wealth: money },
+        { name: "🎰 ShadowBroker", wealth: 210000 },
+        { name: "🚗 DriftMaster", wealth: 95000 }
+      ].sort((a,b) => b.wealth - a.wealth);
+
+      list.innerHTML = '';
+      fakeLeaders.forEach((l, i) => {
+        list.innerHTML += `
+          <div class="item-card" style="display:flex; justify-size:space-between; align-items:center;">
+            <span><b>#${i+1}</b> ${l.name}</span>
+            <b style="color:var(--gold);">$${l.wealth.toLocaleString()}</b>
+          </div>
+        `;
+      });
+      document.getElementById('leaderboard-modal').style.display = 'flex';
     }
 
     // --- ТАКСИ И РАБОТЫ ---
@@ -408,6 +735,7 @@
 
       triggerHaptic('medium');
       energy -= 15;
+      stats.taxiRides++;
       let damage = Math.floor(Math.random() * 12) + 8;
       car.condition = Math.max(0, car.condition - damage);
       
@@ -699,11 +1027,10 @@
             <img src="${house.img}" class="card-img">
             <b>${house.name}</b><br>
             <span style="font-size:12px; color:var(--text-muted);">Бонус: +${house.energyBonus}⚡ к Макс. Энергии</span><br>
-            <b style="color:var(--success); font-size:15px;">Цена: $${house.cost}</b><br>
-            ${owned 
-              ? `<span style="color:var(--gold); font-weight:bold; font-size:13px;">✅ Куплено</span>`
-              : `<button class="btn btn-gold" style="padding:8px; font-size:13px; margin-top:6px;" onclick="buyRealty(${house.id})">Купить объект</button>`
-            }
+            <b style="color:var(--gold); font-size:14px;">Цена: $${house.cost.toLocaleString()}</b><br>
+            <button class="btn ${owned ? 'btn-danger' : 'btn-success'}" style="margin-top:8px;" onclick="${owned ? `sellRealty(${house.id})` : `buyRealty(${house.id})`}">
+              ${owned ? 'Продать (-75% цены)' : 'Купить недвижимость'}
+            </button>
           </div>
         `;
       });
@@ -716,92 +1043,26 @@
         triggerHaptic('success');
         money -= house.cost;
         myRealty.push(house.id);
-        alert(`🎉 Вы купили: "${house.name}"!`);
+        alert(`🎉 Вы приобрели: ${house.name}! Максимальный запас энергии увеличен.`);
         openRealtyList();
         updateUI();
       } else { triggerHaptic('error'); alert("❌ Не хватает денег!"); }
     }
 
-    // --- ОГРАБЛЕНИЕ ---
-    function commitCrime() {
-      if (energy < 20) { triggerHaptic('error'); alert("⚡ Нужно 20 энергии!"); return; }
-      energy -= 20;
-      if (Math.random() > 0.45) {
-        triggerHaptic('success');
-        let reward = Math.floor(Math.random() * 500) + 200;
-        money += reward;
-        addXP(15);
-        alert(`🤑 Успешный куш: +$${reward} и +15 XP!`);
-      } else {
-        triggerHaptic('error');
-        wantedStars = Math.min(5, wantedStars + 1);
-        alert(`🚨 Ограбление сорвалось! Уровень розыска: ${wantedStars}★`);
-      }
-      updateUI();
-    }
-
-    // --- МИНИ-ИГРА ЭНЕРГИИ ---
-    let energyClicks = 0, energyTimer = null, timeLeft = 6.0;
-
-    function openEnergyGame() {
-      triggerHaptic('light');
-      energyClicks = 0; 
-      timeLeft = 6.0;
-      document.getElementById('energy-clicks').innerText = energyClicks;
-      document.getElementById('energy-timer').innerText = timeLeft.toFixed(2) + " сек";
-      document.getElementById('energy-click-btn').disabled = false;
-      document.getElementById('energy-modal').style.display = 'flex';
-
-      if (energyTimer) clearInterval(energyTimer);
-      energyTimer = setInterval(() => {
-        timeLeft -= 0.1;
-        if (timeLeft <= 0) { 
-          timeLeft = 0;
-          clearInterval(energyTimer); 
-          energyTimer = null;
-          document.getElementById('energy-click-btn').disabled = true;
-          triggerHaptic('error');
-          alert("❌ Время вышло!"); 
-          closeModal('energy-modal'); 
-        }
-        document.getElementById('energy-timer').innerText = timeLeft.toFixed(2) + " сек";
-      }, 100);
-    }
-
-    function clickEnergyMiniGame() {
-      if (timeLeft <= 0) return;
-      triggerHaptic('light');
-      energyClicks++;
-      document.getElementById('energy-clicks').innerText = energyClicks;
-      if (energyClicks >= 5) {
-        if (energyTimer) clearInterval(energyTimer);
-        energyTimer = null;
-        energy = getMaxEnergy();
-        triggerHaptic('success');
-        alert("🎉 Энергия полностью восстановлена!");
-        closeModal('energy-modal');
+    function sellRealty(id) {
+      const house = realtyList.find(h => h.id === id);
+      let sellPrice = Math.round(house.cost * 0.75);
+      if (confirm(`Продать ${house.name} за $${sellPrice}?`)) {
+        triggerHaptic('medium');
+        money += sellPrice;
+        myRealty = myRealty.filter(item => item !== id);
+        alert("💰 Недвижимость продана!");
+        openRealtyList();
         updateUI();
       }
     }
 
-    function closeModal(id) { 
-      if (id === 'energy-modal' && energyTimer) {
-        clearInterval(energyTimer);
-        energyTimer = null;
-      }
-      document.getElementById(id).style.display = 'none'; 
-    }
-
-    // Восстановление энергии
-    setInterval(() => { 
-      let maxE = getMaxEnergy();
-      if (energy < maxE) { 
-        energy += 1; 
-        updateUI(); 
-      } 
-    }, 5000);
-
-    // Первоначальный запуск
+    // Запуск при старте
     updateUI();
   </script>
 </body>
