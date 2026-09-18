@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Бизнес Симулятор</title>
+  <title>Бизнес Симулятор & Авторынок</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -15,17 +15,21 @@
       --danger: #ef4444;
       --text: #f8fafc;
     }
-    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 15px; margin: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 15px; margin: 0; padding-bottom: 30px; }
     .card { background: var(--card); padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #334155; }
     .stat { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 15px; }
-    .btn { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 6px; }
+    .btn { background: var(--accent); color: white; border: none; padding: 10px 14px; border-radius: 10px; width: 100%; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 6px; }
     .btn-success { background: var(--success); }
     .btn-warning { background: var(--warning); color: #000; }
+    .btn-danger { background: var(--danger); }
     .btn:active { opacity: 0.8; transform: scale(0.98); }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-    .grid-btn { background: var(--card); border: 1px solid #334155; padding: 12px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 500; }
-    input { width: 90%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; margin-bottom: 8px; }
-    .badge { background: #334155; padding: 2px 8px; border-radius: 6px; font-size: 12px; }
+    .grid-btn { background: var(--card); border: 1px solid #334155; padding: 12px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 100; }
+    .modal-content { background: var(--card); padding: 20px; border-radius: 16px; width: 85%; max-width: 380px; border: 1px solid #334155; max-height: 80vh; overflow-y: auto; }
+    .car-card { background: #0f172a; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #334155; }
+    .badge { background: #334155; padding: 2px 8px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    input { width: 90%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; margin-bottom: 8px; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -35,36 +39,81 @@
     <div class="stat"><span>Игрок:</span> <b id="nickname">Игрок</b> <span class="badge" onclick="changeNickname()">✏️ изм.</span></div>
     <div class="stat"><span>Баланс:</span> <b id="money" style="color:#10b981">$0</b></div>
     <div class="stat"><span>Энергия:</span> <b id="energy" style="color:#3b82f6">100/100</b></div>
-    <div class="stat"><span>Бизнес доход:</span> <b id="income">+$0/сек</b></div>
+    <div class="stat"><span>Доход бизнеса:</span> <b id="income">+$0/сек</b></div>
+    <div class="stat"><span>Гараж:</span> <b id="garage-count">0 авто</b></div>
   </div>
 
-  <!-- Действия -->
+  <!-- Основные действия -->
   <button class="btn" onclick="work()">💼 Работать (+$25 | -5⚡)</button>
   <button class="btn btn-warning" onclick="watchAd()">📺 Восстановить энергию (Скип)</button>
 
   <!-- Разделы -->
   <div class="grid">
-    <div class="grid-btn" onclick="buyBusiness()">🏢 Бизнес (Купить)</div>
+    <div class="grid-btn" onclick="buyBusiness()">🏢 Бизнес</div>
+    <div class="grid-btn" onclick="openAutoMarket()">🚗 Б/У Авторынок</div>
+    <div class="grid-btn" onclick="openGarage()">🏎️ Мой Гараж</div>
     <div class="grid-btn" onclick="playCasino()">🎰 Казино</div>
-    <div class="grid-btn" onclick="alert('Авторынок появится в следующем обновлении!')">🚗 Авторынок</div>
-    <div class="grid-btn" onclick="alert('Трейд с игроками в разработке!')">🔄 Трейд</div>
+  </div>
+
+  <!-- Модалка Авторынка -->
+  <div id="market-modal" class="modal">
+    <div class="modal-content">
+      <h3>🚗 Б/У Авторынок</h3>
+      <p style="font-size:12px; color:#94a3b8;">Покупай машины напрямую у ИИ-продавцов. Торгуйся с умом!</p>
+      <div id="cars-list"></div>
+      <button class="btn btn-danger" onclick="closeModal('market-modal')">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Модалка Торга с Ботом -->
+  <div id="bargain-modal" class="modal">
+    <div class="modal-content">
+      <h3 id="bargain-car-title">Торг за авто</h3>
+      <p id="seller-dialog" style="background:#0f172a; padding:10px; border-radius:8px; font-size:13px; color:#38bdf8;">"Че надо? Машина огненная, цена окончательная."</p>
+      <p style="font-size:13px;">Гос. цена: <b id="bargain-price">$0</b></p>
+      <input type="number" id="bargain-offer" placeholder="Введите ваше предложение ($)">
+      <button class="btn btn-success" onclick="makeOffer()">Предложить цену</button>
+      <button class="btn" onclick="buyDirectly()">Купить без торга</button>
+      <button class="btn btn-danger" onclick="closeModal('bargain-modal')">Уйти</button>
+    </div>
+  </div>
+
+  <!-- Модалка Гаража -->
+  <div id="garage-modal" class="modal">
+    <div class="modal-content">
+      <h3>🏎️ Мой Гараж</h3>
+      <div id="garage-list"></div>
+      <button class="btn btn-danger" onclick="closeModal('garage-modal')">Закрыть</button>
+    </div>
   </div>
 
   <script>
-    let money = 0;
+    let money = 500;
     let energy = 100;
+    let maxEnergy = 100;
     let nickname = "Игрок";
     let bizIncome = 0;
     let bizCost = 100;
+    let myGarage = [];
 
-    // Запрещенные слова для ника
+    // Список Б/У машин на рынке
+    const carsList = [
+      { id: 1, name: "VAZ 2107", basePrice: 300, mileage: "185,000 км", state: "Помято крыло" },
+      { id: 2, name: "BMW E36", basePrice: 1200, mileage: "240,000 км", state: "Дрифт корч" },
+      { id: 3, name: "Mercedes W124", basePrice: 2500, mileage: "310,000 км", state: "Легенда, сел-поехал" },
+      { id: 4, name: "Toyota Camry 40", basePrice: 5000, mileage: "150,000 км", state: "Состояние идеал" }
+    ];
+
+    let selectedCar = null;
+
     const badWords = ["дурак", "лох", "дебил", "быдло"];
 
     function updateUI() {
       document.getElementById('money').innerText = '$' + money;
-      document.getElementById('energy').innerText = energy + '/100';
+      document.getElementById('energy').innerText = energy + '/' + maxEnergy;
       document.getElementById('nickname').innerText = nickname;
       document.getElementById('income').innerText = '+$' + bizIncome + '/сек';
+      document.getElementById('garage-count').innerText = myGarage.length + ' авто';
     }
 
     function work() {
@@ -73,25 +122,22 @@
         energy -= 5;
         updateUI();
       } else {
-        alert('⚡ Нет энергии! Посмотри рекламу или подожди.');
+        alert('⚡ Нет энергии! Посмотри рекламу.');
       }
     }
 
     function watchAd() {
-      alert('🎬 Просмотр рекламы... Энергия полностью восстановлена!');
-      energy = 100;
+      alert('🎬 Энергия полностью восстановлена!');
+      energy = maxEnergy;
       updateUI();
     }
 
     function changeNickname() {
       let newName = prompt("Введите новый никнейм:");
       if (!newName) return;
-      
       let lower = newName.toLowerCase();
-      let hasBadWord = badWords.some(word => lower.includes(word));
-
-      if (hasBadWord) {
-        alert("❌ Такой никнейм использовать нельзя!");
+      if (badWords.some(w => lower.includes(w))) {
+        alert("❌ Запрещенный ник!");
       } else {
         nickname = newName;
         updateUI();
@@ -103,11 +149,88 @@
         money -= bizCost;
         bizIncome += 10;
         bizCost = Math.round(bizCost * 1.5);
-        alert('🎉 Бизнес куплен! Теперь дает +$' + bizIncome + '/сек');
+        alert('🎉 Бизнес куплен! Доход: +$' + bizIncome + '/сек');
         updateUI();
       } else {
         alert('❌ Не хватает денег! Нужно: $' + bizCost);
       }
+    }
+
+    // --- АВТОРЫНОК И ТОРГ ---
+    function openAutoMarket() {
+      const container = document.getElementById('cars-list');
+      container.innerHTML = '';
+      carsList.forEach(car => {
+        container.innerHTML += `
+          <div class="car-card">
+            <b>${car.name}</b><br>
+            <span style="font-size:12px; color:#cbd5e1;">Пробег: ${car.mileage} | ${car.state}</span><br>
+            <span style="color:#10b981; font-weight:bold;">Цена: $${car.basePrice}</span>
+            <button class="btn" style="padding:6px; font-size:12px;" onclick="startBargain(${car.id})">Торговаться / Купить</button>
+          </div>
+        `;
+      });
+      document.getElementById('market-modal').style.display = 'flex';
+    }
+
+    function startBargain(carId) {
+      selectedCar = carsList.find(c => c.id === carId);
+      document.getElementById('bargain-car-title').innerText = selectedCar.name;
+      document.getElementById('bargain-price').innerText = '$' + selectedCar.basePrice;
+      document.getElementById('seller-dialog').innerText = '"Здарова! Тачка огонь. За $' + selectedCar.basePrice + ' отдаю, ни центом меньше!"';
+      document.getElementById('bargain-offer').value = '';
+      document.getElementById('bargain-modal').style.display = 'flex';
+    }
+
+    function makeOffer() {
+      let offer = parseInt(document.getElementById('bargain-offer').value);
+      if (!offer || offer <= 0) { alert("Введи адекватную сумму!"); return; }
+
+      let minPrice = Math.round(selectedCar.basePrice * 0.75); // Минимальная скидка бота 25%
+
+      if (offer >= selectedCar.basePrice) {
+        buyCar(selectedCar, selectedCar.basePrice);
+      } else if (offer >= minPrice) {
+        document.getElementById('seller-dialog').innerText = '"Ладно, уговорил! За $' + offer + ' забирай!"';
+        setTimeout(() => buyCar(selectedCar, offer), 1200);
+      } else if (offer < minPrice && offer >= selectedCar.basePrice * 0.5) {
+        let counterOffer = Math.round((selectedCar.basePrice + offer) / 2);
+        document.getElementById('seller-dialog').innerText = '"Ты с ума сшел? Давай хотя бы за $' + counterOffer + '!"';
+      } else {
+        document.getElementById('seller-dialog').innerText = '"С такими предложениями иди пешком ходи! Пошел вон!"';
+      }
+    }
+
+    function buyDirectly() {
+      buyCar(selectedCar, selectedCar.basePrice);
+    }
+
+    function buyCar(car, finalPrice) {
+      if (money >= finalPrice) {
+        money -= finalPrice;
+        myGarage.push(car.name);
+        maxEnergy += 10; // Каждая машина увеличивает макс. энергию
+        alert('🎉 Поздравляем! Ты купил ' + car.name + ' за $' + finalPrice + '!');
+        closeModal('bargain-modal');
+        closeModal('market-modal');
+        updateUI();
+      } else {
+        alert('❌ У тебя нет столько денег!');
+      }
+    }
+
+    function openGarage() {
+      const container = document.getElementById('garage-list');
+      if (myGarage.length === 0) {
+        container.innerHTML = '<p style="font-size:13px; color:#94a3b8;">Гараж пуст. Купи авто на авторынке!</p>';
+      } else {
+        container.innerHTML = myGarage.map(car => `<div class="car-card">🏎️ <b>${car}</b></div>`).join('');
+      }
+      document.getElementById('garage-modal').style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
     }
 
     function playCasino() {
@@ -117,25 +240,17 @@
         money += 120;
         alert("🎰 ВЫИГРЫШ! +$120");
       } else {
-        alert("🎰 Проигрыш! Попробуй еще раз.");
+        alert("🎰 Проигрыш!");
       }
       updateUI();
     }
 
-    // Пассивный доход от бизнеса каждые 1 сек
     setInterval(() => {
-      if (bizIncome > 0) {
-        money += bizIncome;
-        updateUI();
-      }
+      if (bizIncome > 0) { money += bizIncome; updateUI(); }
     }, 1000);
 
-    // Авто-восстановление энергии по 1 ед. каждые 3 сек
     setInterval(() => {
-      if (energy < 100) {
-        energy += 1;
-        updateUI();
-      }
+      if (energy < maxEnergy) { energy += 1; updateUI(); }
     }, 3000);
 
     Telegram.WebApp.ready();
