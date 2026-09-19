@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -273,10 +273,10 @@
             </div>
             <div id="market-list"></div>
 
-            <div class="section-title">🎒 Инвентарь (Склад перекупа)</div>
+            <div class="section-title">🎒 Инвентарь/гараж (Склад перекупа)</div>
             <div id="inventory-list"></div>
 
-            <div class="section-title">📤 Активные объявления на Авито</div>
+            <div class="section-title">📤 Активные объявления на Рынке</div>
             <div id="listings-list"></div>
 
             <div class="section-title">⚖️ Споры и диспуты</div>
@@ -546,7 +546,6 @@
                     <input type="checkbox" id="vibro-toggle"> Вибрация
                 </label>
             </div>
-            <div class="item-card" style="border:1px solid var(--accent); background:rgba(99,102,241,0.08);">
             <div class="item-card">
                 <div class="title-sm" style="margin-bottom:4px;">👑 Престиж</div>
                 <div class="tiny muted" style="margin-bottom:6px;">Сброс прогресса в обмен на постоянный бонус к доходу. Нужно: <b id="prestige-req">0 ₽</b> чистого капитала. Получите: <b id="prestige-gain">+0</b> очков.</div>
@@ -2943,7 +2942,7 @@ function playRoulette(color) {
 
     setTimeout(() => {
         if (epoch !== gameEpoch) return;
-        wheel.textContent = resColor === 'green' ? `🟢 ЗЕРО (${res})` : (resColor === 'red' ? `🔴 КРАСНОЕ (${res})` : `⚫ ЧЕРНОЕ (${res})`);
+        wheel.textContent = resColor === 'green' ? `🟢 КУШ (${res})` : (resColor === 'red' ? `🔴 КРАСНОЕ (${res})` : `⚫ ЧЕРНОЕ (${res})`);
         if (color === resColor) {
             const win = Math.floor(bet * (resColor === 'green' ? ROULETTE.greenPayout : ROULETTE.colorPayout));
             state.balance += win;
