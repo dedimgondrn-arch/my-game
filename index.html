@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Phone OS: P2P Resell Ultimate Pro</title>
+    <meta name="description" content="A phone OS simulation game featuring P2P & Avito market trading with cars, real estate, electronics, sweet deals from uninformed sellers, detailing, fast buyer calls, crypto hub, mining rigs, bank, and casino.">
+    <meta property="og:title" content="Phone OS: P2P Resell Ultimate Pro">
+    <meta property="og:description" content="A phone OS simulation game featuring P2P & Avito market trading with cars, real estate, electronics, sweet deals from uninformed sellers, detailing, fast buyer calls, crypto hub, mining rigs, bank, and casino.">
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -157,6 +160,18 @@
         .badge-green { color: var(--green); border-color: var(--green); }
         .badge-red { color: var(--red); border-color: var(--red); }
         .badge-yellow { color: var(--yellow); border-color: var(--yellow); }
+        @keyframes sweetPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+        .badge-sweet {
+            background: #dc2626 !important; color: #ffffff !important; border: 1px solid #f87171 !important;
+            font-weight: bold; animation: sweetPulse 1.6s infinite ease-in-out;
+        }
+        .sweet-card {
+            border-color: #f59e0b !important;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.25);
+        }
 
         .book-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; padding: 2px 0; border-bottom: 1px dashed var(--border); }
         .ask { color: var(--red); }
@@ -230,10 +245,10 @@
         </button>
     </div>
 
-    <!-- P2P MARKET -->
+    <!-- P2P & AVITO MARKET -->
     <div class="app-window" id="app-market">
         <div class="app-header">
-            <span class="title-sm">P2P Market</span>
+            <span class="title-sm">P2P & Авито Маркет</span>
             <span style="font-size:0.75rem; color:var(--yellow);" id="trust-score-display">⭐ 5.00</span>
             <span style="color:var(--green); font-weight:bold; font-size:0.8rem;" class="global-balance-display">1 000 ₽</span>
         </div>
@@ -242,21 +257,29 @@
             <div class="tabs" id="cat-tabs" role="tablist"></div>
             <div class="tiny muted" id="demand-info" style="margin-bottom:6px;"></div>
 
-            <div class="row-between" style="margin-bottom:8px;">
+            <div class="row-between" style="margin-bottom:8px; gap:6px; flex-wrap:wrap;">
                 <label class="tiny muted" style="display:flex; align-items:center; gap:4px;">
-                    <input type="checkbox" id="guarantor-toggle"> Гарант (+<span id="guarantor-fee-label">5</span>% к цене, без риска)
+                    <input type="checkbox" id="guarantor-toggle"> 🛡️ Гарант (+<span id="guarantor-fee-label">5</span>%)
                 </label>
+                <label class="tiny" style="display:flex; align-items:center; gap:4px; color:#f59e0b; font-weight:bold; cursor:pointer;">
+                    <input type="checkbox" id="sweet-only-toggle"> 🔥 Не шарят
+                </label>
+                <select id="market-sort-select" class="tiny" style="background:var(--card-bg); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:3px 6px;">
+                    <option value="discount">🔥 По скидке</option>
+                    <option value="cheap">Сначала дешевле</option>
+                    <option value="expensive">Сначала дороже</option>
+                </select>
                 <button class="btn btn-primary" id="market-refresh-btn">Обновить</button>
             </div>
             <div id="market-list"></div>
 
-            <div class="section-title">🎒 Инвентарь</div>
+            <div class="section-title">🎒 Инвентарь (Склад перекупа)</div>
             <div id="inventory-list"></div>
 
-            <div class="section-title">📤 Активные объявления</div>
+            <div class="section-title">📤 Активные объявления на Авито</div>
             <div id="listings-list"></div>
 
-            <div class="section-title">⚖️ Диспуты</div>
+            <div class="section-title">⚖️ Споры и диспуты</div>
             <div id="disputes-list"></div>
         </div>
     </div>
@@ -484,6 +507,8 @@
                 <div class="stat-row"><span class="muted">Рейтинг доверия:</span><b id="stat-trust">5.00 ⭐</b></div>
                 <div class="stat-row"><span class="muted">Отзывов:</span><b id="stat-reviews">0</b></div>
                 <div class="stat-row"><span class="muted">Успешных сделок:</span><b id="stat-sales">0</b></div>
+                <div class="stat-row"><span class="muted">Снайпнуто лоу-прайсов:</span><b id="stat-sweets" style="color:var(--yellow);">0</b></div>
+                <div class="stat-row"><span class="muted">Предпродажек сделано:</span><b id="stat-refurbs" style="color:var(--cyan);">0</b></div>
                 <div class="stat-row"><span class="muted">Заработано всего:</span><b id="stat-earned" style="color:var(--green);">0 ₽</b></div>
                 <div class="stat-row"><span class="muted">Комиссий уплачено:</span><b id="stat-fees" style="color:var(--red);">0 ₽</b></div>
                 <div class="stat-row"><span class="muted">Оборот Крипты:</span><b id="stat-crypto-volume" style="color:var(--yellow);">0 ₽</b></div>
@@ -520,6 +545,15 @@
                 <label class="small" style="display:flex; gap:6px; align-items:center;">
                     <input type="checkbox" id="vibro-toggle"> Вибрация
                 </label>
+            </div>
+            <div class="item-card" style="border:1px solid var(--accent); background:rgba(99,102,241,0.08);">
+                <div class="title-sm" style="margin-bottom:4px; color:var(--text);">📥 Скачать код игры</div>
+                <div class="tiny muted" style="margin-bottom:8px;">Полный код вашей игры одним файлом:</div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <a href="/download-txt" download="game.txt" class="btn btn-primary" style="text-align:center; text-decoration:none; display:block;">📄 Скачать текстовый документ (.txt)</a>
+                    <a href="/download-html" download="index.html" class="btn btn-cyan" style="text-align:center; text-decoration:none; display:block;">🌐 Скачать как HTML-файл (.html)</a>
+                    <a href="/game.txt" target="_blank" rel="noopener noreferrer" class="btn btn-dark" style="text-align:center; text-decoration:none; display:block;">👁️ Открыть весь код текстом на экране</a>
+                </div>
             </div>
             <div class="item-card">
                 <div class="title-sm" style="margin-bottom:4px;">👑 Престиж</div>
@@ -629,7 +663,7 @@ const BALANCE = {
     },
 
     market: {
-        lotCount: 4,
+        lotCount: 7,
         feeRatio: 0.045,            // комиссия площадки при продаже
         refreshCost: 30,
         refreshCooldownSec: 15,
@@ -702,10 +736,13 @@ const RIG_TYPES = {
 };
 
 const CATEGORIES = {
-    games:    { name: 'Игры',      level: 1 },
-    keys:     { name: 'Ключи',     level: 1 },
-    subs:     { name: 'Подписки',  level: 3 },
-    accounts: { name: 'Аккаунты',  level: 5 }
+    gadgets:  { name: 'Электроника', icon: '📱', level: 1 },
+    games:    { name: 'Игры',        icon: '🎮', level: 1 },
+    keys:     { name: 'Ключи',       icon: '🔑', level: 1 },
+    subs:     { name: 'Подписки',    icon: '⚡', level: 2 },
+    auto:     { name: 'Авто',        icon: '🚗', level: 2 },
+    realty:   { name: 'Недвижка',    icon: '🏠', level: 3 },
+    accounts: { name: 'Аккаунты',    icon: '👑', level: 4 }
 };
 
 const UNLOCKS = {
@@ -720,29 +757,123 @@ const UNLOCKS = {
 };
 
 const APP_NAMES = {
-    'app-market': 'P2P Market', 'app-bank': 'Банк', 'app-crypto': 'Crypto Hub',
+    'app-market': 'P2P & Авито', 'app-bank': 'Банк', 'app-crypto': 'Crypto Hub',
     'app-casino': 'Казино', 'app-mining': 'Майнинг', 'app-bot': 'Авто-Бот',
     'app-stats': 'Статистика', 'app-settings': 'Настройки'
 };
 
+const SELLER_NOTES = [
+    '«Срочно нужны деньги на сессию, заберите быстрее!»',
+    '«Нашёл в гараже у деда, вроде работает, цену не знаю.»',
+    '«Жена ругается, сказала избавиться от этого хлама.»',
+    '«Сын уехал учиться в Москву, распродаю его вещи.»',
+    '«Срочный переезд сегодня вечером! Заберите кто первый приедет.»',
+    '«Подарили на др, лежит пылится, забирайте за сколько не жалко.»',
+    '«Не разбираюсь в этих марках, продаю как есть за копейки.»',
+    '«Срочно гашу кредит, отдаю в минус, только сегодня!»',
+    '«Купил по пьяни, теперь не нужно, забирайте за полцены.»',
+    '«Продаю без торга у капота, и так отдаю даром!»',
+    '«Дедушка попросил продать, отдадим за сколько дадите.»',
+    '«Срочно нужны бабки на ремонт тачки, отдаю за бесценок!»'
+];
+
+const BUYER_NAMES = [
+    'Артём (Перекуп)',
+    'Магомед (Срочный выкуп)',
+    'Дмитрий (Для себя)',
+    'Илья (Подборщик)',
+    'Сергей (Студент)',
+    'Максим (Торг у капота)',
+    'Владимир (Готов выехать)'
+];
+
 const ITEM_TEMPLATES = [
-    { title: 'Brawl Stars | 12k кубков',        category: 'games',    min: 220,  max: 320,  real: 430,   risk: 0.25 },
-    { title: 'Genshin | AR55 акк',              category: 'games',    min: 900,  max: 1300, real: 1650,  risk: 0.2  },
-    { title: 'Steam | CS2 Prime',               category: 'games',    min: 1500, max: 2000, real: 2500,  risk: 0.15 },
-    { title: 'Ключ Minecraft Java',             category: 'keys',     min: 380,  max: 500,  real: 620,   risk: 0.05 },
-    { title: 'Windows 11 Pro | Retail',         category: 'keys',     min: 700,  max: 950,  real: 1200,  risk: 0.08 },
-    { title: 'Office 365 | 5 ПК',               category: 'keys',     min: 1100, max: 1500, real: 1850,  risk: 0.07 },
-    { title: 'Telegram Premium 3 мес',          category: 'subs',     min: 560,  max: 720,  real: 880,   risk: 0.02 },
-    { title: 'Spotify Family | 12 мес',         category: 'subs',     min: 1300, max: 1700, real: 2100,  risk: 0.06 },
-    { title: 'PSN Turkey | FC 25',              category: 'subs',     min: 2100, max: 2600, real: 3200,  risk: 0.1  },
-    { title: '👑 Steam | 200+ Игр',             category: 'accounts', min: 3400, max: 4200, real: 5400,  risk: 0.12 },
-    { title: '👑 Brawl Stars | 60k кубков',     category: 'accounts', min: 4200, max: 5200, real: 6700,  risk: 0.14 },
-    { title: '👑 Battle.net | Full Collection', category: 'accounts', min: 6000, max: 7600, real: 9500,  risk: 0.16 }
+    // --- GADGETS (Электроника, Level 1) ---
+    { title: 'Б/у Наушники JBL Tune 510BT',      category: 'gadgets',  min: 450,    max: 700,    real: 1100,   risk: 0.08 },
+    { title: 'Xiaomi Smart Band 8 (В коробке)',  category: 'gadgets',  min: 650,    max: 950,    real: 1400,   risk: 0.05 },
+    { title: 'Игровая мышь Logitech G102',       category: 'gadgets',  min: 550,    max: 850,    real: 1300,   risk: 0.06 },
+    { title: 'AirPods 2 Оригинал (Один тише)',   category: 'gadgets',  min: 800,    max: 1200,   real: 1900,   risk: 0.15 },
+    { title: 'Битый iPhone 7 32GB (Под экран)',  category: 'gadgets',  min: 700,    max: 1100,   real: 1700,   risk: 0.22 },
+    { title: 'Монитор Samsung 24" Full HD',      category: 'gadgets',  min: 2400,   max: 3300,   real: 4200,   risk: 0.07 },
+    { title: 'AirPods Pro 2 (Оригинал)',         category: 'gadgets',  min: 6500,   max: 9000,   real: 12500,  risk: 0.12 },
+    { title: 'iPad 9 64GB Space Gray',           category: 'gadgets',  min: 14000,  max: 18500,  real: 23500,  risk: 0.08 },
+    { title: 'iPhone 11 128GB (АКБ 87%)',        category: 'gadgets',  min: 16000,  max: 21000,  real: 26500,  risk: 0.14 },
+    { title: 'PlayStation 4 Slim 1TB + 2 геймпада', category: 'gadgets', min: 13500, max: 17500, real: 22000,  risk: 0.10 },
+    { title: 'PlayStation 5 (Дисковая, Ревизия 3)', category: 'gadgets', min: 34000, max: 42000, real: 51000,  risk: 0.09 },
+    { title: 'Steam Deck 512GB OLED',            category: 'gadgets',  min: 38000,  max: 47000,  real: 56000,  risk: 0.08 },
+    { title: 'iPhone 13 128GB (Синий, идеал)',   category: 'gadgets',  min: 33000,  max: 42000,  real: 50000,  risk: 0.10 },
+    { title: 'Видеокарта RTX 4060 Ti 8GB',       category: 'gadgets',  min: 27000,  max: 35000,  real: 42000,  risk: 0.07 },
+    { title: 'MacBook Air M1 8/256 (Серый космос)', category: 'gadgets', min: 42000, max: 53000, real: 64000,  risk: 0.08 },
+    { title: 'iPhone 15 Pro Max 256GB Natural',  category: 'gadgets',  min: 78000,  max: 96000,  real: 118000, risk: 0.12 },
+    { title: 'Видеокарта RTX 4090 24GB Rog Strix', category: 'gadgets', min: 145000, max: 180000, real: 225000, risk: 0.10 },
+    { title: 'MacBook Pro 16 M3 Max 36GB/1TB',   category: 'gadgets',  min: 190000, max: 240000, real: 295000, risk: 0.09 },
+
+    // --- GAMES (Игры, Level 1) ---
+    { title: 'Brawl Stars | 12k кубков',         category: 'games',    min: 220,    max: 320,    real: 430,    risk: 0.25 },
+    { title: 'Stumble Guys | Топ скины',         category: 'games',    min: 180,    max: 260,    real: 350,    risk: 0.18 },
+    { title: 'Genshin Impact | AR55 акк',        category: 'games',    min: 900,    max: 1300,   real: 1650,   risk: 0.20 },
+    { title: 'Steam | CS2 Prime',                category: 'games',    min: 1500,   max: 2000,   real: 2500,   risk: 0.15 },
+    { title: 'Dota 2 | 4000 MMR + Аркана',       category: 'games',    min: 1800,   max: 2500,   real: 3300,   risk: 0.18 },
+    { title: 'Valorant | Vandal Prime',          category: 'games',    min: 1200,   max: 1700,   real: 2300,   risk: 0.15 },
+    { title: 'GTA V Online | Прокачка $300M',    category: 'games',    min: 650,    max: 950,    real: 1350,   risk: 0.12 },
+
+    // --- KEYS (Ключи, Level 1) ---
+    { title: 'Ключ Minecraft Java & Bedrock',    category: 'keys',     min: 380,    max: 500,    real: 620,    risk: 0.05 },
+    { title: 'Windows 11 Pro | Retail',          category: 'keys',     min: 700,    max: 950,    real: 1200,   risk: 0.08 },
+    { title: 'Office 365 | 5 ПК',                category: 'keys',     min: 1100,   max: 1500,   real: 1850,   risk: 0.07 },
+    { title: 'Kaspersky Plus 1 год',             category: 'keys',     min: 580,    max: 820,    real: 1100,   risk: 0.05 },
+    { title: 'FL Studio 21 Producer Key',        category: 'keys',     min: 2200,   max: 3100,   real: 4100,   risk: 0.06 },
+
+    // --- SUBS (Подписки, Level 2) ---
+    { title: 'Telegram Premium 3 мес',           category: 'subs',     min: 560,    max: 720,    real: 880,    risk: 0.02 },
+    { title: 'Telegram Premium 12 мес',          category: 'subs',     min: 1750,   max: 2300,   real: 2950,   risk: 0.03 },
+    { title: 'Spotify Family | 12 мес',          category: 'subs',     min: 1300,   max: 1700,   real: 2100,   risk: 0.06 },
+    { title: 'PSN Turkey | FC 25',               category: 'subs',     min: 2100,   max: 2600,   real: 3200,   risk: 0.10 },
+    { title: 'Discord Nitro 1 год',              category: 'subs',     min: 2100,   max: 2800,   real: 3700,   risk: 0.05 },
+    { title: 'ChatGPT Plus 1 мес',               category: 'subs',     min: 1400,   max: 1900,   real: 2500,   risk: 0.04 },
+
+    // --- AUTO (Автомобили и транспорт, Level 2) ---
+    { title: 'Электросамокат Kugoo G2 Pro',      category: 'auto',     min: 24000,  max: 32000,  real: 42000,  risk: 0.12 },
+    { title: 'Питбайк Kayo Basic 125cc',         category: 'auto',     min: 36000,  max: 48000,  real: 65000,  risk: 0.16 },
+    { title: 'ВАЗ-2107 «Боевая классика» (16v)', category: 'auto',     min: 35000,  max: 52000,  real: 75000,  risk: 0.25 },
+    { title: 'ВАЗ-2114 «Четырка» (Шумка, саб)',  category: 'auto',     min: 75000,  max: 110000, real: 155000, risk: 0.22 },
+    { title: 'Lada Priora 2012 (Черная, пневма)',category: 'auto',     min: 145000, max: 195000, real: 260000, risk: 0.20 },
+    { title: 'Ford Focus II 2008 1.6 MT Рестайл',category: 'auto',     min: 280000, max: 370000, real: 470000, risk: 0.18 },
+    { title: 'Lada Granta 2021 (Один хозяин)',   category: 'auto',     min: 390000, max: 490000, real: 620000, risk: 0.12 },
+    { title: 'BMW 5 Series E39 525i (Родной лак)', category: 'auto',   min: 380000, max: 510000, real: 650000, risk: 0.24 },
+    { title: 'Hyundai Solaris 2018 (Не такси)',  category: 'auto',     min: 740000, max: 920000, real: 1150000,risk: 0.14 },
+    { title: 'Toyota Camry 3.5 2014 (Белая)',    category: 'auto',     min: 1200000,max: 1520000,real: 1880000,risk: 0.12 },
+    { title: 'Tesla Model 3 Long Range 2022',    category: 'auto',     min: 2200000,max: 2800000,real: 3450000,risk: 0.13 },
+    { title: 'BMW 3 Series G20 M-Sport 2020',    category: 'auto',     min: 2500000,max: 3100000,real: 3850000,risk: 0.15 },
+    { title: 'Mercedes-Benz E-Class W213 AMG',   category: 'auto',     min: 3100000,max: 3900000,real: 4750000,risk: 0.14 },
+    { title: 'Porsche Cayenne GTS 2019 (Идеал)', category: 'auto',     min: 5200000,max: 6600000,real: 8200000,risk: 0.15 },
+
+    // --- REALTY (Недвижимость, Level 3) ---
+    { title: 'Кладовка 4.5 м² в цоколе ЖК',      category: 'realty',   min: 65000,  max: 95000,  real: 135000, risk: 0.05 },
+    { title: 'Капитальный гараж в ГСК (24 м²)',  category: 'realty',   min: 140000, max: 210000, real: 290000, risk: 0.10 },
+    { title: 'Дача 6 соток с баней из сруба',    category: 'realty',   min: 440000, max: 620000, real: 820000, risk: 0.12 },
+    { title: 'Комната 18 м² в сталинке у метро', category: 'realty',   min: 950000, max: 1250000,real: 1650000,risk: 0.14 },
+    { title: 'Студия 22 м² под аренду у метро',  category: 'realty',   min: 2350000,max: 3000000,real: 3800000,risk: 0.08 },
+    { title: '1-к квартира 38 м² (Под ремонт)',  category: 'realty',   min: 3400000,max: 4400000,real: 5500000,risk: 0.15 },
+    { title: 'Евродвушка 54 м² в ЖК Бизнес',     category: 'realty',   min: 6100000,max: 7800000,real: 9600000,risk: 0.09 },
+    { title: 'Коттедж 200 м² в закрытом КП',     category: 'realty',   min: 11500000,max: 14800000,real: 18500000,risk: 0.12 },
+    { title: 'Пентхаус 220 м² с террасой в Сити',category: 'realty',   min: 39000000,max: 51000000,real: 68000000,risk: 0.10 },
+
+    // --- ACCOUNTS (Топовые аккаунты и медиа, Level 4) ---
+    { title: '👑 Steam | 200+ Игр',              category: 'accounts', min: 3400,   max: 4200,   real: 5400,   risk: 0.12 },
+    { title: '👑 Brawl Stars | 60k кубков',      category: 'accounts', min: 4200,   max: 5200,   real: 6700,   risk: 0.14 },
+    { title: '👑 Battle.net | Full Collection',  category: 'accounts', min: 6000,   max: 7600,   real: 9500,   risk: 0.16 },
+    { title: '👑 Telegram-канал 10k пдп (Охват 4k)', category: 'accounts', min: 18000, max: 25000, real: 35000, risk: 0.15 },
+    { title: '👑 YouTube-канал 50k подписчиков', category: 'accounts', min: 38000, max: 52000, real: 72000,  risk: 0.18 }
 ];
 
 const ACHIEVEMENTS = [
     { id: 'first10k',   name: 'Первые 10 000 ₽',        desc: 'Накопить 10 000 ₽ чистого капитала', test: s => netWorth() >= 10000 },
     { id: 'streak10',   name: '10 сделок без брака',    desc: '10 успешных продаж подряд без восстановления', test: s => s.cleanStreak >= 10 },
+    { id: 'sweetSniper',name: 'Снайпер лоу-прайса',     desc: 'Купить 3 лота от не шарящих продавцов', test: s => (s.statsSweetDeals || 0) >= 3 },
+    { id: 'prepMaster', name: 'Мастер предпродажки',    desc: 'Сделать предпродажную подготовку 3 лотов', test: s => (s.statsRefurbished || 0) >= 3 },
+    { id: 'firstCar',   name: 'Авто-перекуп',           desc: 'Перепродать первый автомобиль', test: s => s.inventory.some(i => i.category === 'auto') || s.listings.some(l => l.category === 'auto') || (s.statsSales >= 5 && s.level >= 2) },
+    { id: 'firstFlat',  name: 'Риелтор-магнат',         desc: 'Перепродать недвижимость', test: s => s.inventory.some(i => i.category === 'realty') || s.listings.some(l => l.category === 'realty') || (s.statsSales >= 10 && s.level >= 3) },
     { id: 'miner',      name: 'Майнер',                 desc: 'Купить 3 фермы',                    test: s => s.rigs.length >= 3 },
     { id: 'coolhead',   name: 'Холодная голова',        desc: 'Охлаждение 3 уровня',               test: s => s.coolingLevel >= 3 },
     { id: 'arb',        name: 'Арбитражник',            desc: 'Заработать 50 000 ₽ на крипте',     test: s => s.statsCryptoProfit >= 50000 },
@@ -833,6 +964,8 @@ function defaultState() {
         statsCryptoProfit: 0,
         statsScamSales: 0,
         statsDisputesWon: 0,
+        statsSweetDeals: 0,
+        statsRefurbished: 0,
         deposit: 0,
         loan: 0,
         loanDueAt: 0,
@@ -906,6 +1039,8 @@ function normalizeState(s) {
     s.level = Math.max(1, Math.floor(s.level));
     s.xp = Math.max(0, s.xp);
     s.prestige = Math.max(0, Math.floor(s.prestige));
+    s.statsSweetDeals = Math.max(0, num(s.statsSweetDeals, 0));
+    s.statsRefurbished = Math.max(0, num(s.statsRefurbished, 0));
     if (!THEMES.includes(s.theme)) s.theme = 'default';
 
     for (const key of Object.keys(COINS)) {
@@ -936,10 +1071,11 @@ function normalizeState(s) {
             return {
                 id: takeId(i.id),
                 title: i.title,
-                category: CATEGORIES[i.category] ? i.category : 'games',
+                category: CATEGORIES[i.category] ? i.category : 'gadgets',
                 buyPrice: Math.max(0, num(i.buyPrice, 0)),
                 realValue,
                 isBad: i.isBad === true,
+                refurbished: i.refurbished === true,
                 sellPrice: Math.max(1, Math.floor(num(i.sellPrice, realValue)))
             };
         });
@@ -949,11 +1085,12 @@ function normalizeState(s) {
         .map(l => ({
             id: takeId(l.id),
             title: l.title,
-            category: CATEGORIES[l.category] ? l.category : 'games',
+            category: CATEGORIES[l.category] ? l.category : 'gadgets',
             buyPrice: Math.max(0, num(l.buyPrice, 0)),
             realValue: Math.max(1, num(l.realValue, 1)),
             price: Math.max(1, Math.floor(num(l.price, 1))),
             isBad: l.isBad === true,
+            refurbished: l.refurbished === true,
             scam: l.scam === true,
             readyAt: num(l.readyAt, Date.now() + 10000)
         }));
@@ -1011,6 +1148,7 @@ function flushSave() { if (dirty) saveGame(); }
    ===================================================================== */
 let market = [];
 let haggleState = null;
+let activeBuyerOffer = null;
 let botTimer = null;
 let pushTimer = null;
 let secCounter = 0;
@@ -1192,6 +1330,8 @@ function renderHUD() {
     $('stat-trust').textContent = `${state.trustScore.toFixed(2)} ⭐`;
     $('stat-reviews').textContent = state.reviewCount;
     $('stat-sales').textContent = state.statsSales;
+    if ($('stat-sweets')) $('stat-sweets').textContent = state.statsSweetDeals || 0;
+    if ($('stat-refurbs')) $('stat-refurbs').textContent = state.statsRefurbished || 0;
     $('stat-earned').textContent = fmt(state.statsEarned);
     $('stat-fees').textContent = fmt(state.statsFees);
     $('stat-crypto-volume').textContent = fmt(state.statsCryptoVolume);
@@ -1372,17 +1512,17 @@ function categoryUnlocked(key) { return state.level >= CATEGORIES[key].level; }
 function renderCategoryTabs() {
     const tabs = $('cat-tabs');
     tabs.innerHTML = '';
-    const mk = (key, label, locked) => {
+    const mk = (key, label, locked, icon) => {
         const btn = document.createElement('button');
         btn.className = 'tab' + (activeCategory === key ? ' active' : '');
-        btn.textContent = locked ? `🔒 ${label}` : label;
+        btn.textContent = locked ? `🔒 ${icon ? icon + ' ' : ''}${label}` : `${icon ? icon + ' ' : ''}${label}`;
         btn.disabled = locked;
         btn.dataset.cat = key;
         tabs.appendChild(btn);
     };
-    mk('all', 'Все', false);
+    mk('all', 'Все', false, '🌐');
     for (const key of Object.keys(CATEGORIES)) {
-        mk(key, CATEGORIES[key].name, !categoryUnlocked(key));
+        mk(key, CATEGORIES[key].name, !categoryUnlocked(key), CATEGORIES[key].icon);
     }
 }
 
@@ -1404,7 +1544,8 @@ function renderDemandInfo() {
         .map(k => {
             const d = state.demand[k];
             const color = d >= 1.1 ? 'var(--green)' : (d <= 0.9 ? 'var(--red)' : 'var(--text-muted)');
-            return `<span style="color:${color}">${CATEGORIES[k].name} ${Math.round(d * 100)}%</span>`;
+            const icon = CATEGORIES[k].icon ? CATEGORIES[k].icon + ' ' : '';
+            return `<span style="color:${color}">${icon}${CATEGORIES[k].name} ${Math.round(d * 100)}%</span>`;
         });
     $('demand-info').innerHTML = 'Спрос: ' + parts.join(' · ');
 }
@@ -1415,15 +1556,29 @@ function availableTemplates() {
 }
 
 function createLot(t) {
+    // 28% шанс, что продавец «не шарит» / «дурачок» и продает товар за лоу-прайс (скидка 55-75% от рынка)
+    const isSweetDeal = Math.random() < 0.28;
+    let price;
+    let sellerNote = '';
+    if (isSweetDeal) {
+        const discountRatio = randRange(0.25, 0.45); // за 25-45% от реальной стоимости
+        price = Math.max(100, Math.floor(t.real * discountRatio));
+        sellerNote = pick(SELLER_NOTES);
+    } else {
+        price = randInt(t.min, t.max);
+    }
+
     return {
         id: uid(),
         title: t.title,
         category: t.category,
-        price: randInt(t.min, t.max),
+        price,
         realValue: t.real,
         risk: t.risk,
         isBad: Math.random() < t.risk,
-        checked: false
+        checked: false,
+        isSweetDeal,
+        sellerNote
     };
 }
 
@@ -1450,6 +1605,10 @@ function generateMarket(paid = false) {
 
 function useGuarantor() { return $('guarantor-toggle').checked; }
 
+function lotCheckCost(lot) {
+    return Math.max(50, Math.min(2500, Math.floor(lot.price * 0.008)));
+}
+
 function renderMarket() {
     const list = $('market-list');
     list.innerHTML = '';
@@ -1457,34 +1616,77 @@ function renderMarket() {
     $('market-refresh-btn').textContent = cd > 0 ? `Обновить (${fmt(BALANCE.market.refreshCost)})` : 'Обновить';
 
     if (market.length === 0) {
-        list.innerHTML = '<div class="tiny muted">Лотов нет — обновите рынок.</div>';
+        list.innerHTML = '<div class="tiny muted" style="padding:8px 0;">Лотов нет — нажмите «Обновить» рынок.</div>';
         return;
     }
-    market.forEach(lot => {
+
+    let listLots = [...market];
+    const sweetOnly = $('sweet-only-toggle') && $('sweet-only-toggle').checked;
+    if (sweetOnly) {
+        listLots = listLots.filter(l => l.isSweetDeal);
+    }
+
+    const sortMode = $('market-sort-select') ? $('market-sort-select').value : 'discount';
+    if (sortMode === 'discount') {
+        listLots.sort((a, b) => (1 - a.price / a.realValue) < (1 - b.price / b.realValue) ? 1 : -1);
+    } else if (sortMode === 'cheap') {
+        listLots.sort((a, b) => a.price - b.price);
+    } else if (sortMode === 'expensive') {
+        listLots.sort((a, b) => b.price - a.price);
+    }
+
+    if (listLots.length === 0) {
+        list.innerHTML = '<div class="tiny muted" style="padding:8px 0;">В этой категории сейчас нет лотов от не шарящих продавцов. Нажмите «Обновить» или снимите фильтр.</div>';
+        return;
+    }
+
+    listLots.forEach(lot => {
         const card = document.createElement('div');
-        card.className = 'item-card';
+        card.className = 'item-card' + (lot.isSweetDeal ? ' sweet-card' : '');
         let checkLine = '';
         if (lot.checked) {
             checkLine = lot.isBad
-                ? '<div class="tiny" style="color:var(--red); margin-bottom:4px;">⚠️ ЧЕКЕР: Лот подозрительный!</div>'
-                : '<div class="tiny" style="color:var(--green); margin-bottom:4px;">✅ ЧЕКЕР: Лот чистый!</div>';
+                ? '<div class="tiny" style="color:var(--red); margin-bottom:4px; font-weight:bold;">⚠️ ДИАГНОСТИКА: Обнаружен скрытый дефект / восстановлен!</div>'
+                : '<div class="tiny" style="color:var(--green); margin-bottom:4px; font-weight:bold;">✅ ДИАГНОСТИКА: Чистый лот без дефектов и залогов!</div>';
         }
         const guarPrice = Math.ceil(lot.price * (1 + BALANCE.market.guarantorFee));
         const shown = useGuarantor() ? guarPrice : lot.price;
+        const discountPct = Math.max(1, Math.round((1 - lot.price / lot.realValue) * 100));
+        const catObj = CATEGORIES[lot.category] || { name: lot.category, icon: '📦' };
+
+        let sweetBadge = '';
+        let quoteBox = '';
+        if (lot.isSweetDeal) {
+            sweetBadge = `<span class="badge badge-sweet">🔥 НЕ ШАРИТ (−${discountPct}%)</span>`;
+            if (lot.sellerNote) {
+                quoteBox = `<div class="tiny" style="color:#fbbf24; font-style:italic; margin:4px 0 2px; padding:3px 6px; background:rgba(245,158,11,0.12); border-radius:6px; border-left:3px solid #f59e0b;">💬 ${esc(lot.sellerNote)}</div>`;
+            }
+        }
+
+        const estProfit = Math.floor(lot.realValue * (1 - BALANCE.market.feeRatio) - lot.price);
+        const estProfitHtml = estProfit > 0 ? `<div class="tiny" style="color:var(--green); font-weight:600;">Потенциал перепродажи: ~+${fmtExact(estProfit)}</div>` : '';
+        const chCost = lotCheckCost(lot);
+
         card.innerHTML = `
             <div class="row-between">
                 <div class="title-sm">${esc(lot.title)}</div>
-                <span class="badge">${esc(CATEGORIES[lot.category].name)}</span>
+                <div class="row" style="gap:4px; align-items:center;">
+                    ${sweetBadge}
+                    <span class="badge">${catObj.icon || ''} ${esc(catObj.name)}</span>
+                </div>
             </div>
+            ${quoteBox}
             <div style="font-size:0.8rem; margin:2px 0;"><b>${fmtExact(shown)}</b>
-                <span class="tiny muted">(Рынок: ~${fmtExact(lot.realValue)})</span></div>
-            <div class="tiny" style="color:${lot.risk > 0.1 ? 'var(--red)' : 'var(--green)'}; margin-bottom:4px;">
-                Риск восстановления: ${Math.round(lot.risk * 100)}%${useGuarantor() ? ' · покрыт гарантом' : ''}</div>
+                <span class="tiny muted">(Рыночная оценка: ~${fmtExact(lot.realValue)})</span>
+            </div>
+            ${estProfitHtml}
+            <div class="tiny" style="color:${lot.risk > 0.12 ? 'var(--red)' : 'var(--green)'}; margin:2px 0 4px;">
+                Риск дефекта: ${Math.round(lot.risk * 100)}%${useGuarantor() ? ' · покрыт гарантом' : ''}</div>
             ${checkLine}
             <div class="row" style="gap:4px;">
                 <button class="btn btn-primary" style="flex:1;" data-act="buy" data-lot="${lot.id}">Купить</button>
-                <button class="btn btn-purple" data-act="check" data-lot="${lot.id}">🔍 ${BALANCE.market.checkCost}₽</button>
-                <button class="btn btn-warning" data-act="chat" data-lot="${lot.id}" aria-label="Торг">💬</button>
+                <button class="btn btn-purple" data-act="check" data-lot="${lot.id}">🔍 ${fmt(chCost)}</button>
+                <button class="btn btn-warning" data-act="chat" data-lot="${lot.id}" aria-label="Торг">💬 Торг</button>
             </div>`;
         list.appendChild(card);
     });
@@ -1504,24 +1706,28 @@ function buyLot(lot, price, opts = {}) {
     state.balance -= total;
     if (guarantor) state.statsFees += total - price;
 
+    if (lot.isSweetDeal) {
+        state.statsSweetDeals = (state.statsSweetDeals || 0) + 1;
+    }
+
     if (lot.isBad) {
         if (guarantor) {
             state.balance += price; // гарант возвращает стоимость лота, комиссия сгорает
-            showPush('🛡️', `Гарант отклонил лот "${lot.title}" — деньги возвращены`, 'good');
+            showPush('🛡️', `Гарант отклонил дефектный лот "${lot.title}" — деньги возвращены`, 'good');
             return 'saved';
         }
         state.cleanStreak = 0;
         changeTrust(-0.2);
         state.inventory.push({
             id: uid(), title: lot.title, category: lot.category,
-            buyPrice: total, realValue: Math.floor(lot.realValue * 0.2),
-            isBad: true, sellPrice: Math.floor(lot.realValue * 0.2)
+            buyPrice: total, realValue: Math.floor(lot.realValue * 0.35),
+            isBad: true, refurbished: false, sellPrice: Math.floor(lot.realValue * 0.35)
         });
         state.disputes.push({
             id: uid(), title: lot.title, amount: total, checked: lot.checked,
-            reason: 'Лот восстановлен продавцом'
+            reason: 'Лот с дефектом или залогом'
         });
-        showPush('❌', `Лот "${lot.title}" восстановлен! Можно открыть диспут.`, 'bad');
+        showPush('❌', `Лот "${lot.title}" с дефектом! Можно сделать предпродажку или открыть диспут.`, 'bad');
         renderInventory();
         renderDisputes();
         return 'bad';
@@ -1530,9 +1736,13 @@ function buyLot(lot, price, opts = {}) {
     state.inventory.push({
         id: uid(), title: lot.title, category: lot.category,
         buyPrice: total, realValue: lot.realValue, isBad: false,
-        sellPrice: Math.floor(lot.realValue * 1.02)
+        refurbished: false, sellPrice: Math.floor(lot.realValue * 1.02)
     });
-    showPush('🛍️', `Куплен лот "${lot.title}"`, 'good');
+    if (lot.isSweetDeal) {
+        showPush('🔥', `Снайп лоу-прайса! "${lot.title}" куплен за ${fmtExact(price)} (рынок ~${fmtExact(lot.realValue)})`, 'good');
+    } else {
+        showPush('🛍️', `Куплен лот "${lot.title}"`, 'good');
+    }
     renderInventory();
     return 'ok';
 }
@@ -1547,11 +1757,12 @@ function manualBuy(lot, price) {
 
 function checkLot(lot) {
     if (lot.checked) return showPush('🔍', 'Этот лот уже проверен.');
-    const cost = BALANCE.market.checkCost;
-    if (state.balance < cost) return warn(`Недостаточно ${cost} ₽!`);
+    const cost = lotCheckCost(lot);
+    if (state.balance < cost) return warn(`Недостаточно ${fmtExact(cost)} для диагностики!`);
     state.balance -= cost;
     state.statsFees += cost;
     lot.checked = true;
+    showPush('🔍', lot.isBad ? '⚠️ Внимание: найден дефект / залог!' : '✅ Диагностика: лот чистый!', lot.isBad ? 'bad' : 'good');
     renderMarket();
     refresh(true);
 }
@@ -1567,10 +1778,15 @@ function addMsg(cls, text) {
 }
 
 function openChat(lot) {
-    haggleState = { lot, currentPrice: lot.price, minPrice: Math.floor(lot.price * 0.78), attempts: 0 };
-    $('chat-title').textContent = `Торг: ${lot.title}`;
+    const isSweet = lot.isSweetDeal === true;
+    const minPrice = isSweet ? Math.floor(lot.price * 0.70) : Math.floor(lot.price * 0.78);
+    haggleState = { lot, currentPrice: lot.price, minPrice, attempts: 0, isSweet };
+    $('chat-title').textContent = isSweet ? `🔥 Срочно: ${lot.title}` : `Торг: ${lot.title}`;
     $('chat-history').innerHTML = '';
-    addMsg('msg-them', `Привет! Отдам за ${fmtExact(lot.price)}.`);
+    const greeting = isSweet
+        ? (lot.sellerNote ? `${lot.sellerNote} Отдам прямо сейчас за ${fmtExact(lot.price)}!` : `Привет, отдаю срочно за ${fmtExact(lot.price)}!`)
+        : `Привет! Отдам за ${fmtExact(lot.price)}. Торг только разумный.`;
+    addMsg('msg-them', greeting);
     $('chat-modal').classList.add('active');
 }
 
@@ -1583,19 +1799,19 @@ function haggleAction(action) {
     const h = haggleState;
     if (!h) return;
     if (action === 'discount') {
-        const proposed = Math.floor(h.currentPrice * 0.92);
+        const proposed = Math.floor(h.currentPrice * 0.90);
         if (proposed < h.minPrice || h.attempts >= 4) {
-            addMsg('msg-them', `Это крайняя цена (${fmtExact(h.currentPrice)})!`);
+            addMsg('msg-them', h.isSweet ? `Куда ещё дешевле?! Это и так даром отдаю (${fmtExact(h.currentPrice)})!` : `Это крайняя цена (${fmtExact(h.currentPrice)})!`);
             return;
         }
         h.attempts++;
         addMsg('msg-me', `Скинешь до ${fmtExact(proposed)}?`);
-        const chance = 0.35 + (state.trustScore - 1) * 0.08;
+        const chance = h.isSweet ? 0.72 : (0.35 + (state.trustScore - 1) * 0.08);
         if (Math.random() < chance) {
             h.currentPrice = proposed;
-            addMsg('msg-them', `По рукам! Забирай за ${fmtExact(proposed)}.`);
+            addMsg('msg-them', h.isSweet ? `Ладно, брат, забирай за ${fmtExact(proposed)}, только приезжай скорее!` : `По рукам! Забирай за ${fmtExact(proposed)}.`);
         } else {
-            addMsg('msg-them', 'Не, это слишком дешево.');
+            addMsg('msg-them', h.isSweet ? 'Не, ну за совсем бесплатно не отдам.' : 'Не, это слишком дешево.');
         }
     } else if (action === 'buy') {
         const { lot, currentPrice } = h;
@@ -1604,7 +1820,7 @@ function haggleAction(action) {
     }
 }
 
-/* --- Инвентарь и объявления --- */
+/* --- Инвентарь, предпродажка и объявления --- */
 function syncSellInputs() {
     state.inventory.forEach(item => {
         const el = $(`sell-price-${item.id}`);
@@ -1615,31 +1831,104 @@ function syncSellInputs() {
     });
 }
 
+function prepCost(item) {
+    return Math.max(100, Math.floor(item.realValue * 0.04));
+}
+
+function calcNetProfit(item, price) {
+    const fee = Math.floor(price * BALANCE.market.feeRatio);
+    return (price - fee) - item.buyPrice;
+}
+
+function updateInventoryProfitPreview(id) {
+    const item = state.inventory.find(i => i.id === id);
+    if (!item) return;
+    const input = $(`sell-price-${id}`);
+    const previewEl = $(`profit-preview-${id}`);
+    if (!input || !previewEl) return;
+    const p = Math.floor(Number(input.value)) || 0;
+    const profit = calcNetProfit(item, p);
+    const profitColor = profit >= 0 ? 'var(--green)' : 'var(--red)';
+    previewEl.innerHTML = `Чистая прибыль: <b style="color:${profitColor};">${profit >= 0 ? '+' : ''}${fmtExact(profit)}</b> (после комиссии ${Math.round(BALANCE.market.feeRatio * 100)}%)`;
+}
+
 function renderInventory() {
     syncSellInputs();
     const inv = $('inventory-list');
     inv.innerHTML = '';
     if (state.inventory.length === 0) {
-        inv.innerHTML = '<div class="tiny muted">Инвентарь пуст.</div>';
+        inv.innerHTML = '<div class="tiny muted" style="padding:8px 0;">Инвентарь пуст. Покупайте товары на маркете для перепродажи.</div>';
         return;
     }
     state.inventory.forEach(item => {
         const card = document.createElement('div');
         card.className = 'item-card';
         const scamPrice = Math.floor(item.realValue * BALANCE.market.scamMargin * 2);
+        const catObj = CATEGORIES[item.category] || { name: item.category, icon: '📦' };
+        const prCost = prepCost(item);
+
+        let statusBadge = `<span class="badge badge-green">${catObj.icon || ''} ${esc(catObj.name)}</span>`;
+        if (item.isBad) {
+            statusBadge = '<span class="badge badge-red">⚠️ Брак / Дефект</span>';
+        } else if (item.refurbished) {
+            statusBadge = '<span class="badge badge-yellow">🧼 Предпродажка (+20%)</span>';
+        }
+
+        const profit = calcNetProfit(item, item.sellPrice);
+        const profitColor = profit >= 0 ? 'var(--green)' : 'var(--red)';
+
+        // Быстрые пресеты цен перекупа: -15% (быстрая продажа), В рынок, +15% (наценка), +35% (овер)
+        const pQuick = Math.floor(item.realValue * 0.85);
+        const pMarket = item.realValue;
+        const pOver = Math.floor(item.realValue * 1.15);
+        const pGreedy = Math.floor(item.realValue * 1.35);
+
         card.innerHTML = `
             <div class="row-between">
                 <div class="title-sm">${esc(item.title)}</div>
-                <span class="badge ${item.isBad ? 'badge-red' : 'badge-green'}">${item.isBad ? 'восстановлен' : CATEGORIES[item.category].name}</span>
+                ${statusBadge}
             </div>
-            <div class="tiny muted">Куплен за ${fmtExact(item.buyPrice)} · рынок ~${fmtExact(item.realValue)} · комиссия ${Math.round(BALANCE.market.feeRatio * 100)}%</div>
-            <div class="row" style="margin-top:4px; align-items:center;">
-                <input type="number" inputmode="numeric" min="1" step="1" class="price-input" id="sell-price-${item.id}" value="${item.sellPrice}" aria-label="Цена продажи">
-                <button class="btn btn-success" style="flex:1;" data-sell="${item.id}">Выставить</button>
+            <div class="tiny muted" style="margin:2px 0;">
+                Закупка: <b>${fmtExact(item.buyPrice)}</b> · Рынок: ~<b>${fmtExact(item.realValue)}</b>
+            </div>
+            <div class="tiny" id="profit-preview-${item.id}" style="margin-bottom:4px;">
+                Чистая прибыль: <b style="color:${profitColor};">${profit >= 0 ? '+' : ''}${fmtExact(profit)}</b> (после комиссии ${Math.round(BALANCE.market.feeRatio * 100)}%)
+            </div>
+            <div class="row" style="gap:4px; margin-bottom:6px; flex-wrap:wrap;">
+                <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pQuick}">-15% (Быстро)</button>
+                <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pMarket}">В рынок</button>
+                <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pOver}">+15% (Перекуп)</button>
+                <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pGreedy}">+35% (Овер)</button>
+            </div>
+            <div class="row" style="margin-top:4px; align-items:center; gap:4px;">
+                <input type="number" inputmode="numeric" min="1" step="1" class="price-input" id="sell-price-${item.id}" value="${item.sellPrice}" aria-label="Цена продажи" data-item-id="${item.id}">
+                <button class="btn btn-success" style="flex:1;" data-sell="${item.id}">Выставить на Авито</button>
+                ${!item.refurbished ? `<button class="btn btn-purple" data-prep="${item.id}" title="Устранить дефект и повысить ценность">🧼 Предпродажка (${fmt(prCost)})</button>` : ''}
                 ${item.isBad ? `<button class="btn btn-danger" data-scam="${item.id}" title="Продать как чистый: ${fmtExact(scamPrice)}">🎭 Скам</button>` : ''}
             </div>`;
         inv.appendChild(card);
     });
+}
+
+function prepItem(id) {
+    const item = state.inventory.find(i => i.id === id);
+    if (!item) return;
+    if (item.refurbished) return warn('Этот товар уже прошёл предпродажную подготовку!');
+    const cost = prepCost(item);
+    if (state.balance < cost) return warn(`Недостаточно средств (${fmtExact(cost)}) для детейлинга / предпродажки!`);
+
+    state.balance -= cost;
+    state.statsFees += cost;
+    state.statsRefurbished = (state.statsRefurbished || 0) + 1;
+    item.isBad = false;
+    item.refurbished = true;
+    item.realValue = Math.floor(item.realValue * 1.20); // +20% к рыночной оценке
+    item.sellPrice = Math.floor(item.realValue * 1.05);
+
+    addXP(25);
+    showPush('🧼', `Предпродажка "${item.title}": дефекты устранены, оценка выросла до ${fmtExact(item.realValue)}!`, 'good');
+    renderInventory();
+    refresh(true);
 }
 
 function listItem(id, scam) {
@@ -1657,10 +1946,10 @@ function listItem(id, scam) {
     state.listings.push({
         id: uid(), title: item.title, category: item.category,
         buyPrice: item.buyPrice, realValue: item.realValue,
-        price, isBad: item.isBad, scam: !!scam,
+        price, isBad: item.isBad, refurbished: item.refurbished === true, scam: !!scam,
         readyAt: Date.now() + delay * 1000
     });
-    showPush('📤', `Выставлено: ${item.title} за ${fmtExact(price)}`);
+    showPush('📤', `Выставлено на Авито: ${item.title} за ${fmtExact(price)}`);
     renderInventory();
     renderListings();
     refresh(true);
@@ -1669,20 +1958,54 @@ function listItem(id, scam) {
 function renderListings() {
     const list = $('listings-list');
     list.innerHTML = '';
-    if (state.listings.length === 0) {
-        list.innerHTML = '<div class="tiny muted">Нет активных объявлений.</div>';
+
+    // Если есть активное предложение покупателя (срочный выкуп / звонок)
+    if (activeBuyerOffer) {
+        const listing = state.listings.find(l => l.id === activeBuyerOffer.listingId);
+        if (listing && Date.now() < activeBuyerOffer.expiresAt) {
+            const timeLeft = Math.max(0, Math.ceil((activeBuyerOffer.expiresAt - Date.now()) / 1000));
+            const offerCard = document.createElement('div');
+            offerCard.className = 'item-card sweet-card';
+            offerCard.style.borderColor = '#22c55e';
+            offerCard.innerHTML = `
+                <div class="row-between">
+                    <div class="title-sm" style="color:#22c55e;">📞 Входящий звонок: ${esc(activeBuyerOffer.buyerName)}</div>
+                    <span class="badge badge-sweet">⏰ ${timeLeft} с</span>
+                </div>
+                <div class="tiny" style="margin:4px 0;">
+                    «Готов забрать <b>${esc(listing.title)}</b> прямо сейчас за <b>${fmtExact(activeBuyerOffer.offerPrice)}</b> наличными!»
+                </div>
+                <div class="row" style="gap:4px; margin-top:6px;">
+                    <button class="btn btn-success btn-xs" style="flex:1;" data-accept-offer="${activeBuyerOffer.id}">✅ Продать сразу (${fmtExact(activeBuyerOffer.offerPrice)})</button>
+                    <button class="btn btn-dark btn-xs" data-reject-offer="${activeBuyerOffer.id}">❌ Отклонить</button>
+                </div>`;
+            list.appendChild(offerCard);
+        } else {
+            activeBuyerOffer = null;
+        }
+    }
+
+    if (state.listings.length === 0 && !activeBuyerOffer) {
+        list.innerHTML = '<div class="tiny muted" style="padding:8px 0;">Нет активных объявлений. Выставьте товары из инвентаря.</div>';
         return;
     }
+
     state.listings.forEach(l => {
         const card = document.createElement('div');
         card.className = 'item-card';
         card.dataset.listing = l.id;
+        const catObj = CATEGORIES[l.category] || { name: l.category, icon: '📦' };
+        const badges = [];
+        if (catObj.icon) badges.push(catObj.icon);
+        if (l.refurbished) badges.push('<span class="badge badge-yellow">детейлинг</span>');
+        if (l.scam) badges.push('<span class="badge badge-red">скам</span>');
+
         card.innerHTML = `
             <div class="row-between">
-                <div class="title-sm">${esc(l.title)} ${l.scam ? '<span class="badge badge-red">скам</span>' : ''}</div>
-                <span class="small" style="color:var(--green);">${fmtExact(l.price)}</span>
+                <div class="title-sm">${esc(l.title)} ${badges.join(' ')}</div>
+                <span class="small" style="color:var(--green); font-weight:bold;">${fmtExact(l.price)}</span>
             </div>
-            <div class="tiny muted">Ждём покупателя: <b class="listing-timer"></b> · шанс ${Math.round(saleChance(l) * 100)}%</div>
+            <div class="tiny muted">Ждём покупателя: <b class="listing-timer"></b> · шанс продажи ${Math.round(saleChance(l) * 100)}%</div>
             <div class="row" style="margin-top:4px;">
                 <button class="btn btn-dark btn-xs" data-unlist="${l.id}">Снять с продажи</button>
             </div>`;
@@ -1698,6 +2021,74 @@ function updateListingTimers() {
     });
 }
 
+function checkBuyerOffers() {
+    if (activeBuyerOffer) {
+        if (Date.now() >= activeBuyerOffer.expiresAt) {
+            activeBuyerOffer = null;
+            renderListings();
+        }
+        return;
+    }
+    if (state.listings.length === 0) return;
+
+    // 15% шанс в тик появления звонка от покупателя с предложением моментального выкупа
+    if (Math.random() < 0.15) {
+        const listing = pick(state.listings);
+        if (!listing) return;
+        const buyerName = pick(BUYER_NAMES);
+        const offerRatio = randRange(0.85, 1.05); // предлагает от 85% до 105% цены
+        const offerPrice = Math.max(100, Math.floor(listing.price * offerRatio));
+        activeBuyerOffer = {
+            id: uid(),
+            listingId: listing.id,
+            buyerName,
+            offerPrice,
+            expiresAt: Date.now() + 15000
+        };
+        beep(700, 80, 'sine');
+        showPush('📞', `Звонок по "${listing.title}": ${buyerName} предлагает ${fmtExact(offerPrice)}!`);
+        renderListings();
+    }
+}
+
+function acceptBuyerOffer(offerId) {
+    if (!activeBuyerOffer || activeBuyerOffer.id !== offerId) return;
+    const listing = state.listings.find(l => l.id === activeBuyerOffer.listingId);
+    if (!listing) {
+        activeBuyerOffer = null;
+        renderListings();
+        return;
+    }
+
+    const price = activeBuyerOffer.offerPrice;
+    const fee = Math.floor(price * BALANCE.market.feeRatio);
+    const net = price - fee;
+
+    state.listings = state.listings.filter(l => l.id !== listing.id);
+    state.balance += net;
+    state.statsFees += fee;
+    state.statsSales++;
+    state.statsEarned += net - listing.buyPrice;
+    state.reviewCount++;
+    state.cleanStreak++;
+    addXP(BALANCE.progression.xpPerSale + Math.max(0, net - listing.buyPrice) * BALANCE.progression.xpPerProfit);
+    changeTrust(0.09);
+
+    showPush('🤝', `Покупатель ${activeBuyerOffer.buyerName} выкупил "${listing.title}" за ${fmtExact(net)} (комиссия ${fmtExact(fee)})!`, 'good');
+    activeBuyerOffer = null;
+    renderListings();
+    renderInventory();
+    refresh(true);
+}
+
+function rejectBuyerOffer(offerId) {
+    if (activeBuyerOffer && activeBuyerOffer.id === offerId) {
+        activeBuyerOffer = null;
+        showPush('📞', 'Предложение покупателя отклонено.');
+        renderListings();
+    }
+}
+
 function saleChance(l) {
     const ratio = l.price / Math.max(1, l.realValue);
     const demand = specBonus(l.category);
@@ -1709,6 +2100,7 @@ function saleChance(l) {
     else base = 0.06;
     base *= demand;
     base *= 0.85 + (state.trustScore - 1) * 0.05;
+    if (l.refurbished) base *= 1.15; // предпродажка ускоряет продажу!
     if (l.scam) base *= 0.8;
     return clamp(base, 0.02, 0.97);
 }
@@ -1720,7 +2112,7 @@ function unlistItem(id) {
     state.listings.splice(idx, 1);
     state.inventory.push({
         id: uid(), title: l.title, category: l.category, buyPrice: l.buyPrice,
-        realValue: l.realValue, isBad: l.isBad, sellPrice: l.price
+        realValue: l.realValue, isBad: l.isBad, refurbished: l.refurbished === true, sellPrice: l.price
     });
     renderListings();
     renderInventory();
@@ -1773,7 +2165,7 @@ function resolveListings() {
         } else {
             state.inventory.push({
                 id: uid(), title: l.title, category: l.category, buyPrice: l.buyPrice,
-                realValue: l.realValue, isBad: l.isBad, sellPrice: Math.floor(l.price * 0.9)
+                realValue: l.realValue, isBad: l.isBad, refurbished: l.refurbished === true, sellPrice: Math.floor(l.price * 0.9)
             });
             state.reviewCount++;
             changeTrust(-0.04);
@@ -2825,13 +3217,12 @@ function applyOffline() {
    17. ТУТОРИАЛ И ОВЕРЛЕЙ
    ===================================================================== */
 const TUTORIAL = [
-    { title: 'Добро пожаловать в P2P Resell', text: 'Вы — реселлер игровых аккаунтов. Покупайте лоты дешевле рынка, продавайте дороже и качайте рейтинг доверия.' },
-    { title: '🛍️ P2P Market', text: 'У лотов есть риск восстановления. Чекер (60 ₽) показывает правду, Гарант (+5% к цене) возвращает деньги за плохой лот. Продажа не мгновенная: объявление ждёт покупателя, площадка берёт комиссию ~4.5%.' },
-    { title: '⭐ Рейтинг и баны', text: 'Оверпрайс и скам-лоты роняют рейтинг. За жалобы аккаунт могут заблокировать — разбан платный.' },
-    { title: '💎 Crypto Hub', text: 'Курсы ходят случайным блужданием, у бирж разные цены — можно арбитражить: купить дешевле на одной бирже и продать дороже на другой.' },
-    { title: '🏦 Банк и ⛏️ майнинг', text: 'Вклад даёт 0.1% / 10 с и ограничен половиной капитала, кредит дороже и со сроком: просрочка снимает рейтинг и списывает активы. Фермы приносят крипту, но жрут свет — долг больше лимита отключает майнинг.' },
-    { title: '🎰 Казино', text: 'Преимущество казино ~4%, ставка ограничена 20% баланса. В краше есть авто-вывод. Это способ слить деньги, а не заработать.' },
-    { title: '⬆️ Прогресс', text: 'За сделки идёт опыт: новые уровни открывают приложения и категории товаров. На 1 000 000 ₽ доступен престиж — сброс ради постоянного бонуса к доходу.' }
+    { title: 'Добро пожаловать в P2P & Avito Resell', text: 'Вы — топовый перекуп! Начинайте с игровых аккаунтов и гаджетов, развивайтесь до авторынка и элитной недвижимости. Скупайте лоу-прайс и продавайте в рынок!' },
+    { title: '🔥 Снайпинг: продавцы «не шарят»', text: 'На маркетплейсе часто попадаются продавцы, которые не разбираются в ценах и отдают редкие товары за бесценок (−50-75% от рынка). Ищите бейдж «НЕ ШАРИТ» и выкупайте их первыми!' },
+    { title: '🧼 Детейлинг и предпродажка', text: 'Купили лот с дефектом или хотите навариться больше? Сделайте предпродажную подготовку в инвентаре: это снимет дефект и увеличит рыночную оценку на +20%!' },
+    { title: '📞 Звонки покупателей и быстрый выкуп', text: 'После публикации объявления на Авито вам могут звонить покупатели с предложением забрать лот моментально за наличные. Успейте принять решение, пока таймер не истёк!' },
+    { title: '🚗 От аккаунтов до машин и вилл', text: 'С каждым новым уровнем открываются более прибыльные ниши: Смартфоны, Ноутбуки, Автомобили и даже Недвижимость. Чем дороже актив — тем внушительнее прибыль перекупа!' },
+    { title: '💎 Крипта, Банк и Фермы', text: 'Диверсифицируйте прибыль: арбитражьте крипту между биржами, держите вклад в банке и развивайте майнинг-фермы.' }
 ];
 
 let tutorialStep = 0;
@@ -2955,6 +3346,8 @@ $('home-btn').addEventListener('click', closeApps);
 /* Маркет */
 $('market-refresh-btn').addEventListener('click', () => generateMarket(true));
 $('guarantor-toggle').addEventListener('change', renderMarket);
+if ($('sweet-only-toggle')) $('sweet-only-toggle').addEventListener('change', renderMarket);
+if ($('market-sort-select')) $('market-sort-select').addEventListener('change', renderMarket);
 $('cat-tabs').addEventListener('click', e => {
     const tab = e.target.closest('.tab');
     if (!tab || tab.disabled) return;
@@ -2976,10 +3369,35 @@ $('inventory-list').addEventListener('click', e => {
     if (sell) return listItem(Number(sell.dataset.sell), false);
     const scam = e.target.closest('button[data-scam]');
     if (scam) return listItem(Number(scam.dataset.scam), true);
+    const prep = e.target.closest('button[data-prep]');
+    if (prep) return prepItem(Number(prep.dataset.prep));
+    const setP = e.target.closest('button[data-set-price]');
+    if (setP) {
+        const itemId = Number(setP.dataset.setPrice);
+        const val = Number(setP.dataset.val);
+        const input = $(`sell-price-${itemId}`);
+        if (input) {
+            input.value = val;
+            const item = state.inventory.find(i => i.id === itemId);
+            if (item) item.sellPrice = val;
+            updateInventoryProfitPreview(itemId);
+        }
+        return;
+    }
+});
+$('inventory-list').addEventListener('input', e => {
+    if (e.target.matches('.price-input')) {
+        const itemId = Number(e.target.dataset.itemId);
+        if (itemId) updateInventoryProfitPreview(itemId);
+    }
 });
 $('listings-list').addEventListener('click', e => {
     const btn = e.target.closest('button[data-unlist]');
-    if (btn) unlistItem(Number(btn.dataset.unlist));
+    if (btn) return unlistItem(Number(btn.dataset.unlist));
+    const accept = e.target.closest('button[data-accept-offer]');
+    if (accept) return acceptBuyerOffer(Number(accept.dataset.acceptOffer));
+    const reject = e.target.closest('button[data-reject-offer]');
+    if (reject) return rejectBuyerOffer(Number(reject.dataset.rejectOffer));
 });
 $('disputes-list').addEventListener('click', e => {
     const open = e.target.closest('button[data-dispute]');
@@ -3089,6 +3507,7 @@ setInterval(() => {
     secCounter++;
     bankTick();
     resolveListings();
+    checkBuyerOffers();
     updateListingTimers();
     if (secCounter % 5 === 0) renderMarket();
     if (secCounter % 10 === 0) sampleNetWorth();
@@ -3132,4 +3551,3 @@ saveGame();
 </script>
 </body>
 </html>
-
