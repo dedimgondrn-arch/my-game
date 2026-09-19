@@ -107,6 +107,14 @@
         .stat-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.75rem; }
         .progress-bar { width: 100%; height: 6px; background: #0f172a; border-radius: 3px; overflow: hidden; margin-top: 4px; }
         .progress-fill { height: 100%; transition: width 0.3s; }
+
+        /* Вкладки для казино */
+        .casino-tabs { display: flex; gap: 4px; overflow-x: auto; margin-bottom: 10px; padding-bottom: 4px; }
+        .casino-tab { padding: 5px 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; font-size: 0.68rem; color: #fff; cursor: pointer; white-space: nowrap; }
+        .casino-tab.active { background: var(--accent); border-color: var(--accent); }
+        .casino-game { display: none; }
+        .casino-game.active { display: block; }
+        .casino-input { width: 100%; padding: 6px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 0.75rem; margin: 4px 0 8px; }
     </style>
 </head>
 <body>
@@ -140,6 +148,10 @@
         <div class="app-icon" onclick="openApp('app-bank')">
             <div class="icon-box" style="background: linear-gradient(135deg, #eab308, #ca8a04);">🏦</div>
             <span class="app-label">Банк</span>
+        </div>
+        <div class="app-icon" onclick="openApp('app-casino')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #ef4444, #b91c1c);">🎰</div>
+            <span class="app-label">Казино</span>
         </div>
         <div class="app-icon" onclick="openApp('app-bot')">
             <div class="icon-box" style="background: linear-gradient(135deg, #a855f7, #7e22ce);">🤖</div>
@@ -190,7 +202,6 @@
             <span style="color:var(--green); font-weight:bold; font-size:0.8rem;" class="global-balance-display">1 000 ₽</span>
         </div>
         <div class="app-content">
-            <!-- Электричество -->
             <div class="item-card">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
@@ -248,6 +259,93 @@
                     <button class="btn btn-primary" style="flex:1;" onclick="payLoan()">Погасить</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- КАЗИНО (НОВОЕ ПРИЛОЖЕНИЕ) -->
+    <div class="app-window" id="app-casino">
+        <div class="app-header">
+            <span style="font-weight:bold; font-size:0.85rem;">🎰 Royal Casino</span>
+            <span style="color:var(--green); font-weight:bold; font-size:0.8rem;" class="global-balance-display">1 000 ₽</span>
+        </div>
+        <div class="app-content">
+            <div class="casino-tabs">
+                <button class="casino-tab active" onclick="switchCasinoGame('crash')">🚀 Краш</button>
+                <button class="casino-tab" onclick="switchCasinoGame('blackjack')">🃏 Блэкджек</button>
+                <button class="casino-tab" onclick="switchCasinoGame('roulette')">🎯 Рулетка</button>
+                <button class="casino-tab" onclick="switchCasinoGame('coin')">🪙 Орел/Решка</button>
+                <button class="casino-tab" onclick="switchCasinoGame('dice')">🎲 Кости</button>
+            </div>
+
+            <!-- КРАШ / РАКЕТА -->
+            <div class="casino-game active" id="game-crash">
+                <div class="item-card" style="text-align:center;">
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Ракета</div>
+                    <div id="crash-mult" style="font-size:2.2rem; font-weight:bold; color:var(--accent); margin:10px 0;">1.00x</div>
+                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
+                    <input type="number" id="crash-bet" class="casino-input" value="100">
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-success" id="crash-btn-start" style="flex:1;" onclick="startCrash()">Запустить</button>
+                        <button class="btn btn-warning" id="crash-btn-cash" style="flex:1;" onclick="cashoutCrash()" disabled>Забрать</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛЭКДЖЕК -->
+            <div class="casino-game" id="game-blackjack">
+                <div class="item-card">
+                    <div style="font-size:0.7rem; color:var(--text-muted);">Дилер: <span id="bj-dealer-hand" style="color:#fff; font-weight:bold;">-</span> (<span id="bj-dealer-score">0</span>)</div>
+                    <div style="font-size:0.7rem; color:var(--text-muted); margin-top:6px;">Вы: <span id="bj-player-hand" style="color:#fff; font-weight:bold;">-</span> (<span id="bj-player-score">0</span>)</div>
+                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:8px;">Ставка (₽):</label>
+                    <input type="number" id="bj-bet" class="casino-input" value="100">
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-primary" id="bj-btn-deal" style="flex:1;" onclick="bjDeal()">Раздать</button>
+                        <button class="btn btn-success" id="bj-btn-hit" style="flex:1;" onclick="bjHit()" disabled>+1 Карту</button>
+                        <button class="btn btn-warning" id="bj-btn-stand" style="flex:1;" onclick="bjStand()" disabled>Хватит</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- РУЛЕТКА -->
+            <div class="casino-game" id="game-roulette">
+                <div class="item-card" style="text-align:center;">
+                    <div id="roulette-wheel" style="font-size:1.8rem; font-weight:bold; margin:10px 0;">🎰</div>
+                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
+                    <input type="number" id="roulette-bet" class="casino-input" value="100">
+                    <div style="display:flex; gap:4px;">
+                        <button class="btn btn-danger" style="flex:1;" onclick="playRoulette('red')">Красное (x2)</button>
+                        <button class="btn btn-success" style="flex:1;" onclick="playRoulette('green')">Зеро (x14)</button>
+                        <button class="btn btn-primary" style="flex:1; background:#334155;" onclick="playRoulette('black')">Черное (x2)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ОРЕЛ И РЕШКА -->
+            <div class="casino-game" id="game-coin">
+                <div class="item-card" style="text-align:center;">
+                    <div id="coin-icon" style="font-size:2.5rem; margin:10px 0;">🪙</div>
+                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
+                    <input type="number" id="coin-bet" class="casino-input" value="100">
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-warning" style="flex:1;" onclick="playCoin('heads')">Орёл (x2)</button>
+                        <button class="btn btn-cyan" style="flex:1;" onclick="playCoin('tails')">Решка (x2)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- КОСТИ -->
+            <div class="casino-game" id="game-dice">
+                <div class="item-card" style="text-align:center;">
+                    <div style="display:flex; justify-content:space-around; font-size:2rem; margin:10px 0;">
+                        <div>Вы: <span id="dice-player">🎲</span></div>
+                        <div>Дилер: <span id="dice-dealer">🎲</span></div>
+                    </div>
+                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
+                    <input type="number" id="dice-bet" class="casino-input" value="100">
+                    <button class="btn btn-purple" style="width:100%;" onclick="playDice()">Бросить кости</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -331,7 +429,6 @@
     let state = JSON.parse(localStorage.getItem('p2p_game_save')) || JSON.parse(JSON.stringify(DEFAULT_STATE));
     let botInterval = null;
 
-    // ВАЛИДАЦИЯ И ЗАЩИТА ОТ NaN
     function sanitizeState() {
         if (isNaN(state.balance) || state.balance === null) state.balance = 1000;
         if (isNaN(state.electricityBill) || state.electricityBill === null) state.electricityBill = 0;
@@ -407,7 +504,6 @@
     }
 
     /* --- ТАЙМЕРЫ И ДИНАМИКА --- */
-    
     let secCounter = 0;
     setInterval(() => {
         secCounter++;
@@ -435,7 +531,6 @@
     /* --- МАЙНИНГ ФЕРМЫ --- */
     setInterval(() => {
         if (state.rigs.length === 0) return;
-
         let activePowerUsage = 0;
 
         state.rigs.forEach(rig => {
@@ -713,6 +808,205 @@
         if (state.balance < state.loan) return alert('❌ Недостаточно денег!');
         state.balance -= state.loan; state.loan = 0; updateUI();
         showPush('✅', 'Кредит погашен!');
+    }
+
+    /* --- ЛОГИКА КАЗИНО --- */
+    function switchCasinoGame(gameId) {
+        document.querySelectorAll('.casino-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.casino-game').forEach(g => g.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(`game-${gameId}`).classList.add('active');
+    }
+
+    // 1. КРАШ / РАКЕТА
+    let crashTimer = null;
+    let crashMult = 1.00;
+    let crashBet = 0;
+    let crashCrashPoint = 0;
+
+    function startCrash() {
+        const bet = parseFloat(document.getElementById('crash-bet').value);
+        if (!bet || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
+
+        state.balance -= bet;
+        crashBet = bet;
+        crashMult = 1.00;
+        crashCrashPoint = (Math.random() < 0.05) ? 1.00 : (1 + Math.random() * Math.random() * 8).toFixed(2);
+        
+        document.getElementById('crash-btn-start').disabled = true;
+        document.getElementById('crash-btn-cash').disabled = false;
+        updateUI();
+
+        crashTimer = setInterval(() => {
+            crashMult += 0.05;
+            document.getElementById('crash-mult').innerText = crashMult.toFixed(2) + 'x';
+
+            if (crashMult >= crashCrashPoint) {
+                clearInterval(crashTimer);
+                document.getElementById('crash-mult').innerText = '💥 ' + crashMult.toFixed(2) + 'x (ВЗРЫВ!)';
+                document.getElementById('crash-btn-start').disabled = false;
+                document.getElementById('crash-btn-cash').disabled = true;
+                showPush('💥', 'Ракета взорвалась!');
+            }
+        }, 150);
+    }
+
+    function cashoutCrash() {
+        clearInterval(crashTimer);
+        const win = Math.floor(crashBet * crashMult);
+        state.balance += win;
+        showPush('🚀', `Забрал ${win} ₽ (${crashMult.toFixed(2)}x)!`);
+        document.getElementById('crash-btn-start').disabled = false;
+        document.getElementById('crash-btn-cash').disabled = true;
+        updateUI();
+    }
+
+    // 2. БЛЭКДЖЕК
+    let bjDeck = [], bjPlayer = [], bjDealer = [], bjBetAmt = 0;
+
+    function bjDeal() {
+        const bet = parseFloat(document.getElementById('bj-bet').value);
+        if (!bet || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
+
+        state.balance -= bet;
+        bjBetAmt = bet;
+        bjDeck = [2,3,4,5,6,7,8,9,10,10,10,10,11, 2,3,4,5,6,7,8,9,10,10,10,10,11];
+        bjPlayer = [getCard(), getCard()];
+        bjDealer = [getCard()];
+
+        document.getElementById('bj-btn-deal').disabled = true;
+        document.getElementById('bj-btn-hit').disabled = false;
+        document.getElementById('bj-btn-stand').disabled = false;
+
+        renderBJ();
+        updateUI();
+    }
+
+    function getCard() {
+        const idx = Math.floor(Math.random() * bjDeck.length);
+        return bjDeck.splice(idx, 1)[0];
+    }
+
+    function calcScore(hand) {
+        let sum = hand.reduce((a,b) => a+b, 0);
+        if (sum > 21 && hand.includes(11)) sum -= 10;
+        return sum;
+    }
+
+    function renderBJ() {
+        document.getElementById('bj-player-hand').innerText = bjPlayer.join(', ');
+        document.getElementById('bj-player-score').innerText = calcScore(bjPlayer);
+        document.getElementById('bj-dealer-hand').innerText = bjDealer.join(', ');
+        document.getElementById('bj-dealer-score').innerText = calcScore(bjDealer);
+    }
+
+    function bjHit() {
+        bjPlayer.push(getCard());
+        renderBJ();
+        if (calcScore(bjPlayer) > 21) {
+            showPush('💥', 'Перебор! Вы проиграли.');
+            endBJ(false);
+        }
+    }
+
+    function bjStand() {
+        while (calcScore(bjDealer) < 17) bjDealer.push(getCard());
+        renderBJ();
+        const pScore = calcScore(bjPlayer);
+        const dScore = calcScore(bjDealer);
+
+        if (dScore > 21 || pScore > dScore) {
+            const win = bjBetAmt * 2;
+            state.balance += win;
+            showPush('🃏', `Победа! Выиграли ${win} ₽`);
+        } else if (pScore === dScore) {
+            state.balance += bjBetAmt;
+            showPush('🤝', 'Ничья!');
+        } else {
+            showPush('❌', 'Дилер выиграл!');
+        }
+        endBJ(true);
+    }
+
+    function endBJ() {
+        document.getElementById('bj-btn-deal').disabled = false;
+        document.getElementById('bj-btn-hit').disabled = true;
+        document.getElementById('bj-btn-stand').disabled = true;
+        updateUI();
+    }
+
+    // 3. РУЛЕТКА
+    function playRoulette(color) {
+        const bet = parseFloat(document.getElementById('roulette-bet').value);
+        if (!bet || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
+
+        state.balance -= bet;
+        const res = Math.floor(Math.random() * 15); // 0 = зеленый, 1-7 = красный, 8-14 = черный
+        let resColor = res === 0 ? 'green' : (res <= 7 ? 'red' : 'black');
+
+        const wheel = document.getElementById('roulette-wheel');
+        wheel.innerText = '🌀 Вращение...';
+
+        setTimeout(() => {
+            const colorName = resColor === 'green' ? '🟢 ЗЕРО' : (resColor === 'red' ? '🔴 КРАСНОЕ' : '⚫ ЧЕРНОЕ');
+            wheel.innerText = colorName;
+
+            if (color === resColor) {
+                const mult = resColor === 'green' ? 14 : 2;
+                const win = bet * mult;
+                state.balance += win;
+                showPush('🎯', `Выигрыш ${win} ₽!`);
+            } else {
+                showPush('❌', 'Не угадали!');
+            }
+            updateUI();
+        }, 1000);
+    }
+
+    // 4. ОРЕЛ И РЕШКА
+    function playCoin(choice) {
+        const bet = parseFloat(document.getElementById('coin-bet').value);
+        if (!bet || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
+
+        state.balance -= bet;
+        const result = Math.random() < 0.5 ? 'heads' : 'tails';
+        const icon = document.getElementById('coin-icon');
+        icon.innerText = '🌀';
+
+        setTimeout(() => {
+            icon.innerText = result === 'heads' ? '🦅' : '🪙';
+            if (choice === result) {
+                state.balance += bet * 2;
+                showPush('🪙', `Угадали! +${bet * 2} ₽`);
+            } else {
+                showPush('❌', 'Не угадали!');
+            }
+            updateUI();
+        }, 600);
+    }
+
+    // 5. КОСТИ
+    function playDice() {
+        const bet = parseFloat(document.getElementById('dice-bet').value);
+        if (!bet || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
+
+        state.balance -= bet;
+        const pDice = Math.floor(Math.random() * 6) + 1;
+        const dDice = Math.floor(Math.random() * 6) + 1;
+
+        document.getElementById('dice-player').innerText = pDice;
+        document.getElementById('dice-dealer').innerText = dDice;
+
+        if (pDice > dDice) {
+            state.balance += bet * 2;
+            showPush('🎲', `Выиграли ${bet * 2} ₽!`);
+        } else if (pDice === dDice) {
+            state.balance += bet;
+            showPush('🤝', 'Ничья!');
+        } else {
+            showPush('❌', 'Дилер победил!');
+        }
+        updateUI();
     }
 
     /* --- БОТ И ТЕМЫ --- */
