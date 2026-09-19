@@ -83,6 +83,14 @@
             padding: 45px 12px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-content: start;
             transition: background 0.3s; overflow-y: auto;
         }
+        .home-dashboard {
+            grid-column: 1 / -1; padding: 10px; border-radius: 16px;
+            background: linear-gradient(135deg, rgba(99,102,241,0.26), rgba(6,182,212,0.16));
+            border: 1px solid rgba(129,140,248,0.45); box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+        }
+        .home-dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 8px; }
+        .home-metric { min-width: 0; padding: 6px; border-radius: 9px; background: rgba(2,6,23,0.42); }
+        .home-metric b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.72rem; }
 
         .app-icon { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; background: none; border: none; padding: 0; }
         .app-icon:disabled { opacity: 0.35; cursor: not-allowed; }
@@ -272,6 +280,20 @@
 
     <!-- РАБОЧИЙ СТОЛ -->
     <div class="desktop" id="desktop">
+        <div class="home-dashboard">
+            <div class="row-between">
+                <div>
+                    <div class="title-sm">Добро пожаловать в Resell OS</div>
+                    <div class="tiny muted">Торгуй, проверяй, строй империю.</div>
+                </div>
+                <span class="badge badge-green" id="home-market-state">Рынок активен</span>
+            </div>
+            <div class="home-dashboard-grid">
+                <div class="home-metric"><span class="tiny muted">Капитал</span><b id="home-networth">0 ₽</b></div>
+                <div class="home-metric"><span class="tiny muted">Бизнес-поток</span><b id="home-business-flow" style="color:var(--green);">+0/с</b></div>
+                <div class="home-metric"><span class="tiny muted">Розыск</span><b id="home-heat" style="color:var(--green);">0%</b></div>
+            </div>
+        </div>
         <button class="app-icon" data-app="app-market" aria-label="P2P Market">
             <div class="icon-box" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">🛍️</div>
             <span class="app-label">P2P Market</span>
@@ -307,6 +329,10 @@
         <button class="app-icon" data-app="app-business" aria-label="Бизнес-центр">
             <div class="icon-box" style="background: linear-gradient(135deg, #06b6d4, #2563eb);">🏢<span class="lock-badge" hidden>🔒</span></div>
             <span class="app-label">Бизнесы</span>
+        </button>
+        <button class="app-icon" data-app="app-empire" aria-label="Империя">
+            <div class="icon-box" style="background: linear-gradient(135deg, #f59e0b, #dc2626);">👑<span class="lock-badge" hidden>🔒</span></div>
+            <span class="app-label">Империя</span>
         </button>
         <button class="app-icon" data-app="app-stats" aria-label="Статистика">
             <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">📊</div>
@@ -651,8 +677,55 @@
                     <b class="business-income" id="business-total-income">0 ₽/сек</b>
                 </div>
                 <div class="progress-bar"><div class="progress-fill" id="business-portfolio-fill" style="width:0%; background:linear-gradient(90deg,var(--cyan),var(--accent));"></div></div>
+                <div class="tiny muted" id="business-event" style="margin-top:7px;">Сеть готова к запуску.</div>
             </div>
             <div id="business-list"></div>
+        </div>
+    </div>
+
+    <!-- ИМПЕРИЯ: ФИНАНСЫ, СТАТУС, RPG И ТЕНЕВАЯ ЭКОНОМИКА -->
+    <div class="app-window" id="app-empire">
+        <div class="app-header">
+            <span class="title-sm">👑 Империя</span>
+            <span class="badge badge-yellow" id="empire-heat-label">Розыск 0%</span>
+            <span style="color:var(--green); font-weight:bold; font-size:0.8rem;" class="global-balance-display">0 ₽</span>
+        </div>
+        <div class="app-content">
+            <div class="business-hero">
+                <div class="row-between">
+                    <div><div class="title-sm">Финансовый терминал</div><div class="tiny muted">Акции, сырьё и рискованные сделки с плечом.</div></div>
+                    <span class="badge badge-green" id="finance-dividend-label">Дивиденды: 0 ₽</span>
+                </div>
+                <div id="finance-list"></div>
+                <div class="section-title">⛽ Сырьевые фьючерсы</div>
+                <div id="commodity-list"></div>
+                <div id="leverage-position"></div>
+            </div>
+            <div class="item-card">
+                <div class="row-between"><div class="title-sm">🏎️ Статус и роскошь</div><span class="tiny muted" id="luxury-summary">Активов: 0</span></div>
+                <div id="luxury-list"></div>
+                <div class="section-title">Отношения и наследие</div>
+                <div id="relationship-list"></div>
+            </div>
+            <div class="item-card">
+                <div class="row-between"><div class="title-sm">🎓 Навыки и образование</div><span class="tiny muted">Скидки и бонусы</span></div>
+                <div id="skills-list"></div>
+                <div id="education-list"></div>
+            </div>
+            <div class="item-card">
+                <div class="row-between"><div class="title-sm">⚖️ Теневая экономика</div><span class="badge badge-red" id="shadow-status">Риск под контролем</span></div>
+                <div class="tiny muted" style="margin:5px 0;">Серые схемы дают быстрый капитал, но повышают розыск. Адвокат и взятка снижают последствия.</div>
+                <div class="row">
+                    <button class="btn btn-warning btn-xs" data-scheme="vat">Серая схема +15k</button>
+                    <button class="btn btn-danger btn-xs" data-scheme="smuggle">Контрабанда +45k</button>
+                    <button class="btn btn-cyan btn-xs" data-pay-bribe>Взятка</button>
+                    <button class="btn btn-purple btn-xs" data-hire-lawyer>Адвокат</button>
+                </div>
+            </div>
+            <div class="item-card">
+                <div class="title-sm" style="margin-bottom:5px;">🏆 Цели и концовки</div>
+                <div id="empire-quests"></div>
+            </div>
         </div>
     </div>
 
@@ -873,9 +946,51 @@ const RIG_TYPES = {
 
 const BUSINESS_TYPES = [
     { id: 'coffee', name: 'Кофейня «Поток»', icon: '☕', baseCost: 15000, income: 85, reqLevel: 3, desc: 'Точка с быстрым оборотом и стабильным спросом.' },
+    { id: 'shawarma', name: 'Шаурмичная у метро', icon: '🌯', baseCost: 9000, income: 52, reqLevel: 2, desc: 'Уличный бизнес: быстрый старт, маленький чек, высокий поток.' },
+    { id: 'newsstand', name: 'Ларёк с прессой', icon: '🗞️', baseCost: 12000, income: 64, reqLevel: 2, desc: 'Простой актив для первой диверсификации.' },
+    { id: 'carwash', name: 'Автомойка 24/7', icon: '🧽', baseCost: 48000, income: 250, reqLevel: 3, desc: 'Сервисный бизнес, который усиливает авто-направление.' },
+    { id: 'barbershop', name: 'Барбершоп «Статус»', icon: '💈', baseCost: 110000, income: 540, reqLevel: 4, desc: 'Премиальная услуга с постоянными клиентами.' },
+    { id: 'pcclub', name: 'Компьютерный клуб', icon: '🖥️', baseCost: 175000, income: 820, reqLevel: 4, desc: 'Ночной поток и бонус к цифровым сделкам.' },
+    { id: 'webstudio', name: 'Веб-студия', icon: '💻', baseCost: 360000, income: 1700, reqLevel: 5, desc: 'IT-бизнес с повышенной отдачей от управляющих.' },
+    { id: 'media', name: 'Медиа-холдинг', icon: '📡', baseCost: 720000, income: 3150, reqLevel: 6, desc: 'Новости и реклама двигают весь рынок.' },
     { id: 'delivery', name: 'Курьерский парк', icon: '🛵', baseCost: 65000, income: 360, reqLevel: 4, desc: 'Мопеды работают по городу и доставляют заказы.' },
+    { id: 'factory', name: 'Завод напитков', icon: '🏭', baseCost: 2100000, income: 9800, reqLevel: 7, desc: 'Крупное производство с дорогими, но стабильными апгрейдами.' },
+    { id: 'builder', name: 'Строительная компания', icon: '🏗️', baseCost: 5800000, income: 26000, reqLevel: 8, desc: 'Большой поток денег и повышенный риск проверок.' },
     { id: 'showroom', name: 'Авто-шоурум', icon: '🚘', baseCost: 280000, income: 1450, reqLevel: 5, desc: 'Витрина для дорогих машин и быстрых сделок.' },
-    { id: 'warehouse', name: 'Склад электроники', icon: '📦', baseCost: 950000, income: 5200, reqLevel: 6, desc: 'Оптовый поток гаджетов с высоким оборотом.' }
+    { id: 'warehouse', name: 'Склад электроники', icon: '📦', baseCost: 950000, income: 5200, reqLevel: 6, desc: 'Оптовый поток гаджетов с высоким оборотом.' },
+    { id: 'oilrig', name: 'Нефтяная вышка', icon: '🛢️', baseCost: 18000000, income: 82000, reqLevel: 10, desc: 'Элитный актив с максимальным доходом и жёсткими проверками.' }
+];
+
+const STOCK_TYPES = [
+    { id: 'auto', name: 'Volga Motors', icon: '🚘', base: 240, volatility: 0.035, dividend: 0.003 },
+    { id: 'bank', name: 'Sberbank World', icon: '🏦', base: 180, volatility: 0.022, dividend: 0.004 },
+    { id: 'dev', name: 'Capital Development', icon: '🏙️', base: 320, volatility: 0.028, dividend: 0.002 }
+];
+const COMMODITY_TYPES = [
+    { id: 'oil', name: 'Нефть', icon: '🛢️', base: 92, volatility: 0.045 },
+    { id: 'gold', name: 'Золото', icon: '🥇', base: 2450, volatility: 0.018 },
+    { id: 'grain', name: 'Зерно', icon: '🌾', base: 680, volatility: 0.032 }
+];
+const LUXURY_ASSETS = [
+    { id: 'penthouse', name: 'Пентхаус в Сити', icon: '🏙️', cost: 4200000, income: 900, desc: '+статус и пассивная аренда' },
+    { id: 'villa', name: 'Вилла в Дубае', icon: '🌴', cost: 12500000, income: 2800, desc: 'дорогой актив для олигарха' },
+    { id: 'jet', name: 'Бизнес-джет', icon: '✈️', cost: 38000000, income: 7600, desc: 'быстрые сделки и престиж' },
+    { id: 'yacht', name: 'Суперяхта', icon: '🛥️', cost: 90000000, income: 18000, desc: 'финальный статусный актив' }
+];
+const PARTNERS = [
+    { id: 'analyst', name: 'Алина, аналитик', icon: '📈', cost: 25000, bonus: '−5% к комиссиям биржи' },
+    { id: 'mechanic', name: 'Марк, автомеханик', icon: '🔧', cost: 35000, bonus: '+10% к авто-сделкам' },
+    { id: 'lawyer', name: 'София, юрист', icon: '⚖️', cost: 50000, bonus: '−15 к розыску при событии' }
+];
+const SKILL_TYPES = [
+    { id: 'charisma', name: 'Харизма', icon: '🎤', desc: 'скидка на торг и роскошь' },
+    { id: 'finance', name: 'Финансовая грамотность', icon: '📚', desc: 'дешевле плечо и выше дивиденды' },
+    { id: 'intuition', name: 'Интуиция', icon: '🧠', desc: 'точнее индекс сделки и торги' }
+];
+const EDUCATION_TYPES = [
+    { id: 'trading', name: 'Курсы трейдинга', cost: 18000, bonus: '+10% к биржевой доходности' },
+    { id: 'mba', name: 'MBA в Гарварде', cost: 250000, bonus: '+15% к бизнес-потоку' },
+    { id: 'engineering', name: 'Диплом инженера', cost: 90000, bonus: '−12% к стоимости сервисов' }
 ];
 
 const CATEGORIES = {
@@ -896,6 +1011,7 @@ const UNLOCKS = {
     'app-casino': 3,
     'app-auction': 3,
     'app-business': 3,
+    'app-empire': 4,
     'app-mining': 4,
     'app-bot': 5,
     'app-stats': 1,
@@ -906,6 +1022,7 @@ const APP_NAMES = {
     'app-market': 'P2P & Авито', 'app-bank': 'Банк', 'app-crypto': 'Crypto Hub',
     'app-garage': 'Гараж/Сервис', 'app-casino': 'Казино', 'app-auction': 'Аукционы',
     'app-business': 'Бизнес-центр',
+    'app-empire': 'Империя',
     'app-mining': 'Майнинг', 'app-bot': 'Авто-Бот',
     'app-stats': 'Статистика', 'app-settings': 'Настройки'
 };
@@ -1089,6 +1206,9 @@ function defaultState() {
     }
     const demand = {};
     for (const key of Object.keys(CATEGORIES)) demand[key] = 1;
+    const stockPrices = {}, commodityPrices = {};
+    for (const asset of STOCK_TYPES) stockPrices[asset.id] = asset.base;
+    for (const asset of COMMODITY_TYPES) commodityPrices[asset.id] = asset.base;
 
     return {
         version: SAVE_VERSION,
@@ -1126,10 +1246,36 @@ function defaultState() {
         businessEarned: 0,
         businesses: {
             coffee: { owned: false, level: 0, staff: 0 },
+            shawarma: { owned: false, level: 0, staff: 0 },
+            newsstand: { owned: false, level: 0, staff: 0 },
+            carwash: { owned: false, level: 0, staff: 0 },
+            barbershop: { owned: false, level: 0, staff: 0 },
+            pcclub: { owned: false, level: 0, staff: 0 },
+            webstudio: { owned: false, level: 0, staff: 0 },
+            media: { owned: false, level: 0, staff: 0 },
             delivery: { owned: false, level: 0, staff: 0 },
+            factory: { owned: false, level: 0, staff: 0 },
+            builder: { owned: false, level: 0, staff: 0 },
             showroom: { owned: false, level: 0, staff: 0 },
-            warehouse: { owned: false, level: 0, staff: 0 }
+            warehouse: { owned: false, level: 0, staff: 0 },
+            oilrig: { owned: false, level: 0, staff: 0 }
         },
+        businessEvent: 'Сеть готова к запуску.',
+        businessEventTimer: 0,
+        heat: 0,
+        stockPrices,
+        stocks: { auto: 0, bank: 0, dev: 0 },
+        commodityPrices,
+        commodities: { oil: 0, gold: 0, grain: 0 },
+        leveragePosition: null,
+        insiderNews: null,
+        financeTimer: 0,
+        luxuryAssets: [],
+        partner: null,
+        familyLevel: 0,
+        skills: { charisma: 0, finance: 0, intuition: 0 },
+        education: { trading: false, mba: false, engineering: false },
+        questClaims: [],
         garageLevel: 0,
         mechanicHired: false,
         mechanicTimer: 0,
@@ -1216,6 +1362,30 @@ function normalizeState(s) {
     s.statsAuctionsWon = Math.max(0, num(s.statsAuctionsWon, 0));
     s.rentIncomeTotal = Math.max(0, num(s.rentIncomeTotal, 0));
     s.businessEarned = Math.max(0, num(s.businessEarned, 0));
+    s.businessEvent = typeof s.businessEvent === 'string' ? s.businessEvent : 'Сеть готова к запуску.';
+    s.businessEventTimer = Math.max(0, num(s.businessEventTimer, 0));
+    s.heat = clamp(num(s.heat, 0), 0, 100);
+    if (!s.stockPrices || typeof s.stockPrices !== 'object') s.stockPrices = {};
+    if (!s.stocks || typeof s.stocks !== 'object') s.stocks = {};
+    if (!s.commodityPrices || typeof s.commodityPrices !== 'object') s.commodityPrices = {};
+    if (!s.commodities || typeof s.commodities !== 'object') s.commodities = {};
+    STOCK_TYPES.forEach(asset => {
+        s.stockPrices[asset.id] = clamp(num(s.stockPrices[asset.id], asset.base), asset.base * 0.2, asset.base * 5);
+        s.stocks[asset.id] = Math.max(0, Math.floor(num(s.stocks[asset.id], 0)));
+    });
+    COMMODITY_TYPES.forEach(asset => {
+        s.commodityPrices[asset.id] = clamp(num(s.commodityPrices[asset.id], asset.base), asset.base * 0.2, asset.base * 5);
+        s.commodities[asset.id] = Math.max(0, Math.floor(num(s.commodities[asset.id], 0)));
+    });
+    s.financeTimer = Math.max(0, num(s.financeTimer, 0));
+    s.luxuryAssets = Array.isArray(s.luxuryAssets) ? s.luxuryAssets.filter(id => LUXURY_ASSETS.some(a => a.id === id)) : [];
+    s.partner = PARTNERS.some(p => p.id === s.partner) ? s.partner : null;
+    s.familyLevel = clamp(Math.floor(num(s.familyLevel, 0)), 0, 3);
+    s.questClaims = Array.isArray(s.questClaims) ? s.questClaims : [];
+    if (!s.skills || typeof s.skills !== 'object') s.skills = {};
+    if (!s.education || typeof s.education !== 'object') s.education = {};
+    SKILL_TYPES.forEach(skill => { s.skills[skill.id] = clamp(Math.floor(num(s.skills[skill.id], 0)), 0, 5); });
+    EDUCATION_TYPES.forEach(course => { s.education[course.id] = s.education[course.id] === true; });
     if (!s.businesses || typeof s.businesses !== 'object') s.businesses = {};
     BUSINESS_TYPES.forEach(type => {
         const b = s.businesses[type.id] && typeof s.businesses[type.id] === 'object' ? s.businesses[type.id] : {};
@@ -1427,8 +1597,22 @@ function rigsValue() {
 function netWorth() {
     return state.balance + state.deposit + cryptoValue() + rigsValue()
         + businessAssetValue()
+        + stockPortfolioValue() + commodityPortfolioValue() + luxuryAssetValue()
+        + (state.leveragePosition ? state.leveragePosition.margin : 0)
         + state.inventory.reduce((a, i) => a + i.realValue * 0.8, 0)
         - debtDue(state.loan) - debtDue(state.electricityBill);
+}
+
+function stockPortfolioValue() {
+    return STOCK_TYPES.reduce((sum, asset) => sum + (state.stocks?.[asset.id] || 0) * (state.stockPrices?.[asset.id] || asset.base), 0);
+}
+
+function commodityPortfolioValue() {
+    return COMMODITY_TYPES.reduce((sum, asset) => sum + (state.commodities?.[asset.id] || 0) * (state.commodityPrices?.[asset.id] || asset.base), 0);
+}
+
+function luxuryAssetValue() {
+    return LUXURY_ASSETS.reduce((sum, asset) => sum + (state.luxuryAssets?.includes(asset.id) ? asset.cost : 0), 0);
 }
 
 function businessAssetValue() {
@@ -1525,6 +1709,13 @@ function renderHUD() {
     const bal = fmt(state.balance);
     document.querySelectorAll('.global-balance-display').forEach(el => { el.textContent = bal; });
     $('level-chip').textContent = `Lv ${state.level}`;
+    if ($('home-networth')) $('home-networth').textContent = fmt(netWorth());
+    if ($('home-business-flow')) $('home-business-flow').textContent = `+${fmt(totalBusinessIncome())}/с`;
+    if ($('home-heat')) {
+        $('home-heat').textContent = `${Math.round(state.heat || 0)}%`;
+        $('home-heat').style.color = state.heat > 60 ? 'var(--red)' : state.heat > 25 ? 'var(--yellow)' : 'var(--green)';
+    }
+    if ($('home-market-state')) $('home-market-state').textContent = isBanned() ? 'Площадка заблокирована' : 'Рынок активен';
 
     $('trust-score-display').textContent = `⭐ ${state.trustScore.toFixed(2)}`;
     $('stat-trust').textContent = `${state.trustScore.toFixed(2)} ⭐`;
@@ -1623,6 +1814,7 @@ function renderBusinesses() {
     $('business-count').textContent = `${owned} активов`;
     $('business-total-income').textContent = `${fmtExact(total)}/сек`;
     $('business-header-income').textContent = `+${fmt(total)}/с`;
+    $('business-event').textContent = `Событие: ${state.businessEvent || 'рынок стабилен'}`;
     $('business-portfolio-fill').style.width = `${Math.min(100, Math.round((owned / BUSINESS_TYPES.length) * 100))}%`;
     list.innerHTML = '';
 
@@ -1695,12 +1887,244 @@ function hireBusinessManager(id) {
 }
 
 function businessTick() {
+    state.businessEventTimer = (state.businessEventTimer || 0) + 1;
+    if (state.businessEventTimer >= 45 && BUSINESS_TYPES.some(type => state.businesses[type.id].owned)) {
+        state.businessEventTimer = 0;
+        const active = BUSINESS_TYPES.filter(type => state.businesses[type.id].owned);
+        const type = pick(active);
+        const b = state.businesses[type.id];
+        const events = [
+            { text: `Проверка налоговой в «${type.name}»: документы в порядке.`, gain: 0, heat: 3 },
+            { text: `Вирусный ролик поднял спрос на «${type.name}».`, gain: businessIncome(type, b) * 18, heat: 0 },
+            { text: `Забастовка на объекте «${type.name}» снизила поток.`, gain: -businessIncome(type, b) * 8, heat: 0 },
+            { text: `Рейдеры попытались забрать «${type.name}», но охрана отбилась.`, gain: -businessIncome(type, b) * 5, heat: 8 }
+        ];
+        const event = pick(events);
+        state.businessEvent = event.text;
+        state.heat = clamp((state.heat || 0) + event.heat, 0, 100);
+        if (event.gain > 0) state.balance += event.gain;
+        if (event.gain < 0) state.balance = Math.max(0, state.balance + event.gain);
+        showPush(event.gain >= 0 ? '🏢' : '⚠️', `${event.text}${event.gain ? ` ${event.gain > 0 ? '+' : ''}${fmtExact(event.gain)}` : ''}`, event.gain >= 0 ? 'good' : 'bad');
+    }
     const income = totalBusinessIncome();
     if (income <= 0) return;
     state.balance = Math.min(BALANCE.maxMoney, state.balance + income);
     state.businessEarned = (state.businessEarned || 0) + income;
     state.statsEarned += income;
     if ($('app-business') && $('app-business').classList.contains('active')) renderBusinesses();
+}
+
+/* --- Империя: биржа, роскошь, RPG и теневая экономика --- */
+function financeAssetPrice(assetId) {
+    return state.stockPrices[assetId] || STOCK_TYPES.find(a => a.id === assetId)?.base || 1;
+}
+
+function renderEmpire() {
+    const finance = $('finance-list');
+    if (!finance) return;
+    const stockHtml = STOCK_TYPES.map(asset => {
+        const price = financeAssetPrice(asset.id);
+        const owned = state.stocks[asset.id] || 0;
+        return `<div class="stat-row">
+            <span>${asset.icon} ${esc(asset.name)} <span class="tiny muted">×${owned}</span></span>
+            <span><b>${fmtExact(price)}</b>
+            <button class="btn btn-success btn-xs" data-stock-buy="${asset.id}">Купить</button>
+            <button class="btn btn-danger btn-xs" data-stock-sell="${asset.id}" ${owned < 1 ? 'disabled' : ''}>Продать</button>
+            <button class="btn btn-warning btn-xs" data-insider="${asset.id}">Инсайд</button></span>
+        </div>`;
+    }).join('');
+    finance.innerHTML = `<div class="tiny muted" style="margin:6px 0;">Котировки обновляются каждые 6 секунд. Инсайд стоит 15 000 ₽ и двигает рынок.</div>${stockHtml}`;
+    $('commodity-list').innerHTML = COMMODITY_TYPES.map(asset => {
+        const price = state.commodityPrices[asset.id];
+        const owned = state.commodities[asset.id] || 0;
+        return `<div class="stat-row"><span>${asset.icon} ${asset.name} <span class="tiny muted">×${owned}</span></span><span><b>${fmtExact(price)}</b> <button class="btn btn-cyan btn-xs" data-commodity-buy="${asset.id}">Купить</button><button class="btn btn-dark btn-xs" data-commodity-sell="${asset.id}" ${owned < 1 ? 'disabled' : ''}>Продать</button></span></div>`;
+    }).join('');
+    const pos = state.leveragePosition;
+    $('leverage-position').innerHTML = pos
+        ? `<div class="item-card" style="margin-top:7px; border-color:var(--yellow);"><div class="row-between"><b>⚡ Плечо ×${pos.multiplier}: ${esc(STOCK_TYPES.find(a => a.id === pos.assetId)?.name || '')}</b><span class="badge badge-yellow">Маржа ${fmtExact(pos.margin)}</span></div><div class="tiny muted">Вход ${fmtExact(pos.entry)} · Текущая ${fmtExact(financeAssetPrice(pos.assetId))} · Ликвидация −28%</div><button class="btn btn-warning btn-xs" data-leverage-close style="margin-top:5px;">Закрыть позицию</button></div>`
+        : `<div class="tiny muted" style="margin-top:7px;">Плечо ×3: откройте позицию на любую акцию и следите за ликвидацией.</div><div class="row" style="margin-top:4px;">${STOCK_TYPES.map(a => `<button class="btn btn-purple btn-xs" data-leverage-open="${a.id}">Плечо: ${a.icon} ${a.name}</button>`).join('')}</div>`;
+    $('finance-dividend-label').textContent = `Дивиденды: ${fmt(state.lastDividend || 0)}`;
+    $('empire-heat-label').textContent = `Розыск ${Math.round(state.heat)}%`;
+    $('empire-heat-label').className = `badge ${state.heat > 60 ? 'badge-red' : state.heat > 25 ? 'badge-yellow' : 'badge-green'}`;
+
+    $('luxury-summary').textContent = `Активов: ${state.luxuryAssets.length}`;
+    $('luxury-list').innerHTML = LUXURY_ASSETS.map(asset => {
+        const owned = state.luxuryAssets.includes(asset.id);
+        return `<div class="stat-row"><span>${asset.icon} ${asset.name}<br><span class="tiny muted">${asset.desc} · +${fmtExact(asset.income)}/с</span></span><button class="btn ${owned ? 'btn-dark' : 'btn-primary'} btn-xs" data-luxury="${asset.id}" ${owned || state.balance < asset.cost ? 'disabled' : ''}>${owned ? 'Куплено' : fmt(asset.cost)}</button></div>`;
+    }).join('');
+    $('relationship-list').innerHTML = PARTNERS.map(p => {
+        const active = state.partner === p.id;
+        return `<div class="row-between" style="margin-top:4px;"><span class="tiny">${p.icon} ${p.name} <span class="muted">· ${p.bonus}</span></span><button class="btn ${active ? 'btn-success' : 'btn-dark'} btn-xs" data-partner="${p.id}" ${active || state.balance < p.cost ? 'disabled' : ''}>${active ? 'Вместе' : `Познакомиться ${fmt(p.cost)}`}</button></div>`;
+    }).join('');
+    $('skills-list').innerHTML = SKILL_TYPES.map(skill => {
+        const level = state.skills[skill.id];
+        const cost = 12000 * (level + 1);
+        return `<div class="stat-row"><span>${skill.icon} ${skill.name} <span class="tiny muted">ур. ${level}/5 · ${skill.desc}</span></span><button class="btn btn-cyan btn-xs" data-skill="${skill.id}" ${level >= 5 || state.balance < cost ? 'disabled' : ''}>${level >= 5 ? 'MAX' : `+1 · ${fmt(cost)}`}</button></div>`;
+    }).join('');
+    $('education-list').innerHTML = EDUCATION_TYPES.map(course => `<div class="row-between" style="margin-top:4px;"><span class="tiny">🎓 ${course.name} <span class="muted">${course.bonus}</span></span><button class="btn ${state.education[course.id] ? 'btn-success' : 'btn-dark'} btn-xs" data-education="${course.id}" ${state.education[course.id] || state.balance < course.cost ? 'disabled' : ''}>${state.education[course.id] ? 'Пройдено' : fmt(course.cost)}</button></div>`).join('');
+    const heat = Math.round(state.heat);
+    $('shadow-status').textContent = heat > 60 ? 'Вас ищут' : heat > 25 ? 'Есть интерес' : 'Риск под контролем';
+    $('shadow-status').className = `badge ${heat > 60 ? 'badge-red' : heat > 25 ? 'badge-yellow' : 'badge-green'}`;
+    const questRows = [
+        { id: 'million', name: 'Первый миллион', ok: netWorth() >= 1000000, progress: `${fmt(netWorth())} / 1M` },
+        { id: 'business', name: 'Владелец империи', ok: BUSINESS_TYPES.filter(t => state.businesses[t.id].owned).length >= 5, progress: `${BUSINESS_TYPES.filter(t => state.businesses[t.id].owned).length} / 5 бизнесов` },
+        { id: 'crypto', name: 'Криптобарон', ok: (state.crypto.btc?.balance || 0) > 0, progress: `${fmtCoin('btc', state.crypto.btc?.balance || 0)} BTC` },
+        { id: 'luxury', name: 'Олигарх', ok: state.luxuryAssets.length >= 3, progress: `${state.luxuryAssets.length} / 3 активов` }
+    ];
+    $('empire-quests').innerHTML = questRows.map(q => `<div class="stat-row"><span>${q.ok ? '✅' : '⬜'} ${q.name}<br><span class="tiny muted">${q.progress}</span></span><button class="btn btn-success btn-xs" data-quest="${q.id}" ${!q.ok || state.questClaims.includes(q.id) ? 'disabled' : ''}>${state.questClaims.includes(q.id) ? 'Получено' : '+25k'}</button></div>`).join('');
+}
+
+function buyStock(id, sell = false) {
+    const price = financeAssetPrice(id);
+    if (sell) {
+        if ((state.stocks[id] || 0) < 1) return;
+        state.stocks[id]--;
+        state.balance += price;
+    } else {
+        if (state.balance < price) return warn(`Нужно ${fmtExact(price)} на акцию.`);
+        state.balance -= price; state.stocks[id] = (state.stocks[id] || 0) + 1;
+    }
+    renderEmpire(); refresh(true);
+}
+
+function buyCommodity(id, sell = false) {
+    const price = state.commodityPrices[id];
+    if (sell) {
+        if ((state.commodities[id] || 0) < 1) return;
+        state.commodities[id]--; state.balance += price;
+    } else {
+        if (state.balance < price) return warn(`Нужно ${fmtExact(price)} на фьючерс.`);
+        state.balance -= price; state.commodities[id] = (state.commodities[id] || 0) + 1;
+    }
+    renderEmpire(); refresh(true);
+}
+
+function openLeverage(id) {
+    if (state.leveragePosition) return warn('Сначала закройте текущую позицию с плечом.');
+    const margin = Math.max(1000, Math.floor(state.balance * 0.08));
+    if (state.balance < margin) return warn('Нужна маржа для открытия позиции.');
+    state.balance -= margin;
+    state.leveragePosition = { assetId: id, entry: financeAssetPrice(id), margin, multiplier: 3, units: Math.max(1, Math.floor(margin / financeAssetPrice(id))) };
+    showPush('⚡', 'Позиция с плечом открыта. Следите за ликвидацией!', 'good');
+    renderEmpire(); refresh(true);
+}
+
+function closeLeverage() {
+    const pos = state.leveragePosition;
+    if (!pos) return;
+    const pnl = (financeAssetPrice(pos.assetId) - pos.entry) * pos.units * pos.multiplier;
+    const payout = Math.max(0, pos.margin + pnl);
+    state.balance += payout;
+    state.leveragePosition = null;
+    showPush(pnl >= 0 ? '📈' : '📉', `Позиция закрыта: ${pnl >= 0 ? '+' : ''}${fmtExact(pnl)}`, pnl >= 0 ? 'good' : 'bad');
+    renderEmpire(); refresh(true);
+}
+
+function buyInsider(id) {
+    const cost = 15000;
+    if (state.balance < cost) return warn(`Информатор просит ${fmtExact(cost)}.`);
+    state.balance -= cost;
+    state.stockPrices[id] = Math.min(STOCK_TYPES.find(a => a.id === id).base * 5, state.stockPrices[id] * 1.4);
+    state.insiderNews = `Инсайд сработал: ${STOCK_TYPES.find(a => a.id === id).name} выросла на 40%.`;
+    showPush('🕵️', state.insiderNews, 'good');
+    renderEmpire(); refresh(true);
+}
+
+function buyLuxury(id) {
+    const asset = LUXURY_ASSETS.find(a => a.id === id);
+    if (!asset || state.luxuryAssets.includes(id)) return;
+    if (state.balance < asset.cost) return warn(`Нужно ${fmtExact(asset.cost)}.`);
+    state.balance -= asset.cost; state.luxuryAssets.push(id);
+    addXP(40); showPush('💎', `${asset.name} добавлен в коллекцию.`, 'good');
+    renderEmpire(); refresh(true);
+}
+
+function choosePartner(id) {
+    const partner = PARTNERS.find(p => p.id === id);
+    if (!partner || state.partner) return;
+    if (state.balance < partner.cost) return warn(`Нужно ${fmtExact(partner.cost)}.`);
+    state.balance -= partner.cost; state.partner = id; showPush('💍', `Вы начали отношения: ${partner.name}.`, 'good');
+    renderEmpire(); refresh(true);
+}
+
+function upgradeSkill(id) {
+    const skill = SKILL_TYPES.find(s => s.id === id);
+    const level = state.skills[id] || 0; const cost = 12000 * (level + 1);
+    if (!skill || level >= 5) return;
+    if (state.balance < cost) return warn(`Нужно ${fmtExact(cost)}.`);
+    state.balance -= cost; state.skills[id] = level + 1; showPush('🎓', `${skill.name} повышен до уровня ${level + 1}.`, 'good');
+    renderEmpire(); refresh(true);
+}
+
+function buyEducation(id) {
+    const course = EDUCATION_TYPES.find(c => c.id === id);
+    if (!course || state.education[id]) return;
+    if (state.balance < course.cost) return warn(`Нужно ${fmtExact(course.cost)}.`);
+    state.balance -= course.cost; state.education[id] = true; showPush('🎓', `${course.name} завершено.`, 'good');
+    renderEmpire(); refresh(true);
+}
+
+function runScheme(kind) {
+    const gain = kind === 'smuggle' ? 45000 : 15000;
+    const cost = kind === 'smuggle' ? 12000 : 4000;
+    if (state.balance < cost) return warn(`Нужен оборот ${fmtExact(cost)}.`);
+    state.balance -= cost;
+    const chance = clamp(0.62 + (state.skills.charisma || 0) * 0.05 - state.heat * 0.003, 0.2, 0.9);
+    if (Math.random() < chance) {
+        state.balance += gain; state.heat = clamp(state.heat + (kind === 'smuggle' ? 18 : 8), 0, 100);
+        showPush('💼', `Схема сработала: чистыми +${fmtExact(gain - cost)}.`, 'good');
+    } else {
+        state.heat = clamp(state.heat + 25, 0, 100); changeTrust(-0.12);
+        showPush('🚨', 'Схема раскрыта. Потеряны расходы, розыск вырос.', 'bad');
+    }
+    renderEmpire(); refresh(true);
+}
+
+function payBribe() {
+    const cost = 5000 + Math.floor(state.heat * 250);
+    if (state.heat <= 0) return good('Розыск уже на нуле.');
+    if (state.balance < cost) return warn(`Нужно ${fmtExact(cost)} на взятку.`);
+    state.balance -= cost; state.heat = Math.max(0, state.heat - 25); showPush('💵', 'Инспектор получил конверт. Розыск снизился.', 'good');
+    renderEmpire(); refresh(true);
+}
+
+function hireLawyer() {
+    const cost = 25000;
+    if (state.balance < cost) return warn(`Нужно ${fmtExact(cost)} на адвоката.`);
+    state.balance -= cost; state.heat = Math.max(0, state.heat - 40); showPush('⚖️', 'Адвокат снял часть претензий.', 'good');
+    renderEmpire(); refresh(true);
+}
+
+function claimQuest(id) {
+    if (state.questClaims.includes(id)) return;
+    const checks = { million: netWorth() >= 1000000, business: BUSINESS_TYPES.filter(t => state.businesses[t.id].owned).length >= 5, crypto: (state.crypto.btc?.balance || 0) > 0, luxury: state.luxuryAssets.length >= 3 };
+    if (!checks[id]) return;
+    state.questClaims.push(id); state.balance += 25000; addXP(50); showPush('🏆', 'Награда за цель: +25 000 ₽.', 'good');
+    renderEmpire(); refresh(true);
+}
+
+function financeTick() {
+    state.financeTimer = (state.financeTimer || 0) + 1;
+    if (state.financeTimer % 6 !== 0) return;
+    STOCK_TYPES.forEach(asset => {
+        const newsBoost = state.insiderNews && state.insiderNews.id === asset.id ? 1.01 : 1;
+        state.stockPrices[asset.id] = clamp(state.stockPrices[asset.id] * (1 + randn() * asset.volatility) * newsBoost, asset.base * 0.2, asset.base * 5);
+    });
+    COMMODITY_TYPES.forEach(asset => {
+        state.commodityPrices[asset.id] = clamp(state.commodityPrices[asset.id] * (1 + randn() * asset.volatility), asset.base * 0.2, asset.base * 5);
+    });
+    if (state.leveragePosition) {
+        const pos = state.leveragePosition;
+        if (financeAssetPrice(pos.assetId) <= pos.entry * 0.72) {
+            state.leveragePosition = null; state.heat = clamp(state.heat + 8, 0, 100);
+            showPush('💥', 'Ликвидация! Позиция с плечом закрыта в минус.', 'bad');
+        }
+    }
+    if (state.financeTimer % 30 === 0) {
+        const dividend = STOCK_TYPES.reduce((sum, asset) => sum + (state.stocks[asset.id] || 0) * state.stockPrices[asset.id] * asset.dividend, 0);
+        if (dividend > 0) { state.balance += dividend; state.lastDividend = dividend; state.statsEarned += dividend; }
+    }
+    if ($('app-empire') && $('app-empire').classList.contains('active')) renderEmpire();
 }
 
 /* --- Рабочий стол и навигация --- */
@@ -4471,6 +4895,7 @@ function rebuildAll() {
     renderGarage();
     renderAuction();
     renderBusinesses();
+    renderEmpire();
     renderNews();
     resetCasinoUI();
     syncBotUI();
@@ -4559,8 +4984,8 @@ $('disputes-list').addEventListener('click', e => {
 $('chat-close-btn').addEventListener('click', closeChat);
 if ($('haggling-options')) {
     $('haggling-options').addEventListener('click', e => {
-        const btn = e.target.closest('button[data-action]');
-        if (btn && !btn.disabled) haggleAction(btn.dataset.action);
+        const btn = e.target.closest('button[data-haggle]');
+        if (btn && !btn.disabled) haggleAction(btn.dataset.haggle);
     });
 }
 $('haggle-buy-btn').addEventListener('click', () => haggleAction('buy'));
@@ -4599,6 +5024,40 @@ if (businessWin) {
         if (upgrade) return upgradeBusiness(upgrade.dataset.businessUpgrade);
         const staff = e.target.closest('button[data-business-staff]');
         if (staff) return hireBusinessManager(staff.dataset.businessStaff);
+    });
+}
+
+/* Империя */
+const empireWin = $('app-empire');
+if (empireWin) {
+    empireWin.addEventListener('click', e => {
+        const stockBuy = e.target.closest('button[data-stock-buy]');
+        if (stockBuy) return buyStock(stockBuy.dataset.stockBuy, false);
+        const stockSell = e.target.closest('button[data-stock-sell]');
+        if (stockSell) return buyStock(stockSell.dataset.stockSell, true);
+        const commodityBuy = e.target.closest('button[data-commodity-buy]');
+        if (commodityBuy) return buyCommodity(commodityBuy.dataset.commodityBuy, false);
+        const commoditySell = e.target.closest('button[data-commodity-sell]');
+        if (commoditySell) return buyCommodity(commoditySell.dataset.commoditySell, true);
+        const insider = e.target.closest('button[data-insider]');
+        if (insider) return buyInsider(insider.dataset.insider);
+        const leverageOpen = e.target.closest('button[data-leverage-open]');
+        if (leverageOpen) return openLeverage(leverageOpen.dataset.leverageOpen);
+        if (e.target.closest('button[data-leverage-close]')) return closeLeverage();
+        const luxury = e.target.closest('button[data-luxury]');
+        if (luxury) return buyLuxury(luxury.dataset.luxury);
+        const partner = e.target.closest('button[data-partner]');
+        if (partner) return choosePartner(partner.dataset.partner);
+        const skill = e.target.closest('button[data-skill]');
+        if (skill) return upgradeSkill(skill.dataset.skill);
+        const education = e.target.closest('button[data-education]');
+        if (education) return buyEducation(education.dataset.education);
+        const scheme = e.target.closest('button[data-scheme]');
+        if (scheme) return runScheme(scheme.dataset.scheme);
+        if (e.target.closest('button[data-pay-bribe]')) return payBribe();
+        if (e.target.closest('button[data-hire-lawyer]')) return hireLawyer();
+        const quest = e.target.closest('button[data-quest]');
+        if (quest) return claimQuest(quest.dataset.quest);
     });
 }
 
@@ -4718,6 +5177,7 @@ setInterval(() => {
 
 setInterval(tickPrices, BALANCE.crypto.tickMs);
 setInterval(() => { miningTick(1); updateRigs(); }, BALANCE.mining.tickMs);
+setInterval(financeTick, 1000);
 setInterval(flushSave, 5000);
 setInterval(updateClock, 10000);
 
