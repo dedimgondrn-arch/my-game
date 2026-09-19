@@ -331,6 +331,24 @@
     let state = JSON.parse(localStorage.getItem('p2p_game_save')) || JSON.parse(JSON.stringify(DEFAULT_STATE));
     let botInterval = null;
 
+    // ВАЛИДАЦИЯ И ЗАЩИТА ОТ NaN
+    function sanitizeState() {
+        if (isNaN(state.balance) || state.balance === null) state.balance = 1000;
+        if (isNaN(state.electricityBill) || state.electricityBill === null) state.electricityBill = 0;
+        if (isNaN(state.deposit) || state.deposit === null) state.deposit = 0;
+        if (isNaN(state.loan) || state.loan === null) state.loan = 0;
+        if (isNaN(state.trustScore) || state.trustScore === null) state.trustScore = 5.0;
+        if (!Array.isArray(state.rigs)) state.rigs = [];
+
+        state.rigs.forEach(rig => {
+            if (isNaN(rig.powerCost) || !rig.powerCost) rig.powerCost = rig.type === 'asic' ? 20 : 5;
+            if (isNaN(rig.temp)) rig.temp = 45;
+            if (isNaN(rig.durability)) rig.durability = 100;
+            if (isNaN(rig.income)) rig.income = rig.type === 'asic' ? 0.01 : 0.02;
+        });
+    }
+    sanitizeState();
+
     const itemTemplates = [
         { title: 'Brawl Stars | 12k кубков', category: 'BS', min: 200, max: 300, real: 450, risk: 0.25, vip: false },
         { title: 'Ключ Minecraft Java', category: 'Ключи', min: 350, max: 480, real: 650, risk: 0.05, vip: false },
@@ -365,6 +383,8 @@
     }
 
     function updateUI() {
+        sanitizeState();
+
         document.querySelectorAll('.global-balance-display').forEach(el => {
             el.innerText = Math.floor(state.balance).toLocaleString() + ' ₽';
         });
@@ -388,7 +408,6 @@
 
     /* --- ТАЙМЕРЫ И ДИНАМИКА --- */
     
-    // Начисление процентов депозита и увеличение кредитного долга
     let secCounter = 0;
     setInterval(() => {
         secCounter++;
@@ -396,19 +415,18 @@
             state.deposit += state.deposit * 0.01;
         }
         if (state.loan > 0 && secCounter % 10 === 0) {
-            state.loan += state.loan * 0.01; // +1% к долгу каждые 10с
+            state.loan += state.loan * 0.01;
         }
         updateUI();
     }, 1000);
 
-    // Курсы криптовалют каждые 5 сек
     setInterval(() => {
         for (let key in state.crypto) {
             let coin = state.crypto[key];
             coin.rate += 2;
             if (coin.rate > 1000) {
                 coin.rate = coin.baseRate;
-                showPush('📉', `Курс ${coin.name} превысил 1000 ₽ и сбросился!`);
+                showPush('📉', `Курс ${coin.name} сбросился!`);
             }
         }
         updateUI();
@@ -421,23 +439,22 @@
         let activePowerUsage = 0;
 
         state.rigs.forEach(rig => {
-            if (rig.durability <= 0) return; // Сломанное оборудование не работает
+            if (rig.durability <= 0) return;
 
-            activePowerUsage += rig.powerCost;
+            const cost = Number(rig.powerCost) || (rig.type === 'asic' ? 20 : 5);
+            activePowerUsage += cost;
 
-            // Нагрев и износ
             rig.temp = Math.min(100, rig.temp + (Math.random() * 1.5));
             let wear = rig.temp > 85 ? 2.5 : 0.8; 
             rig.durability = Math.max(0, rig.durability - wear);
 
-            // Начисление дохода только если прочность > 0
             if (rig.durability > 0) {
-                if (rig.type === 'gpu') state.crypto.eth.balance += rig.income;
-                if (rig.type === 'asic') state.crypto.btc.balance += rig.income;
+                if (rig.type === 'gpu') state.crypto.eth.balance += (rig.income || 0.02);
+                if (rig.type === 'asic') state.crypto.btc.balance += (rig.income || 0.01);
             }
         });
 
-        state.electricityBill += activePowerUsage;
+        state.electricityBill = (state.electricityBill || 0) + activePowerUsage;
         updateUI();
     }, 3000);
 
@@ -470,10 +487,13 @@
     }
 
     function payElectricity() {
+        sanitizeState();
         if (state.electricityBill <= 0) return alert('✅ У вас нет задолженности!');
         if (state.balance < state.electricityBill) return alert('❌ Недостаточно средств!');
+        
         state.balance -= state.electricityBill;
         state.electricityBill = 0;
+        
         showPush('⚡', 'Счёт за свет оплачен!');
         updateUI();
     }
@@ -505,7 +525,7 @@
                     <div class="progress-fill" style="width:${rig.durability}%; background:${rig.durability < 30 ? 'var(--red)' : 'var(--cyan)'};"></div>
                 </div>
                 <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:0.65rem; color:var(--text-muted);">Чистка/Ремонт: ~${Math.max(0, serviceCost)} ₽</span>
+                    <span style="font-size:0.65rem; color:var(--text-muted);">Обслуживание: ~${Math.max(0, serviceCost)} ₽</span>
                     <button class="btn btn-cyan" onclick="serviceRig(${idx})">Обслужить</button>
                 </div>
             `;
@@ -585,7 +605,6 @@
         else alert('✅ ЧЕКЕР: Лот чистый!');
     }
 
-    /* --- ФИКС БАГА С ТОРГОМ В ЧАТЕ --- */
     function openChat(title, price, realValue, risk) {
         state.activeHaggle = { title, price, currentPrice: price, realValue, risk, minPrice: Math.floor(price * 0.75) };
         document.getElementById('chat-title').innerText = `Торг: ${title}`;
@@ -606,7 +625,7 @@
             } else {
                 history.innerHTML += `<div class="msg msg-me">Скинешь до ${proposedPrice} ₽?</div>`;
                 if (Math.random() > 0.35) {
-                    h.currentPrice = proposedPrice; // Фикс: сохраняем новую сбитую цену
+                    h.currentPrice = proposedPrice;
                     history.innerHTML += `<div class="msg msg-them">По рукам! Забирай за ${proposedPrice} ₽.</div>`;
                 } else {
                     history.innerHTML += `<div class="msg msg-them">Не, это слишком дешево.</div>`;
