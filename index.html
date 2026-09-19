@@ -1,15 +1,15 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P2P RESELLER: ULTIMATE EDITION</title>
+    <title>Phone OS: P2P Ecosystem</title>
     <style>
         :root {
             --bg-color: #0b0f19;
             --card-bg: #1e293b;
             --accent: #6366f1;
-            --accent-hover: #4f46e5;
             --green: #22c55e;
             --red: #ef4444;
             --yellow: #eab308;
@@ -19,123 +19,142 @@
             --border: #334155;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #020617; color: var(--text); display: flex; justify-content: center; min-height: 100vh; padding: 10px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: #0f172a; color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
 
-        .app {
-            width: 100%; max-width: 480px; background: var(--bg-color);
-            border: 1px solid var(--border); border-radius: 16px;
-            display: flex; flex-direction: column; height: 95vh; overflow: hidden; position: relative;
+        /* Корпус смартфона */
+        .phone {
+            width: 380px; height: 750px; background: #000;
+            border: 12px solid #1e293b; border-radius: 40px;
+            display: flex; flex-direction: column; overflow: hidden; position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
         }
 
-        .header {
-            background: var(--card-bg); padding: 10px 15px; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
+        .notch { width: 140px; height: 25px; background: #1e293b; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-radius: 0 0 15px 15px; z-index: 100; }
+        
+        .status-bar { height: 35px; background: #000; padding: 10px 20px 0; display: flex; justify-content: space-between; font-size: 0.75rem; color: #fff; z-index: 90; }
+
+        /* Рабочий стол OS */
+        .desktop {
+            flex: 1; background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+            padding: 50px 20px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-content: start;
         }
-        .user-info { display: flex; align-items: center; gap: 8px; }
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; }
-        .balance { font-size: 1rem; font-weight: bold; color: var(--green); text-align: right; }
 
-        .nav { display: flex; background: var(--card-bg); border-bottom: 1px solid var(--border); overflow-x: auto; }
-        .nav-btn { flex: 1; padding: 10px 6px; background: none; border: none; color: var(--text-muted); font-weight: bold; cursor: pointer; border-bottom: 2px solid transparent; font-size: 0.75rem; white-space: nowrap; }
-        .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .app-icon {
+            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+        }
+        .icon-box {
+            width: 65px; height: 65px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); transition: transform 0.2s;
+        }
+        .app-icon:active .icon-box { transform: scale(0.9); }
+        .app-label { font-size: 0.75rem; color: #fff; text-align: center; }
 
-        .content { flex: 1; padding: 12px; overflow-y: auto; }
-        .section { display: none; }
-        .section.active { display: block; }
+        /* Окна приложений */
+        .app-window {
+            position: absolute; top: 35px; left: 0; width: 100%; height: calc(100% - 35px);
+            background: var(--bg-color); display: none; flex-direction: column; z-index: 80;
+        }
+        .app-window.active { display: flex; }
 
-        .item-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px; }
-        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .item-title { font-weight: bold; font-size: 0.85rem; }
-        .item-badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: #334155; color: #cbd5e1; }
-        .item-price { font-size: 0.95rem; font-weight: bold; }
+        .app-header { background: var(--card-bg); padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .app-content { flex: 1; padding: 12px; overflow-y: auto; }
 
-        .btn { padding: 6px 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.75rem; transition: 0.2s; }
+        /* Элементы приложений */
+        .item-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 10px; }
+        .btn { padding: 6px 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.75rem; }
         .btn-primary { background: var(--accent); color: white; }
+        .btn-warning { background: var(--yellow); color: black; }
         .btn-success { background: var(--green); color: white; }
-        .btn-warning { background: var(--yellow); color: #000; }
-        .btn-purple { background: var(--purple); color: white; }
         .btn-danger { background: var(--red); color: white; }
 
-        /* Конструктор карточки товара */
-        .card-preview {
-            background: linear-gradient(135deg, #1e1b4b, #311042);
-            border: 2px solid var(--accent); border-radius: 10px; padding: 12px;
-            color: white; margin-bottom: 10px; position: relative; overflow: hidden;
-        }
-        .card-preview .seller-tag { position: absolute; top: 8px; right: 8px; background: var(--accent); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .platform-badges { display: flex; gap: 4px; margin-top: 6px; }
-        .platform-badge { font-size: 0.6rem; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; }
+        /* Навигация смарта */
+        .home-bar { height: 25px; background: #000; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 90; }
+        .home-indicator { width: 120px; height: 4px; background: #fff; border-radius: 2px; opacity: 0.6; }
 
-        .log-item { font-size: 0.75rem; padding: 6px 8px; background: var(--card-bg); border-left: 3px solid var(--accent); margin-bottom: 6px; border-radius: 0 6px 6px 0; }
+        /* Чат торга */
+        .chat-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; padding: 15px; z-index: 120; }
+        .chat-modal.active { display: flex; }
+        .chat-box { background: var(--card-bg); border-radius: 12px; padding: 12px; flex: 1; display: flex; flex-direction: column; }
+        .chat-history { flex: 1; background: #0f172a; border-radius: 8px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        .msg { padding: 8px; border-radius: 6px; font-size: 0.8rem; max-width: 85%; }
+        .msg-them { background: #334155; align-self: flex-start; }
+        .msg-me { background: var(--accent); align-self: flex-end; }
     </style>
 </head>
 <body>
 
-<div class="app">
-    <div class="header">
-        <div class="user-info">
-            <div class="avatar">SS</div>
-            <div>
-                <div style="font-weight: bold; font-size: 0.85rem;">SSSTY1</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted);" id="user-stats">⭐ 5.0 | Уровень 1</div>
-            </div>
+<div class="phone">
+    <div class="notch"></div>
+    <div class="status-bar">
+        <span>09:41</span>
+        <span>5G 🔋 100%</span>
+    </div>
+
+    <!-- РАБОЧИЙ СТОЛ СМАРТФОНА -->
+    <div class="desktop">
+        <div class="app-icon" onclick="openApp('app-resell')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">🛍️</div>
+            <span class="app-label">P2P Resell</span>
         </div>
-        <div>
-            <div class="balance" id="balance">1 000 ₽</div>
-            <div style="font-size:0.7rem; color:var(--text-muted); text-align:right;" id="crypto-balance">0 USDT</div>
+        <div class="app-icon" onclick="openApp('app-crypto')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #22c55e, #15803d);">💎</div>
+            <span class="app-label">Crypto Ex</span>
         </div>
     </div>
 
-    <div class="nav">
-        <button class="nav-btn active" onclick="switchTab('market', event)">🛒 Рынок</button>
-        <button class="nav-btn" onclick="switchTab('inventory', event)">🎒 Инвентарь</button>
-        <button class="nav-btn" onclick="switchTab('crypto', event)">💎 P2P Биржа</button>
-        <button class="nav-btn" onclick="switchTab('bot', event)">🤖 Авто-Бот</button>
-    </div>
-
-    <div class="content">
-        <!-- Вкладка: Рынок -->
-        <div id="market" class="section active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-size: 0.8rem; color: var(--text-muted);">Лента лотов:</span>
-                <button class="btn btn-primary" onclick="generateMarketItem()">Обновить</button>
+    <!-- ПРИЛОЖЕНИЕ 1: P2P RESELL -->
+    <div class="app-window" id="app-resell">
+        <div class="app-header">
+            <span style="font-weight:bold;">P2P Market</span>
+            <span style="color:var(--green); font-weight:bold;" id="balance-resell">1 000 ₽</span>
+        </div>
+        <div class="app-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span style="font-size:0.8rem; color:var(--text-muted);">Лента лотов:</span>
+                <button class="btn btn-primary" onclick="generateMarket()">Обновить</button>
             </div>
             <div id="market-list"></div>
-        </div>
-
-        <!-- Вкладка: Инвентарь -->
-        <div id="inventory" class="section">
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Купленные товары:</div>
+            
+            <hr style="border-color:var(--border); margin:15px 0;">
+            <div style="font-weight:bold; margin-bottom:10px;">🎒 Мои Лоты (Инвентарь)</div>
             <div id="inventory-list"></div>
         </div>
+    </div>
 
-        <!-- Вкладка: P2P Криптобиржа -->
-        <div id="crypto" class="section">
+    <!-- ПРИЛОЖЕНИЕ 2: CRYPTO EXCHANGE -->
+    <div class="app-window" id="app-crypto">
+        <div class="app-header">
+            <span style="font-weight:bold;">P2P Криптобиржа</span>
+            <span style="color:var(--yellow);" id="usdt-balance">0 USDT</span>
+        </div>
+        <div class="app-content">
             <div class="item-card">
-                <div style="font-weight:bold; font-size:0.9rem;">Курс USDT / RUB</div>
-                <div style="font-size:1.2rem; color:var(--green); font-weight:bold;" id="usdt-rate">92.50 ₽</div>
-                <div style="font-size:0.75rem; color:var(--text-muted);">Обновление курса каждые 5 секунд</div>
-                
-                <div style="display:flex; gap:6px; margin-top:10px;">
-                    <button class="btn btn-success" style="flex:1;" onclick="tradeCrypto('buy')">Купить 10 USDT</button>
-                    <button class="btn btn-danger" style="flex:1;" onclick="tradeCrypto('sell')">Продать 10 USDT</button>
-                </div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">Курс USDT/RUB:</div>
+                <div style="font-size:1.5rem; font-weight:bold; color:var(--green);" id="usdt-rate">92.50 ₽</div>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-success" style="flex:1;" onclick="tradeCrypto('buy')">Купить 10 USDT</button>
+                <button class="btn btn-danger" style="flex:1;" onclick="tradeCrypto('sell')">Продать 10 USDT</button>
             </div>
         </div>
+    </div>
 
-        <!-- Вкладка: Авто-Бот -->
-        <div id="bot" class="section">
-            <div class="item-card">
-                <div style="font-weight:bold;">Скрипт Авто-Выкупа</div>
-                <div style="font-size:0.75rem; color:var(--text-muted);">Автоматически скупает лоты со скидкой 30%+ от рынка.</div>
-                <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <span>Статус: <b id="bot-status" style="color:var(--red);">Выключен</b></span>
-                    <button class="btn btn-purple" id="bot-toggle-btn" onclick="toggleBot()">Включить (500 ₽/мин)</button>
-                </div>
+    <!-- ЧАТ ТОРГА (Модальное окно) -->
+    <div class="chat-modal" id="chat-modal">
+        <div class="chat-box">
+            <div style="font-weight:bold; margin-bottom:8px;" id="chat-title">Чат с продавцом</div>
+            <div class="chat-history" id="chat-history"></div>
+            <div style="display:flex; gap:6px;">
+                <button class="btn btn-warning" style="flex:1;" onclick="haggle('discount')">Сбить 15%</button>
+                <button class="btn btn-success" style="flex:1;" onclick="haggle('buy')">Забрать</button>
+                <button class="btn btn-danger" onclick="closeChat()">X</button>
             </div>
-            <div id="log-list" style="margin-top:10px;"></div>
         </div>
+    </div>
+
+    <div class="home-bar" onclick="closeApps()">
+        <div class="home-indicator"></div>
     </div>
 </div>
 
@@ -144,192 +163,136 @@
         balance: 1000,
         usdt: 0,
         usdtRate: 92.50,
-        rating: 5.0,
-        reviews: 0,
         inventory: [],
-        botActive: false,
-        botInterval: null
+        activeHaggle: null
     };
 
     const itemTemplates = [
         { title: 'Brawl Stars | 28k кубков', category: 'Brawl Stars', min: 300, max: 600, real: 900 },
-        { title: 'Ключ Minecraft Java+Bedrock', category: 'Ключи Игр', min: 200, max: 400, real: 650 },
-        { title: 'Steam | CS2 Prime (1k hrs)', category: 'Steam', min: 800, max: 1300, real: 2100 },
-        { title: 'PSN Turkey | FC 24 + GTA V', category: 'PSN Турция', min: 1000, max: 1700, real: 2700 }
+        { title: 'Ключ Minecraft Java', category: 'Ключи', min: 200, max: 400, real: 650 },
+        { title: 'PSN Turkey | FC 24', category: 'PSN', min: 1000, max: 1700, real: 2700 }
     ];
 
-    function switchTab(tabId, e) {
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-        e.target.classList.add('active');
-        document.getElementById(tabId).classList.add('active');
+    function openApp(id) {
+        document.querySelectorAll('.app-window').forEach(app => app.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
     }
 
-    function addLog(msg) {
-        const logList = document.getElementById('log-list');
-        const log = document.createElement('div');
-        log.className = 'log-item';
-        log.innerText = msg;
-        logList.prepend(log);
+    function closeApps() {
+        document.querySelectorAll('.app-window').forEach(app => app.classList.remove('active'));
     }
 
     function updateUI() {
-        document.getElementById('balance').innerText = state.balance.toLocaleString() + ' ₽';
-        document.getElementById('crypto-balance').innerText = state.usdt.toFixed(1) + ' USDT';
-        document.getElementById('user-stats').innerText = `⭐ ${state.rating.toFixed(1)} | SSSTY1`;
+        document.getElementById('balance-resell').innerText = state.balance.toLocaleString() + ' ₽';
+        document.getElementById('usdt-balance').innerText = state.usdt.toFixed(1) + ' USDT';
         renderInventory();
     }
 
-    /* --- РЫНОК --- */
-    function generateMarketItem() {
-        const marketList = document.getElementById('market-list');
-        marketList.innerHTML = '';
-
+    /* --- РЫНОК И ТОРГ --- */
+    function generateMarket() {
+        const list = document.getElementById('market-list');
+        list.innerHTML = '';
         for (let i = 0; i < 3; i++) {
-            const template = itemTemplates[Math.floor(Math.random() * itemTemplates.length)];
-            const price = Math.floor(Math.random() * (template.max - template.min + 1)) + template.min;
-            const item = { id: Date.now() + i, title: template.title, category: template.category, price, realValue: template.real };
+            const t = itemTemplates[Math.floor(Math.random() * itemTemplates.length)];
+            const price = Math.floor(Math.random() * (t.max - t.min + 1)) + t.min;
+            const item = { id: Date.now() + i, title: t.title, price, realValue: t.real };
 
             const card = document.createElement('div');
             card.className = 'item-card';
             card.innerHTML = `
-                <div class="item-header">
-                    <span class="item-title">${item.title}</span>
-                    <span class="item-badge">${item.category}</span>
+                <div style="font-weight:bold; font-size:0.85rem;">${item.title}</div>
+                <div style="font-size:0.9rem; margin:4px 0;"><b>${item.price} ₽</b> <span style="font-size:0.7rem; color:var(--text-muted);">(Рынок: ~${item.realValue} ₽)</span></div>
+                <div style="display:flex; gap:6px;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="buyItem(${item.price}, '${item.title}', ${item.realValue})">Купить</button>
+                    <button class="btn btn-warning" style="flex:1;" onclick="openChat('${item.title}', ${item.price}, ${item.realValue})">💬 Торг</button>
                 </div>
-                <div class="item-price">${item.price} ₽ <span style="font-size:0.7rem; color:var(--text-muted);">(Рынок: ~${item.realValue} ₽)</span></div>
-                <button class="btn btn-primary" onclick="buyItem(${item.id}, '${item.title}', ${item.price}, ${item.realValue})">Купить</button>
             `;
-            marketList.appendChild(card);
+            list.appendChild(card);
         }
     }
 
-    function buyItem(id, title, price, realValue) {
-        if (state.balance < price) return alert('❌ Недостаточно рублей!');
+    function openChat(title, price, realValue) {
+        state.activeHaggle = { title, price, realValue };
+        document.getElementById('chat-title').innerText = `Торг: ${title}`;
+        document.getElementById('chat-history').innerHTML = `<div class="msg msg-them">Привет! Отдаю за ${price} ₽. Твоя цена?</div>`;
+        document.getElementById('chat-modal').classList.add('active');
+    }
+
+    function closeChat() { document.getElementById('chat-modal').classList.remove('active'); }
+
+    function haggle(action) {
+        const h = state.activeHaggle;
+        const history = document.getElementById('chat-history');
+
+        if (action === 'discount') {
+            const newPrice = Math.floor(h.price * 0.85);
+            history.innerHTML += `<div class="msg msg-me">Скинь до ${newPrice} ₽, забрал прямо сейчас.</div>`;
+            if (Math.random() > 0.3) {
+                history.innerHTML += `<div class="msg msg-them">По рукам! Забирай за ${newPrice} ₽.</div>`;
+                h.price = newPrice;
+            } else {
+                history.innerHTML += `<div class="msg msg-them">Не, это слишком дёшево.</div>`;
+            }
+        } else if (action === 'buy') {
+            buyItem(h.price, h.title, h.realValue);
+            closeChat();
+        }
+    }
+
+    function buyItem(price, title, realValue) {
+        if (state.balance < price) return alert('❌ Недостаточно средств!');
         state.balance -= price;
-        state.inventory.push({
-            id: Date.now(), title, buyPrice: price, realValue,
-            sellPrice: Math.floor(realValue * 1.1),
-            region: 'TR', platforms: ['PS5', 'Steam'], customDesign: false
-        });
-        addLog(`🛍️ Куплен лот "${title}" за ${price} ₽`);
+        state.inventory.push({ title, buyPrice: price, realValue, sellPrice: Math.floor(realValue * 1.1) });
         updateUI();
-        generateMarketItem();
+        generateMarket();
     }
 
-    /* --- ИНВЕНТАРЬ И ГЕНЕРАТОР ОБЛОЖЕК --- */
     function renderInventory() {
-        const invList = document.getElementById('inventory-list');
-        invList.innerHTML = '';
-
-        if (state.inventory.length === 0) {
-            invList.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem;">Инвентарь пуст.</div>';
-            return;
-        }
-
+        const inv = document.getElementById('inventory-list');
+        inv.innerHTML = '';
         state.inventory.forEach((item, index) => {
             const card = document.createElement('div');
             card.className = 'item-card';
             card.innerHTML = `
-                <div class="card-preview">
-                    <div class="seller-tag">SSSTY1</div>
-                    <div style="font-weight:bold; font-size:0.85rem;">${item.title}</div>
-                    <div style="font-size:0.65rem; opacity:0.8;">Регион: ${item.region} | Гарантия 100%</div>
-                    <div class="platform-badges">
-                        ${item.platforms.map(p => `<span class="platform-badge">${p}</span>`).join('')}
-                    </div>
-                </div>
-                <div style="display:flex; gap:6px; align-items:center;">
-                    <input type="number" id="price-${index}" value="${item.sellPrice}" style="width:80px; padding:4px; background:#0f172a; border:1px solid var(--border); color:white; border-radius:4px;">
-                    <button class="btn btn-success" onclick="sellItem(${index})">Продать</button>
-                    <button class="btn btn-purple" onclick="customizeCard(${index})">🎨 Оформить (+40% к продажам)</button>
+                <div style="font-weight:bold; font-size:0.85rem;">${item.title}</div>
+                <div style="display:flex; gap:6px; margin-top:6px; align-items:center;">
+                    <input type="number" id="sell-price-${index}" value="${item.sellPrice}" style="width:70px; padding:4px; background:#0f172a; border:1px solid var(--border); color:white; border-radius:4px;">
+                    <button class="btn btn-success" style="flex:1;" onclick="sellItem(${index})">Выставить</button>
                 </div>
             `;
-            invList.appendChild(card);
+            inv.appendChild(card);
         });
-    }
-
-    function customizeCard(index) {
-        state.inventory[index].customDesign = true;
-        state.inventory[index].region = ['TR', 'US', 'KZT', 'AR'][Math.floor(Math.random() * 4)];
-        state.inventory[index].platforms = ['PS3', 'PS4', 'PS5', 'Android'];
-        addLog(`🎨 Карточка для "${state.inventory[index].title}" успешно оформлена с брендингом SSSTY1!`);
-        updateUI();
     }
 
     function sellItem(index) {
         const item = state.inventory[index];
-        const setPrice = parseInt(document.getElementById(`price-${index}`).value);
-        let chance = (setPrice / item.realValue) > 1.3 ? 0.25 : 0.7;
-
-        if (item.customDesign) chance += 0.4; // Бонус дизайна
-
-        if (Math.random() < chance) {
+        const setPrice = parseInt(document.getElementById(`sell-price-${index}`).value);
+        if (Math.random() < 0.7) {
             state.balance += setPrice;
-            addLog(`💰 ПРОДАНО! "${item.title}" за ${setPrice} ₽!`);
+            alert(`💰 Продано за ${setPrice} ₽!`);
             state.inventory.splice(index, 1);
             updateUI();
         } else {
-            addLog(`⏳ Покупатели считают цену ${setPrice} ₽ за "${item.title}" слишком высокой.`);
+            alert('⏳ Цена слишком высока, пока нет покупателей.');
         }
     }
 
-    /* --- P2P КРИПТОБИРЖА --- */
-    setInterval(() => {
-        state.usdtRate += (Math.random() - 0.5) * 1.2;
-        document.getElementById('usdt-rate').innerText = state.usdtRate.toFixed(2) + ' ₽';
-    }, 5000);
-
+    /* --- КРИПТОБИРЖА --- */
     function tradeCrypto(type) {
         const cost = state.usdtRate * 10;
         if (type === 'buy') {
             if (state.balance < cost) return alert('❌ Недостаточно рублей!');
             state.balance -= cost;
             state.usdt += 10;
-            addLog(`💎 Куплено 10 USDT за ${cost.toFixed(0)} ₽`);
         } else {
             if (state.usdt < 10) return alert('❌ Недостаточно USDT!');
             state.usdt -= 10;
             state.balance += cost;
-            addLog(`💵 Продано 10 USDT за ${cost.toFixed(0)} ₽`);
         }
         updateUI();
     }
 
-    /* --- АВТО-БОТ --- */
-    function toggleBot() {
-        state.botActive = !state.botActive;
-        const status = document.getElementById('bot-status');
-        const btn = document.getElementById('bot-toggle-btn');
-
-        if (state.botActive) {
-            status.innerText = 'Включен'; status.style.color = 'var(--green)';
-            btn.innerText = 'Выключить';
-            state.botInterval = setInterval(runAutoBot, 3000);
-            addLog('🤖 Авто-бот запущен. Сканирование рынка...');
-        } else {
-            status.innerText = 'Выключен'; status.style.color = 'var(--red)';
-            btn.innerText = 'Включить (500 ₽/мин)';
-            clearInterval(state.botInterval);
-            addLog('🤖 Авто-бот остановлен.');
-        }
-    }
-
-    function runAutoBot() {
-        if (state.balance < 50) return;
-        state.balance -= 5; // Комиссия работы бота
-
-        itemTemplates.forEach(template => {
-            const price = Math.floor(Math.random() * (template.max - template.min + 1)) + template.min;
-            if (price < template.real * 0.65 && state.balance >= price) {
-                buyItem(0, template.title, price, template.real);
-                addLog(`⚡ АВТО-ВЫКУП: Бот перехватил дешёвый лот "${template.title}" за ${price} ₽!`);
-            }
-        });
-        updateUI();
-    }
-
-    generateMarketItem();
+    generateMarket();
     updateUI();
 </script>
 </body>
