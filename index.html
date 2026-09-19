@@ -334,6 +334,10 @@
             <div class="icon-box" style="background: linear-gradient(135deg, #f59e0b, #dc2626);">👑<span class="lock-badge" hidden>🔒</span></div>
             <span class="app-label">Империя</span>
         </button>
+        <button class="app-icon" data-app="app-messenger" aria-label="Мессенджер">
+            <div class="icon-box" style="background: linear-gradient(135deg, #10b981, #047857);">💬<span class="lock-badge" hidden>🔒</span></div>
+            <span class="app-label">Чаты</span>
+        </button>
         <button class="app-icon" data-app="app-stats" aria-label="Статистика">
             <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">📊</div>
             <span class="app-label">Статистика</span>
@@ -343,6 +347,35 @@
             <span class="app-label">Настройки</span>
         </button>
     </div>
+    <!-- МЕССЕНДЖЕР / СДЕЛКИ -->
+<div class="app-window" id="app-messenger" hidden>
+    <div class="app-header">
+        <span class="title-sm">💬 DarkChat / Переговоры</span>
+        <span class="badge badge-green" id="messenger-status">В сети</span>
+    </div>
+    <div class="app-content">
+        <div class="item-card" style="margin-bottom: 10px;">
+            <div class="row-between">
+                <div class="title-sm" id="chat-contact-name">📱 Илья (iPhone 13 128GB)</div>
+                <span class="tiny muted" id="chat-contact-sub">Предложение</span>
+            </div>
+            <div class="tiny muted" style="margin-top: 4px;">Хочет купить за: <b style="color:var(--green);">35 000 ₽</b> (Рынок: 40 000 ₽)</div>
+            
+            <div id="chat-messages" style="height: 160px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; margin: 10px 0; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px;">
+                <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
+                    <b style="color:#10b981;">Илья:</b> Здорово! За 35k прямо сейчас заберу, уступишь?
+                </div>
+            </div>
+
+            <div class="tiny muted" style="margin-bottom: 6px;">Выбери вариант ответа:</div>
+            <div class="row" style="flex-direction: column; gap: 6px;">
+                <button class="btn btn-success btn-xs" onclick="replyTrade('agree')" style="width: 100%;">🤝 Продать за 35 000 ₽</button>
+                <button class="btn btn-warning btn-xs" onclick="replyTrade('haggle')" style="width: 100%;">😏 Предложить 38 000 ₽</button>
+                <button class="btn btn-danger btn-xs" onclick="replyTrade('reject')" style="width: 100%;">❌ Отказать (Без торга)</button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- P2P & AVITO MARKET -->
     <div class="app-window" id="app-market">
@@ -592,6 +625,35 @@
         </div>
     </div>
 
+    <!-- МЕССЕНДЖЕР / СДЕЛКИ -->
+<div class="app-window" id="app-messenger" hidden>
+    <div class="app-header">
+        <span class="title-sm">💬 DarkChat / Переговоры</span>
+        <span class="badge badge-green" id="messenger-status">В сети</span>
+    </div>
+    <div class="app-content">
+        <div class="item-card" style="margin-bottom: 10px;">
+            <div class="row-between">
+                <div class="title-sm" id="chat-contact-name">📱 Илья (iPhone 13 128GB)</div>
+                <span class="tiny muted" id="chat-contact-sub">Предложение</span>
+            </div>
+            <div class="tiny muted" style="margin-top: 4px;">Хочет купить за: <b style="color:var(--green);">35 000 ₽</b> (Рынок: 40 000 ₽)</div>
+            
+            <div id="chat-messages" style="height: 160px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; margin: 10px 0; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px;">
+                <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
+                    <b style="color:#10b981;">Илья:</b> Здорово! За 35k прямо сейчас заберу, уступишь?
+                </div>
+            </div>
+
+            <div class="tiny muted" style="margin-bottom: 6px;">Выбери вариант ответа:</div>
+            <div class="row" style="flex-direction: column; gap: 6px;">
+                <button class="btn btn-success btn-xs" onclick="replyTrade('agree')" style="width: 100%;">🤝 Продать за 35 000 ₽</button>
+                <button class="btn btn-warning btn-xs" onclick="replyTrade('haggle')" style="width: 100%;">😏 Предложить 38 000 ₽</button>
+                <button class="btn btn-danger btn-xs" onclick="replyTrade('reject')" style="width: 100%;">❌ Отказать (Без торга)</button>
+            </div>
+        </div>
+    </div>
+</div>
     <!-- СТАТИСТИКА -->
     <div class="app-window" id="app-stats">
         <div class="app-header"><span class="title-sm">Статистика</span>
@@ -729,30 +791,6 @@
         </div>
     </div>
 
-    <!-- МЕССЕНДЖЕР / ЧАТЫ -->
-<div class="app-window" id="app-messenger">
-    <div class="app-header">
-        <span class="title-sm">💬 DarkChat / Сделки</span>
-        <span style="color:var(--green); font-weight:bold; font-size:0.8rem;" class="global-balance-display">1 000 ₽</span>
-    </div>
-    <div class="app-content">
-        <div class="item-card">
-            <div class="title-sm" id="chat-contact-name">📱 Покупатель: Илья (iPhone 13)</div>
-            <div class="tiny muted" id="chat-contact-sub">Предлагает забрать за 35 000 ₽ (Рынок: 40 000 ₽)</div>
-            
-            <div id="chat-messages" style="height: 150px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 8px; margin: 8px 0; font-size: 0.85rem;">
-                <div style="color: var(--cyan); margin-bottom: 4px;"><b>Илья:</b> Здорово! За 35k прямо сейчас заберу, уступишь?</div>
-            </div>
-
-            <div class="section-title">Варианты ответа:</div>
-            <div class="row" style="flex-direction: column; gap: 5px;">
-                <button class="btn btn-success btn-xs" onclick="replyTrade('agree')">🤝 По рукам! Продать за 35 000 ₽</button>
-                <button class="btn btn-warning btn-xs" onclick="replyTrade('haggle')">😏 Двигайся до 38 000 ₽, тогда забирай</button>
-                <button class="btn btn-danger btn-xs" onclick="replyTrade('reject')">❌ Забудь, без торга</button>
-            </div>
-        </div>
-    </div>
-</div>
     <!-- НАСТРОЙКИ -->
     <div class="app-window" id="app-settings">
         <div class="app-header"><span class="title-sm">Настройки</span></div>
@@ -5309,53 +5347,86 @@ function getAdjustedPrice(basePrice, category = "electronics") {
     }
     return basePrice;
 }
-// Логика Мессенджера и Торга
 function replyTrade(action) {
     const chatBox = document.getElementById('chat-messages');
+    if (!chatBox) return;
     
     if (action === 'agree') {
-        chatBox.innerHTML += `<div style="color:var(--green); margin-top:4px;"><b>Вы:</b> Ладно, приезжай, забирай за 35 000 ₽.</div>`;
-        chatBox.innerHTML += `<div style="color:var(--cyan); margin-top:4px;"><b>Илья:</b> Еду! Сделка закрыта.</div>`;
-        // Здесь вызов твоей функции начисления денег, например: player.balance += 35000;
+        chatBox.innerHTML += `
+            <div style="background: rgba(16, 185, 129, 0.2); padding: 8px 10px; border-radius: 6px; align-self: flex-end; max-width: 85%; text-align: right;">
+                <b>Вы:</b> По рукам, забирай за 35 000 ₽.
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
+                <b style="color:#10b981;">Илья:</b> Отлично, выезжаю!
+            </div>`;
     } else if (action === 'haggle') {
-        chatBox.innerHTML += `<div style="color:var(--yellow); margin-top:4px;"><b>Вы:</b> 35 мало. За 38 отдам.</div>`;
+        chatBox.innerHTML += `
+            <div style="background: rgba(16, 185, 129, 0.2); padding: 8px 10px; border-radius: 6px; align-self: flex-end; max-width: 85%; text-align: right;">
+                <b>Вы:</b> 35 мало. Только за 38 отдам.
+            </div>`;
         setTimeout(() => {
-            chatBox.innerHTML += `<div style="color:var(--cyan); margin-top:4px;"><b>Илья:</b> Эх, ладно, давай за 38 000 ₽, по рукам!</div>`;
-        }, 800);
+            chatBox.innerHTML += `
+                <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
+                    <b style="color:#10b981;">Илья:</b> Эх, ладно, давай за 38k. Скоро буду!
+                </div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, 700);
     } else if (action === 'reject') {
-        chatBox.innerHTML += `<div style="color:var(--red); margin-top:4px;"><b>Вы:</b> Нет, цена окончательная.</div>`;
+        chatBox.innerHTML += `
+            <div style="background: rgba(16, 185, 129, 0.2); padding: 8px 10px; border-radius: 6px; align-self: flex-end; max-width: 85%; text-align: right;">
+                <b>Вы:</b> Без торга.
+            </div>`;
         setTimeout(() => {
-            chatBox.innerHTML += `<div style="color:var(--muted); margin-top:4px;"><b>Илья:</b> Ну и сиди со своим железом. (Покупатель ушел)</div>`;
-        }, 800);
+            chatBox.innerHTML += `
+                <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
+                    <b style="color:#ef4444;">Илья:</b> Ну и продавай дальше. Удачи.
+                </div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, 700);
+    }
+    
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+function replyTrade(action) {
+    const chatBox = document.getElementById('chat-messages');
+    if (!chatBox) return;
+    
+    if (action === 'agree') {
+        chatBox.innerHTML += `
+            <div style="background: rgba(16, 185, 129, 0.2); padding: 8px 10px; border-radius: 6px; align-self: flex-end; max-width: 85%; text-align: right;">
+                <b>Вы:</b> По рукам, забирай за 35 000 ₽.
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
+                <b style="color:#10b981;">Илья:</b> Отлично, выезжаю!
+            </div>`;
+    } else if (action === 'haggle') {
+        chatBox.innerHTML += `
+            <div style="background: rgba(16, 185, 129, 0.2); padding: 8px 10px; border-radius: 6px; align-self: flex-end; max-width: 85%; text-align: right;">
+                <b>Вы:</b> 35 мало. Только за 38 отдам.
+            </div>`;
+        setTimeout(() => {
+            chatBox.innerHTML += `
+                <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
+                    <b style="color:#10b981;">Илья:</b> Эх, ладно, давай за 38k. Скоро буду!
+                </div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, 700);
+    } else if (action === 'reject') {
+        chatBox.innerHTML += `
+            <div style="background: rgba(16, 185, 129, 0.2); padding: 8px 10px; border-radius: 6px; align-self: flex-end; max-width: 85%; text-align: right;">
+                <b>Вы:</b> Без торга.
+            </div>`;
+        setTimeout(() => {
+            chatBox.innerHTML += `
+                <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
+                    <b style="color:#ef4444;">Илья:</b> Ну и продавай дальше. Удачи.
+                </div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, 700);
     }
     
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 </script>
-<style>
-@media (max-width: 480px) {
-  body {
-    padding: 0;
-    min-height: 100vh;
-  }
-
-  .phone {
-    width: 100vw;
-    height: 100vh;
-    border: none;
-    border-radius: 0;
-  }
-
-  .app-content {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  button {
-    min-height: 34px;
-  }
-}
-</style>
-    
 </body>
 </html>
