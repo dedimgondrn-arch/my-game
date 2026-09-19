@@ -342,7 +342,36 @@
             <div class="icon-box" style="background: linear-gradient(135deg, #64748b, #334155);">⚙️</div>
             <span class="app-label">Настройки</span>
         </button>
+   <!-- Иконка на рабочем столе -->
+<div class="app-icon" onclick="openApp('telegram')">
+    <div class="icon-bg" style="background: #2AABEE;">✈️</div>
+    <span>Telegram</span>
+</div>
+
+<!-- Окно приложения Telegram -->
+<div id="telegram-app" class="app-window" style="display:none;">
+    <div class="app-header" style="background:#242D34; color:#fff;">
+        <span>✈️ Telegram (Даркнет & Заказы)</span>
+        <button onclick="closeApp('telegram')">✖</button>
     </div>
+    <div class="app-body" style="background:#0E1621; color:#fff; padding:10px;">
+        <div id="tg-chats">
+            <div style="background:#17212B; padding:10px; border-radius:8px; margin-bottom:8px; cursor:pointer;" onclick="openTgChat('darknet')">
+                <b>🕵️‍♂️ Теневой Курьер</b>
+                <p style="margin:4px 0 0; font-size:12px; color:#aaa;">Срочные серо-чёрные заказы (Высокий куш / +Розыск)</p>
+            </div>
+            <div style="background:#17212B; padding:10px; border-radius:8px; cursor:pointer;" onclick="openTgChat('express')">
+                <b>🚚 Экспресс Доставка</b>
+                <p style="margin:4px 0 0; font-size:12px; color:#aaa;">Легальные курьеры для отправки товаров покупателям</p>
+            </div>
+        </div>
+        <div id="tg-messages" style="display:none;">
+            <button onclick="backToTgChats()" style="margin-bottom:10px;">← Назад к чатам</button>
+            <div id="tg-chat-content"></div>
+        </div>
+    </div>
+</div>
+ </div>
 
     <!-- P2P & AVITO MARKET -->
     <div class="app-window" id="app-market">
@@ -5285,6 +5314,35 @@ function getAdjustedPrice(basePrice, category = "electronics") {
     }
     return basePrice;
 }
+<!-- Иконка на рабочем столе -->
+<div class="app-icon" onclick="openApp('telegram')">
+    <div class="icon-bg" style="background: #2AABEE;">✈️</div>
+    <span>Telegram</span>
+</div>
+
+<!-- Окно приложения Telegram -->
+<div id="telegram-app" class="app-window" style="display:none;">
+    <div class="app-header" style="background:#242D34; color:#fff;">
+        <span>✈️ Telegram (Даркнет & Заказы)</span>
+        <button onclick="closeApp('telegram')">✖</button>
+    </div>
+    <div class="app-body" style="background:#0E1621; color:#fff; padding:10px;">
+        <div id="tg-chats">
+            <div style="background:#17212B; padding:10px; border-radius:8px; margin-bottom:8px; cursor:pointer;" onclick="openTgChat('darknet')">
+                <b>🕵️‍♂️ Теневой Курьер</b>
+                <p style="margin:4px 0 0; font-size:12px; color:#aaa;">Срочные серо-чёрные заказы (Высокий куш / +Розыск)</p>
+            </div>
+            <div style="background:#17212B; padding:10px; border-radius:8px; cursor:pointer;" onclick="openTgChat('express')">
+                <b>🚚 Экспресс Доставка</b>
+                <p style="margin:4px 0 0; font-size:12px; color:#aaa;">Легальные курьеры для отправки товаров покупателям</p>
+            </div>
+        </div>
+        <div id="tg-messages" style="display:none;">
+            <button onclick="backToTgChats()" style="margin-bottom:10px;">← Назад к чатам</button>
+            <div id="tg-chat-content"></div>
+        </div>
+    </div>
+</div>
 </script>
 </body>
 </html>
