@@ -729,6 +729,30 @@
         </div>
     </div>
 
+    <!-- МЕССЕНДЖЕР / ЧАТЫ -->
+<div class="app-window" id="app-messenger">
+    <div class="app-header">
+        <span class="title-sm">💬 DarkChat / Сделки</span>
+        <span style="color:var(--green); font-weight:bold; font-size:0.8rem;" class="global-balance-display">1 000 ₽</span>
+    </div>
+    <div class="app-content">
+        <div class="item-card">
+            <div class="title-sm" id="chat-contact-name">📱 Покупатель: Илья (iPhone 13)</div>
+            <div class="tiny muted" id="chat-contact-sub">Предлагает забрать за 35 000 ₽ (Рынок: 40 000 ₽)</div>
+            
+            <div id="chat-messages" style="height: 150px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 8px; margin: 8px 0; font-size: 0.85rem;">
+                <div style="color: var(--cyan); margin-bottom: 4px;"><b>Илья:</b> Здорово! За 35k прямо сейчас заберу, уступишь?</div>
+            </div>
+
+            <div class="section-title">Варианты ответа:</div>
+            <div class="row" style="flex-direction: column; gap: 5px;">
+                <button class="btn btn-success btn-xs" onclick="replyTrade('agree')">🤝 По рукам! Продать за 35 000 ₽</button>
+                <button class="btn btn-warning btn-xs" onclick="replyTrade('haggle')">😏 Двигайся до 38 000 ₽, тогда забирай</button>
+                <button class="btn btn-danger btn-xs" onclick="replyTrade('reject')">❌ Забудь, без торга</button>
+            </div>
+        </div>
+    </div>
+</div>
     <!-- НАСТРОЙКИ -->
     <div class="app-window" id="app-settings">
         <div class="app-header"><span class="title-sm">Настройки</span></div>
@@ -5284,6 +5308,28 @@ function getAdjustedPrice(basePrice, category = "electronics") {
         return Math.round(basePrice * currentEvent.multiplier);
     }
     return basePrice;
+}
+// Логика Мессенджера и Торга
+function replyTrade(action) {
+    const chatBox = document.getElementById('chat-messages');
+    
+    if (action === 'agree') {
+        chatBox.innerHTML += `<div style="color:var(--green); margin-top:4px;"><b>Вы:</b> Ладно, приезжай, забирай за 35 000 ₽.</div>`;
+        chatBox.innerHTML += `<div style="color:var(--cyan); margin-top:4px;"><b>Илья:</b> Еду! Сделка закрыта.</div>`;
+        // Здесь вызов твоей функции начисления денег, например: player.balance += 35000;
+    } else if (action === 'haggle') {
+        chatBox.innerHTML += `<div style="color:var(--yellow); margin-top:4px;"><b>Вы:</b> 35 мало. За 38 отдам.</div>`;
+        setTimeout(() => {
+            chatBox.innerHTML += `<div style="color:var(--cyan); margin-top:4px;"><b>Илья:</b> Эх, ладно, давай за 38 000 ₽, по рукам!</div>`;
+        }, 800);
+    } else if (action === 'reject') {
+        chatBox.innerHTML += `<div style="color:var(--red); margin-top:4px;"><b>Вы:</b> Нет, цена окончательная.</div>`;
+        setTimeout(() => {
+            chatBox.innerHTML += `<div style="color:var(--muted); margin-top:4px;"><b>Илья:</b> Ну и сиди со своим железом. (Покупатель ушел)</div>`;
+        }, 800);
+    }
+    
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 </script>
 <style>
