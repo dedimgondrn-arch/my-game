@@ -5207,6 +5207,84 @@ if (!state.tutorialDone) {
 }
 saveGame();
 })();
+// ==========================================
+// СИСТЕМА РЫНОЧНЫХ СОБЫТИЙ И ИНФЛЯЦИИ
+// ==========================================
+
+const MARKET_EVENTS = [
+    {
+        title: "⚡ Дефицит видеокарт!",
+        desc: "Цены на электронику и майнинг-оборудование выросли на +40%!",
+        multiplier: 1.4,
+        category: "electronics",
+        duration: 45 // секунд
+    },
+    {
+        title: "📉 Облава на серый импорт!",
+        desc: "Цены на технику упали на -30%. Продавцы скидывают остатки!",
+        multiplier: 0.7,
+        category: "electronics",
+        duration: 30
+    },
+    {
+        title: "🚀 Бум Криптовалюты!",
+        desc: "Доходность майнинга и курсы крипты взлетели на +50%!",
+        multiplier: 1.5,
+        category: "crypto",
+        duration: 60
+    },
+    {
+        title: "👮 Зачистка авторынков!",
+        desc: "Спрос на авто перекупов упал. Цены снижены на -25%.",
+        multiplier: 0.75,
+        category: "cars",
+        duration: 40
+    }
+];
+
+let currentEvent = null;
+let eventTimer = null;
+
+// Функция запуска случайного события
+function triggerRandomMarketEvent() {
+    // Выбираем случайное событие
+    const randomIndex = Math.floor(Math.random() * MARKET_EVENTS.length);
+    currentEvent = MARKET_EVENTS[randomIndex];
+
+    // Показываем плашку/уведомление в интерфейсе
+    showNotification(`${currentEvent.title}\n${currentEvent.desc}`, "warning");
+
+    // Обновляем визуальный баннер новостей (если есть элемент на странице)
+    const newsBanner = document.querySelector(".news-banner") || document.getElementById("news");
+    if (newsBanner) {
+        newsBanner.innerText = `🔥 НОВОСТИ: ${currentEvent.title} — ${currentEvent.desc}`;
+    }
+
+    // Автоматический сброс события через время duration
+    clearTimeout(eventTimer);
+    eventTimer = setTimeout(() => {
+        showNotification("⚖️ Рынок стабилизировался. Цены вернулись в норму.", "info");
+        currentEvent = null;
+        if (newsBanner) {
+            newsBanner.innerText = "Рынок стабилен: следите за скачками цен!";
+        }
+    }, currentEvent.duration * 1000);
+}
+
+// Запускаем проверку событий каждые 2 минуты (с шансом 60%)
+setInterval(() => {
+    if (!currentEvent && Math.random() < 0.6) {
+        triggerRandomMarketEvent();
+    }
+}, 120000);
+
+// Функция для расчёта текущей цены товара с учётом события
+function getAdjustedPrice(basePrice, category = "electronics") {
+    if (currentEvent && (currentEvent.category === category || currentEvent.category === "all")) {
+        return Math.round(basePrice * currentEvent.multiplier);
+    }
+    return basePrice;
+}
 </script>
 </body>
 </html>
