@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phone OS: P2P Ecosystem</title>
+    <title>Phone OS: P2P Resell Pro</title>
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -19,40 +18,43 @@
             --border: #334155;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: #0f172a; color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
+        * { 
+            box-sizing: border-box; margin: 0; padding: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Убирает синюю вспышку при клике */
+            user-select: none;
+        }
+
+        body { background-color: #020617; color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
 
         /* Корпус смартфона */
         .phone {
-            width: 380px; height: 750px; background: #000;
-            border: 12px solid #1e293b; border-radius: 40px;
+            width: 380px; height: 760px; background: #000;
+            border: 10px solid #1e293b; border-radius: 48px;
             display: flex; flex-direction: column; overflow: hidden; position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 2px #334155;
         }
 
-        .notch { width: 140px; height: 25px; background: #1e293b; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-radius: 0 0 15px 15px; z-index: 100; }
-        
-        .status-bar { height: 35px; background: #000; padding: 10px 20px 0; display: flex; justify-content: space-between; font-size: 0.75rem; color: #fff; z-index: 90; }
+        .notch { width: 130px; height: 22px; background: #1e293b; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-radius: 0 0 14px 14px; z-index: 100; }
+        .status-bar { height: 30px; background: #000; padding: 6px 20px 0; display: flex; justify-content: space-between; font-size: 0.7rem; color: #fff; z-index: 90; }
 
         /* Рабочий стол OS */
         .desktop {
-            flex: 1; background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+            flex: 1; background: radial-gradient(circle at top, #1e1b4b, #0f172a);
             padding: 50px 20px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-content: start;
         }
 
-        .app-icon {
-            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
-        }
+        .app-icon { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
         .icon-box {
-            width: 65px; height: 65px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); transition: transform 0.2s;
+            width: 62px; height: 62px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4); transition: transform 0.1s ease;
         }
-        .app-icon:active .icon-box { transform: scale(0.9); }
-        .app-label { font-size: 0.75rem; color: #fff; text-align: center; }
+        .app-icon:active .icon-box { transform: scale(0.92); filter: brightness(0.9); }
+        .app-label { font-size: 0.7rem; color: #fff; text-align: center; font-weight: 500; }
 
         /* Окна приложений */
         .app-window {
-            position: absolute; top: 35px; left: 0; width: 100%; height: calc(100% - 35px);
+            position: absolute; top: 30px; left: 0; width: 100%; height: calc(100% - 65px);
             background: var(--bg-color); display: none; flex-direction: column; z-index: 80;
         }
         .app-window.active { display: flex; }
@@ -60,26 +62,43 @@
         .app-header { background: var(--card-bg); padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
         .app-content { flex: 1; padding: 12px; overflow-y: auto; }
 
-        /* Элементы приложений */
+        /* Элементы и Карточки */
         .item-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 10px; }
-        .btn { padding: 6px 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.75rem; }
+        
+        .btn {
+            padding: 8px 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;
+            transition: background 0.15s, transform 0.05s; outline: none;
+        }
+        .btn:active { transform: scale(0.96); }
         .btn-primary { background: var(--accent); color: white; }
-        .btn-warning { background: var(--yellow); color: black; }
+        .btn-warning { background: var(--yellow); color: #1e293b; }
         .btn-success { background: var(--green); color: white; }
         .btn-danger { background: var(--red); color: white; }
+        .btn-purple { background: var(--purple); color: white; }
 
-        /* Навигация смарта */
-        .home-bar { height: 25px; background: #000; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 90; }
-        .home-indicator { width: 120px; height: 4px; background: #fff; border-radius: 2px; opacity: 0.6; }
+        /* Нижняя Панель Навигации */
+        .phone-nav {
+            height: 35px; background: #000; display: flex; justify-content: center; align-items: center; gap: 15px; z-index: 100;
+        }
+        .home-bar-btn {
+            width: 110px; height: 5px; background: #ffffff; border-radius: 3px; opacity: 0.7; cursor: pointer; transition: opacity 0.2s;
+        }
+        .home-bar-btn:active { opacity: 1; }
 
-        /* Чат торга */
-        .chat-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; padding: 15px; z-index: 120; }
-        .chat-modal.active { display: flex; }
-        .chat-box { background: var(--card-bg); border-radius: 12px; padding: 12px; flex: 1; display: flex; flex-direction: column; }
-        .chat-history { flex: 1; background: #0f172a; border-radius: 8px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        .msg { padding: 8px; border-radius: 6px; font-size: 0.8rem; max-width: 85%; }
-        .msg-them { background: #334155; align-self: flex-start; }
-        .msg-me { background: var(--accent); align-self: flex-end; }
+        /* Компактный Чат Торга (Bottom Sheet) */
+        .chat-modal {
+            position: absolute; bottom: -100%; left: 0; width: 100%; height: 55%;
+            background: var(--card-bg); border-top: 2px solid var(--accent); border-radius: 20px 20px 0 0;
+            display: flex; flex-direction: column; padding: 12px; z-index: 120; transition: bottom 0.25s ease-in-out;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.5);
+        }
+        .chat-modal.active { bottom: 35px; }
+        .chat-history { flex: 1; background: #0f172a; border-radius: 8px; padding: 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin: 8px 0; }
+        .msg { padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; max-width: 85%; }
+        .msg-them { background: #334155; align-self: flex-start; color: #f8fafc; }
+        .msg-me { background: var(--accent); align-self: flex-end; color: white; }
+
+        .log-item { font-size: 0.7rem; padding: 5px; background: #0f172a; border-left: 2px solid var(--accent); margin-bottom: 4px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -91,7 +110,7 @@
         <span>5G 🔋 100%</span>
     </div>
 
-    <!-- РАБОЧИЙ СТОЛ СМАРТФОНА -->
+    <!-- РАБОЧИЙ СТОЛ -->
     <div class="desktop">
         <div class="app-icon" onclick="openApp('app-resell')">
             <div class="icon-box" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">🛍️</div>
@@ -99,39 +118,43 @@
         </div>
         <div class="app-icon" onclick="openApp('app-crypto')">
             <div class="icon-box" style="background: linear-gradient(135deg, #22c55e, #15803d);">💎</div>
-            <span class="app-label">Crypto Ex</span>
+            <span class="app-label">P2P Crypto</span>
+        </div>
+        <div class="app-icon" onclick="openApp('app-bot')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #a855f7, #7e22ce);">🤖</div>
+            <span class="app-label">Авто-Бот</span>
         </div>
     </div>
 
     <!-- ПРИЛОЖЕНИЕ 1: P2P RESELL -->
     <div class="app-window" id="app-resell">
         <div class="app-header">
-            <span style="font-weight:bold;">P2P Market</span>
-            <span style="color:var(--green); font-weight:bold;" id="balance-resell">1 000 ₽</span>
+            <span style="font-weight:bold; font-size:0.85rem;">P2P Market</span>
+            <span style="color:var(--green); font-weight:bold; font-size:0.85rem;" id="balance-resell">1 000 ₽</span>
         </div>
         <div class="app-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span style="font-size:0.8rem; color:var(--text-muted);">Лента лотов:</span>
+                <span style="font-size:0.75rem; color:var(--text-muted);">Актуальные лоты:</span>
                 <button class="btn btn-primary" onclick="generateMarket()">Обновить</button>
             </div>
             <div id="market-list"></div>
             
-            <hr style="border-color:var(--border); margin:15px 0;">
-            <div style="font-weight:bold; margin-bottom:10px;">🎒 Мои Лоты (Инвентарь)</div>
+            <hr style="border-color:var(--border); margin:12px 0;">
+            <div style="font-weight:bold; font-size:0.8rem; margin-bottom:8px;">🎒 Инвентарь (Мои лоты)</div>
             <div id="inventory-list"></div>
         </div>
     </div>
 
-    <!-- ПРИЛОЖЕНИЕ 2: CRYPTO EXCHANGE -->
+    <!-- ПРИЛОЖЕНИЕ 2: P2P КРИПТОБИРЖА -->
     <div class="app-window" id="app-crypto">
         <div class="app-header">
-            <span style="font-weight:bold;">P2P Криптобиржа</span>
-            <span style="color:var(--yellow);" id="usdt-balance">0 USDT</span>
+            <span style="font-weight:bold; font-size:0.85rem;">Crypto Exchange</span>
+            <span style="color:var(--yellow); font-size:0.85rem;" id="usdt-balance">0 USDT</span>
         </div>
         <div class="app-content">
             <div class="item-card">
-                <div style="font-size:0.8rem; color:var(--text-muted);">Курс USDT/RUB:</div>
-                <div style="font-size:1.5rem; font-weight:bold; color:var(--green);" id="usdt-rate">92.50 ₽</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Текущий курс USDT/RUB:</div>
+                <div style="font-size:1.4rem; font-weight:bold; color:var(--green);" id="usdt-rate">92.50 ₽</div>
             </div>
             <div style="display:flex; gap:8px;">
                 <button class="btn btn-success" style="flex:1;" onclick="tradeCrypto('buy')">Купить 10 USDT</button>
@@ -140,21 +163,40 @@
         </div>
     </div>
 
-    <!-- ЧАТ ТОРГА (Модальное окно) -->
-    <div class="chat-modal" id="chat-modal">
-        <div class="chat-box">
-            <div style="font-weight:bold; margin-bottom:8px;" id="chat-title">Чат с продавцом</div>
-            <div class="chat-history" id="chat-history"></div>
-            <div style="display:flex; gap:6px;">
-                <button class="btn btn-warning" style="flex:1;" onclick="haggle('discount')">Сбить 15%</button>
-                <button class="btn btn-success" style="flex:1;" onclick="haggle('buy')">Забрать</button>
-                <button class="btn btn-danger" onclick="closeChat()">X</button>
+    <!-- ПРИЛОЖЕНИЕ 3: АВТО-БОТ -->
+    <div class="app-window" id="app-bot">
+        <div class="app-header">
+            <span style="font-weight:bold; font-size:0.85rem;">Auto-Buy Bot</span>
+        </div>
+        <div class="app-content">
+            <div class="item-card">
+                <div style="font-size:0.8rem; font-weight:bold;">Скрипт авто-выкупа</div>
+                <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">Выкупает дешёвые лоты на 30% ниже рынка.</div>
+                <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.75rem;">Статус: <b id="bot-status" style="color:var(--red);">Выкл</b></span>
+                    <button class="btn btn-purple" id="bot-btn" onclick="toggleBot()">Включить</button>
+                </div>
             </div>
+            <div id="bot-logs" style="margin-top:8px;"></div>
         </div>
     </div>
 
-    <div class="home-bar" onclick="closeApps()">
-        <div class="home-indicator"></div>
+    <!-- КОМПАКТНОЕ МЕНЮ ТОРГА (BOTTOM SHEET) -->
+    <div class="chat-modal" id="chat-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:bold; font-size:0.8rem;" id="chat-title">Торг по лоту</span>
+            <button class="btn btn-danger" style="padding:2px 6px;" onclick="closeChat()">✕</button>
+        </div>
+        <div class="chat-history" id="chat-history"></div>
+        <div style="display:flex; gap:6px;">
+            <button class="btn btn-warning" style="flex:1;" onclick="haggle('discount')">Сбить 15%</button>
+            <button class="btn btn-success" style="flex:1;" onclick="haggle('buy')">Забрать</button>
+        </div>
+    </div>
+
+    <!-- НАВИГАЦИОННАЯ КНОПКА ВЫХОДА (HOME) -->
+    <div class="phone-nav">
+        <div class="home-bar-btn" onclick="closeApps()" title="Выход на рабочий стол"></div>
     </div>
 </div>
 
@@ -164,12 +206,15 @@
         usdt: 0,
         usdtRate: 92.50,
         inventory: [],
-        activeHaggle: null
+        activeHaggle: null,
+        botActive: false,
+        botInterval: null
     };
 
     const itemTemplates = [
         { title: 'Brawl Stars | 28k кубков', category: 'Brawl Stars', min: 300, max: 600, real: 900 },
         { title: 'Ключ Minecraft Java', category: 'Ключи', min: 200, max: 400, real: 650 },
+        { title: 'Steam | CS2 Prime', category: 'Steam', min: 800, max: 1200, real: 1800 },
         { title: 'PSN Turkey | FC 24', category: 'PSN', min: 1000, max: 1700, real: 2700 }
     ];
 
@@ -180,6 +225,7 @@
 
     function closeApps() {
         document.querySelectorAll('.app-window').forEach(app => app.classList.remove('active'));
+        closeChat();
     }
 
     function updateUI() {
@@ -188,7 +234,7 @@
         renderInventory();
     }
 
-    /* --- РЫНОК И ТОРГ --- */
+    /* --- РЫНОК С ТОРГОМ И РЫНОЧНОЙ ЦЕНОЙ --- */
     function generateMarket() {
         const list = document.getElementById('market-list');
         list.innerHTML = '';
@@ -200,8 +246,8 @@
             const card = document.createElement('div');
             card.className = 'item-card';
             card.innerHTML = `
-                <div style="font-weight:bold; font-size:0.85rem;">${item.title}</div>
-                <div style="font-size:0.9rem; margin:4px 0;"><b>${item.price} ₽</b> <span style="font-size:0.7rem; color:var(--text-muted);">(Рынок: ~${item.realValue} ₽)</span></div>
+                <div style="font-weight:bold; font-size:0.8rem;">${item.title}</div>
+                <div style="font-size:0.85rem; margin:4px 0;"><b>${item.price} ₽</b> <span style="font-size:0.68rem; color:var(--text-muted);">(Рынок: ~${item.realValue} ₽)</span></div>
                 <div style="display:flex; gap:6px;">
                     <button class="btn btn-primary" style="flex:1;" onclick="buyItem(${item.price}, '${item.title}', ${item.realValue})">Купить</button>
                     <button class="btn btn-warning" style="flex:1;" onclick="openChat('${item.title}', ${item.price}, ${item.realValue})">💬 Торг</button>
@@ -211,10 +257,11 @@
         }
     }
 
+    /* --- КОМПАКТНЫЙ ЧАТ ТОРГА --- */
     function openChat(title, price, realValue) {
         state.activeHaggle = { title, price, realValue };
         document.getElementById('chat-title').innerText = `Торг: ${title}`;
-        document.getElementById('chat-history').innerHTML = `<div class="msg msg-them">Привет! Отдаю за ${price} ₽. Твоя цена?</div>`;
+        document.getElementById('chat-history').innerHTML = `<div class="msg msg-them">Привет! Продаю за ${price} ₽. Назови свою цену.</div>`;
         document.getElementById('chat-modal').classList.add('active');
     }
 
@@ -226,12 +273,12 @@
 
         if (action === 'discount') {
             const newPrice = Math.floor(h.price * 0.85);
-            history.innerHTML += `<div class="msg msg-me">Скинь до ${newPrice} ₽, забрал прямо сейчас.</div>`;
+            history.innerHTML += `<div class="msg msg-me">Скинешь до ${newPrice} ₽? Заберу сходу.</div>`;
             if (Math.random() > 0.3) {
-                history.innerHTML += `<div class="msg msg-them">По рукам! Забирай за ${newPrice} ₽.</div>`;
+                history.innerHTML += `<div class="msg msg-them">Ладно, договорились! Покупай за ${newPrice} ₽.</div>`;
                 h.price = newPrice;
             } else {
-                history.innerHTML += `<div class="msg msg-them">Не, это слишком дёшево.</div>`;
+                history.innerHTML += `<div class="msg msg-them">Не, брат, это в минус. Минимум ${h.price} ₽.</div>`;
             }
         } else if (action === 'buy') {
             buyItem(h.price, h.title, h.realValue);
@@ -239,8 +286,9 @@
         }
     }
 
+    /* --- ИНВЕНТАРЬ И ПОКУПКИ --- */
     function buyItem(price, title, realValue) {
-        if (state.balance < price) return alert('❌ Недостаточно средств!');
+        if (state.balance < price) return alert('❌ Недостаточно денег!');
         state.balance -= price;
         state.inventory.push({ title, buyPrice: price, realValue, sellPrice: Math.floor(realValue * 1.1) });
         updateUI();
@@ -250,13 +298,17 @@
     function renderInventory() {
         const inv = document.getElementById('inventory-list');
         inv.innerHTML = '';
+        if (state.inventory.length === 0) {
+            inv.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted);">Нет выкупленных товаров.</div>';
+            return;
+        }
         state.inventory.forEach((item, index) => {
             const card = document.createElement('div');
             card.className = 'item-card';
             card.innerHTML = `
-                <div style="font-weight:bold; font-size:0.85rem;">${item.title}</div>
+                <div style="font-weight:bold; font-size:0.8rem;">${item.title}</div>
                 <div style="display:flex; gap:6px; margin-top:6px; align-items:center;">
-                    <input type="number" id="sell-price-${index}" value="${item.sellPrice}" style="width:70px; padding:4px; background:#0f172a; border:1px solid var(--border); color:white; border-radius:4px;">
+                    <input type="number" id="sell-price-${index}" value="${item.sellPrice}" style="width:75px; padding:4px; background:#0f172a; border:1px solid var(--border); color:white; border-radius:4px; font-size:0.75rem;">
                     <button class="btn btn-success" style="flex:1;" onclick="sellItem(${index})">Выставить</button>
                 </div>
             `;
@@ -265,15 +317,14 @@
     }
 
     function sellItem(index) {
-        const item = state.inventory[index];
         const setPrice = parseInt(document.getElementById(`sell-price-${index}`).value);
-        if (Math.random() < 0.7) {
+        if (Math.random() < 0.75) {
             state.balance += setPrice;
-            alert(`💰 Продано за ${setPrice} ₽!`);
+            alert(`💰 Товар успешно продан за ${setPrice} ₽!`);
             state.inventory.splice(index, 1);
             updateUI();
         } else {
-            alert('⏳ Цена слишком высока, пока нет покупателей.');
+            alert('⏳ Покупатели пока думают. Попробуй сбить цену.');
         }
     }
 
@@ -290,6 +341,37 @@
             state.balance += cost;
         }
         updateUI();
+    }
+
+    /* --- АВТО-БОТ --- */
+    function toggleBot() {
+        state.botActive = !state.botActive;
+        const status = document.getElementById('bot-status');
+        const btn = document.getElementById('bot-btn');
+
+        if (state.botActive) {
+            status.innerText = 'Работает'; status.style.color = 'var(--green)';
+            btn.innerText = 'Выключить';
+            state.botInterval = setInterval(runBot, 3000);
+        } else {
+            status.innerText = 'Выкл'; status.style.color = 'var(--red)';
+            btn.innerText = 'Включить';
+            clearInterval(state.botInterval);
+        }
+    }
+
+    function runBot() {
+        const logs = document.getElementById('bot-logs');
+        itemTemplates.forEach(t => {
+            const price = Math.floor(Math.random() * (t.max - t.min + 1)) + t.min;
+            if (price < t.real * 0.65 && state.balance >= price) {
+                buyItem(price, t.title, t.real);
+                const log = document.createElement('div');
+                log.className = 'log-item';
+                log.innerText = `🤖 Бот выкупил "${t.title}" за ${price} ₽`;
+                logs.prepend(log);
+            }
+        });
     }
 
     generateMarket();
