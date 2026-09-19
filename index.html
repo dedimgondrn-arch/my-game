@@ -41,12 +41,12 @@
         /* Рабочий стол OS */
         .desktop {
             flex: 1; background: radial-gradient(circle at top, #1e1b4b, #0f172a);
-            padding: 50px 20px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-content: start;
+            padding: 50px 15px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; align-content: start;
         }
 
         .app-icon { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
         .icon-box {
-            width: 62px; height: 62px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+            width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
             box-shadow: 0 8px 16px rgba(0,0,0,0.4); transition: transform 0.1s ease;
         }
         .app-icon:active .icon-box { transform: scale(0.92); filter: brightness(0.9); }
@@ -99,6 +99,7 @@
         .msg-me { background: var(--accent); align-self: flex-end; color: white; }
 
         .log-item { font-size: 0.7rem; padding: 5px; background: #0f172a; border-left: 2px solid var(--accent); margin-bottom: 4px; border-radius: 4px; }
+        .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -114,7 +115,7 @@
     <div class="desktop">
         <div class="app-icon" onclick="openApp('app-resell')">
             <div class="icon-box" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">🛍️</div>
-            <span class="app-label">P2P Resell</span>
+            <span class="app-label">P2P Market</span>
         </div>
         <div class="app-icon" onclick="openApp('app-crypto')">
             <div class="icon-box" style="background: linear-gradient(135deg, #22c55e, #15803d);">💎</div>
@@ -123,6 +124,14 @@
         <div class="app-icon" onclick="openApp('app-bot')">
             <div class="icon-box" style="background: linear-gradient(135deg, #a855f7, #7e22ce);">🤖</div>
             <span class="app-label">Авто-Бот</span>
+        </div>
+        <div class="app-icon" onclick="openApp('app-stats')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">📊</div>
+            <span class="app-label">Статистика</span>
+        </div>
+        <div class="app-icon" onclick="openApp('app-settings')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #64748b, #334155);">⚙️</div>
+            <span class="app-label">Настройки</span>
         </div>
     </div>
 
@@ -181,6 +190,47 @@
         </div>
     </div>
 
+    <!-- ПРИЛОЖЕНИЕ 4: СТАТИСТИКА -->
+    <div class="app-window" id="app-stats">
+        <div class="app-header">
+            <span style="font-weight:bold; font-size:0.85rem;">Статистика профиля</span>
+        </div>
+        <div class="app-content">
+            <div class="item-card">
+                <div class="stat-row">
+                    <span style="color:var(--text-muted);">Успешных сделок:</span>
+                    <b id="stat-sales">0</b>
+                </div>
+                <div class="stat-row">
+                    <span style="color:var(--text-muted);">Заработано всего:</span>
+                    <b id="stat-earned" style="color:var(--green);">0 ₽</b>
+                </div>
+                <div class="stat-row">
+                    <span style="color:var(--text-muted);">Оборот USDT:</span>
+                    <b id="stat-crypto-volume" style="color:var(--yellow);">0 USDT</b>
+                </div>
+                <div class="stat-row" style="border:none;">
+                    <span style="color:var(--text-muted);">Статус бота:</span>
+                    <b id="stat-bot-state">Выключен</b>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПРИЛОЖЕНИЕ 5: НАСТРОЙКИ -->
+    <div class="app-window" id="app-settings">
+        <div class="app-header">
+            <span style="font-weight:bold; font-size:0.85rem;">Настройки OS</span>
+        </div>
+        <div class="app-content">
+            <div class="item-card">
+                <div style="font-weight:bold; font-size:0.8rem; margin-bottom:4px;">Сброс системы</div>
+                <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:10px;">Полностью сбрасывает баланс, инвентарь и статистику до стартовых значений.</div>
+                <button class="btn btn-danger" style="width:100%;" onclick="resetProgress()">Сбросить прогресс</button>
+            </div>
+        </div>
+    </div>
+
     <!-- КОМПАКТНОЕ МЕНЮ ТОРГА (BOTTOM SHEET) -->
     <div class="chat-modal" id="chat-modal">
         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -201,29 +251,28 @@
 </div>
 
 <script>
-    let state = {
+    const INITIAL_STATE = {
         balance: 1000,
         usdt: 0,
         usdtRate: 92.50,
         inventory: [],
         activeHaggle: null,
         botActive: false,
-        botInterval: null
+        statsSales: 0,
+        statsEarned: 0,
+        statsCryptoVolume: 0
     };
 
-    // Точечно настроенные категории товаров и адекватные рыночные цены
+    let state = JSON.parse(JSON.stringify(INITIAL_STATE));
+    let botInterval = null;
+
     const itemTemplates = [
-        // Мелкие лоты (для разгона начального баланса)
         { title: 'Brawl Stars | 12k кубков + Лега', category: 'Brawl Stars', min: 250, max: 350, real: 450 },
         { title: 'Ключ Minecraft Java Edition', category: 'Ключи', min: 380, max: 520, real: 650 },
         { title: 'Telegram Premium (3 месяца)', category: 'Подписки', min: 600, max: 750, real: 900 },
-
-        // Средний сегмент (Основной оборот рынка)
         { title: 'Brawl Stars | 28k кубков + 50 скинов', category: 'Brawl Stars', min: 1100, max: 1450, real: 1800 },
         { title: 'Steam | CS2 Prime + Inventory 20$', category: 'Steam', min: 1600, max: 2100, real: 2600 },
         { title: 'PSN Turkey | FC 25 + GTA V', category: 'PSN', min: 2200, max: 2700, real: 3400 },
-
-        // Дорогой сегмент (Редкие жирные сделки)
         { title: 'Steam | 100+ игр + Личный аккаунт', category: 'Steam', min: 2800, max: 3500, real: 5200 },
         { title: 'PSN | PS Plus Deluxe (12 месяцев)', category: 'PSN', min: 3200, max: 4000, real: 5800 },
         { title: 'Brawl Stars | 50k кубков + Фулл Тэг', category: 'Brawl Stars', min: 3900, max: 4800, real: 7500 }
@@ -232,6 +281,7 @@
     function openApp(id) {
         document.querySelectorAll('.app-window').forEach(app => app.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        updateUI();
     }
 
     function closeApps() {
@@ -242,17 +292,24 @@
     function updateUI() {
         document.getElementById('balance-resell').innerText = state.balance.toLocaleString() + ' ₽';
         document.getElementById('usdt-balance').innerText = state.usdt.toFixed(1) + ' USDT';
+        
+        // Обновление статистики
+        document.getElementById('stat-sales').innerText = state.statsSales;
+        document.getElementById('stat-earned').innerText = state.statsEarned.toLocaleString() + ' ₽';
+        document.getElementById('stat-crypto-volume').innerText = state.statsCryptoVolume.toFixed(1) + ' USDT';
+        document.getElementById('stat-bot-state').innerText = state.botActive ? 'Работает' : 'Выключен';
+        document.getElementById('stat-bot-state').style.color = state.botActive ? 'var(--green)' : 'var(--red)';
+
         renderInventory();
     }
 
-    /* --- РЫНОК С ТОРГОМ И РЫНОЧНОЙ ЦЕНОЙ --- */
     function generateMarket() {
         const list = document.getElementById('market-list');
         list.innerHTML = '';
         for (let i = 0; i < 3; i++) {
             const t = itemTemplates[Math.floor(Math.random() * itemTemplates.length)];
             const price = Math.floor(Math.random() * (t.max - t.min + 1)) + t.min;
-            const item = { id: Date.now() + i, title: t.title, price, realValue: t.real };
+            const item = { id: Date.now() + i, title: t.title, price, realValue: t.real, originalPrice: price };
 
             const card = document.createElement('div');
             card.className = 'item-card';
@@ -268,9 +325,10 @@
         }
     }
 
-    /* --- КОМПАКТНЫЙ ЧАТ ТОРГА --- */
+    /* --- ФИКС БАГА ТОРГА (ЛИМИТ СКИДКИ) --- */
     function openChat(title, price, realValue) {
-        state.activeHaggle = { title, price, realValue };
+        // Запоминаем стартовую цену, чтобы не давать скидывать бесконечно
+        state.activeHaggle = { title, price, realValue, minPrice: Math.floor(price * 0.75) };
         document.getElementById('chat-title').innerText = `Торг: ${title}`;
         document.getElementById('chat-history').innerHTML = `<div class="msg msg-them">Привет! Продаю за ${price} ₽. Назови свою цену.</div>`;
         document.getElementById('chat-modal').classList.add('active');
@@ -283,25 +341,32 @@
         const history = document.getElementById('chat-history');
 
         if (action === 'discount') {
-            const newPrice = Math.floor(h.price * 0.85);
-            history.innerHTML += `<div class="msg msg-me">Скинешь до ${newPrice} ₽? Заберу сходу.</div>`;
-            if (Math.random() > 0.3) {
-                history.innerHTML += `<div class="msg msg-them">Ладно, договорились! Покупай за ${newPrice} ₽.</div>`;
-                h.price = newPrice;
+            const proposedPrice = Math.floor(h.price * 0.85);
+
+            // Проверка лимита: нельзя сбить ниже 25% от первоначальной цены
+            if (proposedPrice < h.minPrice) {
+                history.innerHTML += `<div class="msg msg-me">Скинешь ещё?</div>`;
+                history.innerHTML += `<div class="msg msg-them">Ты чего, с ума сошёл? Это и так крайняя цена (${h.price} ₽), ниже не скину!</div>`;
             } else {
-                history.innerHTML += `<div class="msg msg-them">Не, брат, это в минус. Минимум ${h.price} ₽.</div>`;
+                history.innerHTML += `<div class="msg msg-me">Скинешь до ${proposedPrice} ₽? Заберу сходу.</div>`;
+                if (Math.random() > 0.35) {
+                    history.innerHTML += `<div class="msg msg-them">Ладно, договорились! Покупай за ${proposedPrice} ₽.</div>`;
+                    h.price = proposedPrice;
+                } else {
+                    history.innerHTML += `<div class="msg msg-them">Не, брат, это в минус. Минимум ${h.price} ₽.</div>`;
+                }
             }
         } else if (action === 'buy') {
             buyItem(h.price, h.title, h.realValue);
             closeChat();
         }
+        history.scrollTop = history.scrollHeight;
     }
 
-    /* --- ИНВЕНТАРЬ И ПОКУПКИ --- */
     function buyItem(price, title, realValue) {
         if (state.balance < price) return alert('❌ Недостаточно денег!');
         state.balance -= price;
-        state.inventory.push({ title, buyPrice: price, realValue, sellPrice: Math.floor(realValue * 1.1) });
+        state.inventory.push({ title, buyPrice: price, realValue, sellPrice: Math.floor(realValue * 1.05) });
         updateUI();
         generateMarket();
     }
@@ -318,8 +383,9 @@
             card.className = 'item-card';
             card.innerHTML = `
                 <div style="font-weight:bold; font-size:0.8rem;">${item.title}</div>
+                <div style="font-size:0.68rem; color:var(--text-muted); margin-top:2px;">Куплено за: ${item.buyPrice} ₽ | Рынок: ~${item.realValue} ₽</div>
                 <div style="display:flex; gap:6px; margin-top:6px; align-items:center;">
-                    <input type="number" id="sell-price-${index}" value="${item.sellPrice}" style="width:75px; padding:4px; background:#0f172a; border:1px solid var(--border); color:white; border-radius:4px; font-size:0.75rem;">
+                    <input type="number" id="sell-price-${index}" value="${item.sellPrice}" style="width:80px; padding:4px; background:#0f172a; border:1px solid var(--border); color:white; border-radius:4px; font-size:0.75rem;">
                     <button class="btn btn-success" style="flex:1;" onclick="sellItem(${index})">Выставить</button>
                 </div>
             `;
@@ -327,34 +393,51 @@
         });
     }
 
+    /* --- ФИКС БАГА ПРОДАЖИ (РЫНОЧНАЯ ВЕРОЯТНОСТЬ) --- */
     function sellItem(index) {
+        const item = state.inventory[index];
         const setPrice = parseInt(document.getElementById(`sell-price-${index}`).value);
-        if (Math.random() < 0.75) {
+
+        if (!setPrice || setPrice <= 0) return alert('❌ Укажите корректную цену!');
+
+        // Расчёт шанса покупки в зависимости от завышения цены
+        const ratio = setPrice / item.realValue;
+        let buyChance = 0;
+
+        if (ratio <= 0.9) buyChance = 0.95;       // Очень дёшево — улетит моментально (95%)
+        else if (ratio <= 1.1) buyChance = 0.70;  // Адекватный рынок (70%)
+        else if (ratio <= 1.3) buyChance = 0.30;  // Завышенная цена (30%)
+        else if (ratio <= 1.5) buyChance = 0.10;  // Оверпрайс (10%)
+        else buyChance = 0.0;                     // Дикий оверпрайс — никто не купит (0%)
+
+        if (Math.random() < buyChance) {
             state.balance += setPrice;
+            state.statsSales += 1;
+            state.statsEarned += (setPrice - item.buyPrice);
             alert(`💰 Товар успешно продан за ${setPrice} ₽!`);
             state.inventory.splice(index, 1);
             updateUI();
         } else {
-            alert('⏳ Покупатели пока думают. Попробуй сбить цену.');
+            alert('❌ Покупатели считают, что цена слишком завышена! Попробуй снизить её.');
         }
     }
 
-    /* --- КРИПТОБИРЖА --- */
     function tradeCrypto(type) {
         const cost = state.usdtRate * 10;
         if (type === 'buy') {
             if (state.balance < cost) return alert('❌ Недостаточно рублей!');
             state.balance -= cost;
             state.usdt += 10;
+            state.statsCryptoVolume += 10;
         } else {
             if (state.usdt < 10) return alert('❌ Недостаточно USDT!');
             state.usdt -= 10;
             state.balance += cost;
+            state.statsCryptoVolume += 10;
         }
         updateUI();
     }
 
-    /* --- АВТО-БОТ --- */
     function toggleBot() {
         state.botActive = !state.botActive;
         const status = document.getElementById('bot-status');
@@ -363,12 +446,13 @@
         if (state.botActive) {
             status.innerText = 'Работает'; status.style.color = 'var(--green)';
             btn.innerText = 'Выключить';
-            state.botInterval = setInterval(runBot, 3000);
+            botInterval = setInterval(runBot, 3000);
         } else {
             status.innerText = 'Выкл'; status.style.color = 'var(--red)';
             btn.innerText = 'Включить';
-            clearInterval(state.botInterval);
+            clearInterval(botInterval);
         }
+        updateUI();
     }
 
     function runBot() {
@@ -383,6 +467,21 @@
                 logs.prepend(log);
             }
         });
+    }
+
+    /* --- СБРОС ПРОГРЕССА В НАСТРОЙКАХ --- */
+    function resetProgress() {
+        if (confirm('Точно сбросить весь прогресс и очистить инвентарь?')) {
+            if (botInterval) clearInterval(botInterval);
+            state = JSON.parse(JSON.stringify(INITIAL_STATE));
+            document.getElementById('bot-status').innerText = 'Выкл';
+            document.getElementById('bot-status').style.color = 'var(--red)';
+            document.getElementById('bot-btn').innerText = 'Включить';
+            document.getElementById('bot-logs').innerHTML = '';
+            generateMarket();
+            updateUI();
+            alert('🔄 Системный сброс выполнен!');
+        }
     }
 
     generateMarket();
