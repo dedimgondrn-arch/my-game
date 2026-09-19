@@ -160,6 +160,27 @@
         .badge-green { color: var(--green); border-color: var(--green); }
         .badge-red { color: var(--red); border-color: var(--red); }
         .badge-yellow { color: var(--yellow); border-color: var(--yellow); }
+        .business-hero {
+            background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(99,102,241,0.16));
+            border: 1px solid rgba(6,182,212,0.55); border-radius: 14px; padding: 12px; margin-bottom: 10px;
+            box-shadow: 0 8px 24px rgba(6,182,212,0.08);
+        }
+        .business-card {
+            background: linear-gradient(160deg, rgba(30,41,59,0.98), rgba(15,23,42,0.96));
+            border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 8px;
+            transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+        }
+        .business-card:hover { transform: translateY(-1px); border-color: var(--accent); box-shadow: 0 8px 18px rgba(0,0,0,0.2); }
+        .business-income { color: var(--green); font-weight: 800; white-space: nowrap; }
+        .deal-score {
+            display: flex; align-items: center; gap: 6px; padding: 5px 7px; margin: 5px 0;
+            border-radius: 8px; background: rgba(15,23,42,0.72); border: 1px solid var(--border);
+            font-size: 0.67rem;
+        }
+        .deal-score-bar { flex: 1; height: 5px; background: #0f172a; border-radius: 99px; overflow: hidden; }
+        .deal-score-fill { height: 100%; border-radius: inherit; transition: width 0.25s ease; }
+        .verification-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 5px; }
+        .verification-cell { padding: 4px 5px; border-radius: 6px; background: rgba(15,23,42,0.7); font-size: 0.62rem; }
         @keyframes sweetPulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.04); }
@@ -282,6 +303,10 @@
         <button class="app-icon" data-app="app-auction" aria-label="Аукционы">
             <div class="icon-box" style="background: linear-gradient(135deg, #ec4899, #be185d);">🔨<span class="lock-badge" hidden>🔒</span></div>
             <span class="app-label">Аукционы</span>
+        </button>
+        <button class="app-icon" data-app="app-business" aria-label="Бизнес-центр">
+            <div class="icon-box" style="background: linear-gradient(135deg, #06b6d4, #2563eb);">🏢<span class="lock-badge" hidden>🔒</span></div>
+            <span class="app-label">Бизнесы</span>
         </button>
         <button class="app-icon" data-app="app-stats" aria-label="Статистика">
             <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">📊</div>
@@ -605,6 +630,32 @@
         </div>
     </div>
 
+    <!-- БИЗНЕС-ЦЕНТР -->
+    <div class="app-window" id="app-business">
+        <div class="app-header">
+            <span class="title-sm">🏢 Бизнес-центр</span>
+            <span class="business-income" id="business-header-income">+0 ₽/с</span>
+            <span style="color:var(--green); font-weight:bold; font-size:0.8rem;" class="global-balance-display">0 ₽</span>
+        </div>
+        <div class="app-content">
+            <div class="business-hero">
+                <div class="row-between">
+                    <div>
+                        <div class="title-sm">Портфель активного дохода</div>
+                        <div class="tiny muted">Стройте сеть бизнесов и зарабатывайте даже во время торговли.</div>
+                    </div>
+                    <span class="badge badge-green" id="business-count">0 активов</span>
+                </div>
+                <div class="row-between" style="margin-top:9px;">
+                    <span class="tiny muted">Пассивный поток</span>
+                    <b class="business-income" id="business-total-income">0 ₽/сек</b>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="business-portfolio-fill" style="width:0%; background:linear-gradient(90deg,var(--cyan),var(--accent));"></div></div>
+            </div>
+            <div id="business-list"></div>
+        </div>
+    </div>
+
     <!-- НАСТРОЙКИ -->
     <div class="app-window" id="app-settings">
         <div class="app-header"><span class="title-sm">Настройки</span></div>
@@ -758,6 +809,11 @@ const BALANCE = {
         banUnbanCost: 2500,
         demandDriftSec: 30
     },
+    business: {
+        managerMax: 3,
+        managerBonus: 0.22,
+        maxLevel: 5
+    },
 
     bot: {
         maxLevel: 5,
@@ -815,6 +871,13 @@ const RIG_TYPES = {
     }
 };
 
+const BUSINESS_TYPES = [
+    { id: 'coffee', name: 'Кофейня «Поток»', icon: '☕', baseCost: 15000, income: 85, reqLevel: 3, desc: 'Точка с быстрым оборотом и стабильным спросом.' },
+    { id: 'delivery', name: 'Курьерский парк', icon: '🛵', baseCost: 65000, income: 360, reqLevel: 4, desc: 'Мопеды работают по городу и доставляют заказы.' },
+    { id: 'showroom', name: 'Авто-шоурум', icon: '🚘', baseCost: 280000, income: 1450, reqLevel: 5, desc: 'Витрина для дорогих машин и быстрых сделок.' },
+    { id: 'warehouse', name: 'Склад электроники', icon: '📦', baseCost: 950000, income: 5200, reqLevel: 6, desc: 'Оптовый поток гаджетов с высоким оборотом.' }
+];
+
 const CATEGORIES = {
     gadgets:  { name: 'Электроника', icon: '📱', level: 1 },
     games:    { name: 'Игры',        icon: '🎮', level: 1 },
@@ -832,6 +895,7 @@ const UNLOCKS = {
     'app-garage': 2,
     'app-casino': 3,
     'app-auction': 3,
+    'app-business': 3,
     'app-mining': 4,
     'app-bot': 5,
     'app-stats': 1,
@@ -841,6 +905,7 @@ const UNLOCKS = {
 const APP_NAMES = {
     'app-market': 'P2P & Авито', 'app-bank': 'Банк', 'app-crypto': 'Crypto Hub',
     'app-garage': 'Гараж/Сервис', 'app-casino': 'Казино', 'app-auction': 'Аукционы',
+    'app-business': 'Бизнес-центр',
     'app-mining': 'Майнинг', 'app-bot': 'Авто-Бот',
     'app-stats': 'Статистика', 'app-settings': 'Настройки'
 };
@@ -1058,6 +1123,13 @@ function defaultState() {
         statsChecked: 0,
         statsAuctionsWon: 0,
         rentIncomeTotal: 0,
+        businessEarned: 0,
+        businesses: {
+            coffee: { owned: false, level: 0, staff: 0 },
+            delivery: { owned: false, level: 0, staff: 0 },
+            showroom: { owned: false, level: 0, staff: 0 },
+            warehouse: { owned: false, level: 0, staff: 0 }
+        },
         garageLevel: 0,
         mechanicHired: false,
         mechanicTimer: 0,
@@ -1143,6 +1215,16 @@ function normalizeState(s) {
     s.statsChecked = Math.max(0, num(s.statsChecked, 0));
     s.statsAuctionsWon = Math.max(0, num(s.statsAuctionsWon, 0));
     s.rentIncomeTotal = Math.max(0, num(s.rentIncomeTotal, 0));
+    s.businessEarned = Math.max(0, num(s.businessEarned, 0));
+    if (!s.businesses || typeof s.businesses !== 'object') s.businesses = {};
+    BUSINESS_TYPES.forEach(type => {
+        const b = s.businesses[type.id] && typeof s.businesses[type.id] === 'object' ? s.businesses[type.id] : {};
+        s.businesses[type.id] = {
+            owned: b.owned === true,
+            level: clamp(Math.floor(num(b.level, 0)), 0, BALANCE.business.maxLevel),
+            staff: clamp(Math.floor(num(b.staff, 0)), 0, BALANCE.business.managerMax)
+        };
+    });
     s.garageLevel = clamp(Math.floor(num(s.garageLevel, 0)), 0, 3);
     s.mechanicHired = s.mechanicHired === true;
     s.mechanicTimer = Math.max(0, num(s.mechanicTimer, 0));
@@ -1344,8 +1426,16 @@ function rigsValue() {
 }
 function netWorth() {
     return state.balance + state.deposit + cryptoValue() + rigsValue()
+        + businessAssetValue()
         + state.inventory.reduce((a, i) => a + i.realValue * 0.8, 0)
         - debtDue(state.loan) - debtDue(state.electricityBill);
+}
+
+function businessAssetValue() {
+    return BUSINESS_TYPES.reduce((sum, type) => {
+        const b = state.businesses && state.businesses[type.id];
+        return sum + (b && b.owned ? type.baseCost * (0.55 + b.level * 0.12) : 0);
+    }, 0);
 }
 
 const prestigeBonus = () => 1 + state.prestige * BALANCE.prestige.bonusPerPoint;
@@ -1424,6 +1514,7 @@ function doPrestige() {
    ===================================================================== */
 function refresh(saveNow = false) {
     renderHUD();
+    if ($('app-business')) renderBusinesses();
     updateRigs();
     dirty = true;
     checkAchievements();
@@ -1504,6 +1595,112 @@ function renderHUD() {
 
 function changeTrust(delta) {
     state.trustScore = clamp(round2(state.trustScore + delta), 1, 5);
+}
+
+/* --- Бизнес-центр: пассивный доход и развитие сети --- */
+function businessIncome(type, b) {
+    if (!type || !b || !b.owned || b.level <= 0) return 0;
+    return Math.floor(type.income * b.level * (1 + b.staff * BALANCE.business.managerBonus) * prestigeBonus());
+}
+
+function totalBusinessIncome() {
+    return BUSINESS_TYPES.reduce((sum, type) => sum + businessIncome(type, state.businesses[type.id]), 0);
+}
+
+function businessUpgradeCost(type, b) {
+    return Math.floor(type.baseCost * Math.pow(1.75, Math.max(0, b.level - 1)));
+}
+
+function businessManagerCost(type, b) {
+    return Math.floor(type.baseCost * 0.32 * (b.staff + 1));
+}
+
+function renderBusinesses() {
+    const list = $('business-list');
+    if (!list) return;
+    const total = totalBusinessIncome();
+    const owned = BUSINESS_TYPES.filter(type => state.businesses[type.id].owned).length;
+    $('business-count').textContent = `${owned} активов`;
+    $('business-total-income').textContent = `${fmtExact(total)}/сек`;
+    $('business-header-income').textContent = `+${fmt(total)}/с`;
+    $('business-portfolio-fill').style.width = `${Math.min(100, Math.round((owned / BUSINESS_TYPES.length) * 100))}%`;
+    list.innerHTML = '';
+
+    BUSINESS_TYPES.forEach(type => {
+        const b = state.businesses[type.id];
+        const locked = state.level < type.reqLevel;
+        const ownedLabel = b.owned ? `Уровень ${b.level}/${BALANCE.business.maxLevel}` : 'Не запущен';
+        const income = businessIncome(type, b);
+        const upgradeCost = b.owned && b.level < BALANCE.business.maxLevel ? businessUpgradeCost(type, b) : 0;
+        const managerCost = b.owned && b.staff < BALANCE.business.managerMax ? businessManagerCost(type, b) : 0;
+        const card = document.createElement('div');
+        card.className = 'business-card';
+        card.innerHTML = `
+            <div class="row-between">
+                <div class="row" style="gap:7px; align-items:center;">
+                    <span style="font-size:1.5rem;">${type.icon}</span>
+                    <div><div class="title-sm">${esc(type.name)}</div><div class="tiny muted">${esc(type.desc)}</div></div>
+                </div>
+                <span class="badge ${b.owned ? 'badge-green' : locked ? 'badge-red' : 'badge-yellow'}">${locked ? `Ур. ${type.reqLevel}` : ownedLabel}</span>
+            </div>
+            <div class="stat-row" style="margin-top:6px;">
+                <span class="muted">Поток</span><b class="business-income">${b.owned ? `+${fmtExact(income)}/сек` : '—'}</b>
+            </div>
+            ${b.owned ? `<div class="tiny muted" style="margin:5px 0;">Управляющие: <b>${b.staff}/${BALANCE.business.managerMax}</b> · каждый даёт +${Math.round(BALANCE.business.managerBonus * 100)}% к потоку</div>` : `<div class="tiny muted" style="margin:5px 0;">Старт: <b>${fmtExact(type.baseCost)}</b> · откроется с уровня ${type.reqLevel}</div>`}
+            <div class="row" style="gap:5px; margin-top:6px;">
+                ${!b.owned
+                    ? `<button class="btn btn-primary" style="flex:1;" data-business-buy="${type.id}" ${locked || state.balance < type.baseCost ? 'disabled' : ''}>Запустить · ${fmt(type.baseCost)}</button>`
+                    : `<button class="btn btn-primary btn-xs" style="flex:1;" data-business-upgrade="${type.id}" ${b.level >= BALANCE.business.maxLevel || state.balance < upgradeCost ? 'disabled' : ''}>Улучшить · ${b.level >= BALANCE.business.maxLevel ? 'MAX' : fmt(upgradeCost)}</button>
+                       <button class="btn btn-cyan btn-xs" style="flex:1;" data-business-staff="${type.id}" ${b.staff >= BALANCE.business.managerMax || state.balance < managerCost ? 'disabled' : ''}>Нанять · ${b.staff >= BALANCE.business.managerMax ? 'MAX' : fmt(managerCost)}</button>`
+                }
+            </div>`;
+        list.appendChild(card);
+    });
+}
+
+function buyBusiness(id) {
+    const type = BUSINESS_TYPES.find(x => x.id === id);
+    const b = type && state.businesses[type.id];
+    if (!type || !b || b.owned) return;
+    if (state.level < type.reqLevel) return warn(`Бизнес откроется на ${type.reqLevel} уровне.`);
+    if (state.balance < type.baseCost) return warn(`Нужно ${fmtExact(type.baseCost)} для запуска.`);
+    state.balance -= type.baseCost;
+    b.owned = true; b.level = 1; b.staff = 0;
+    addXP(30);
+    showPush('🏢', `${type.name} запущен: +${fmtExact(businessIncome(type, b))}/сек`, 'good');
+    renderBusinesses(); refresh(true);
+}
+
+function upgradeBusiness(id) {
+    const type = BUSINESS_TYPES.find(x => x.id === id);
+    const b = type && state.businesses[type.id];
+    if (!type || !b || !b.owned || b.level >= BALANCE.business.maxLevel) return;
+    const cost = businessUpgradeCost(type, b);
+    if (state.balance < cost) return warn(`Нужно ${fmtExact(cost)} на улучшение.`);
+    state.balance -= cost; b.level++;
+    addXP(20);
+    showPush('📈', `${type.name} улучшен до уровня ${b.level}.`, 'good');
+    renderBusinesses(); refresh(true);
+}
+
+function hireBusinessManager(id) {
+    const type = BUSINESS_TYPES.find(x => x.id === id);
+    const b = type && state.businesses[type.id];
+    if (!type || !b || !b.owned || b.staff >= BALANCE.business.managerMax) return;
+    const cost = businessManagerCost(type, b);
+    if (state.balance < cost) return warn(`Нужно ${fmtExact(cost)} на управляющего.`);
+    state.balance -= cost; b.staff++;
+    showPush('👔', `Управляющий нанят. Поток вырос до ${fmtExact(businessIncome(type, b))}/сек.`, 'good');
+    renderBusinesses(); refresh(true);
+}
+
+function businessTick() {
+    const income = totalBusinessIncome();
+    if (income <= 0) return;
+    state.balance = Math.min(BALANCE.maxMoney, state.balance + income);
+    state.businessEarned = (state.businessEarned || 0) + income;
+    state.statsEarned += income;
+    if ($('app-business') && $('app-business').classList.contains('active')) renderBusinesses();
 }
 
 /* --- Рабочий стол и навигация --- */
@@ -1672,9 +1869,15 @@ const SELLER_ARCHETYPES = {
 };
 
 function generateAutotekaReport(lot) {
+    const score = lot.isBad
+        ? clamp(Math.round(24 - lot.risk * 35), 4, 28)
+        : clamp(Math.round(94 - lot.risk * 28 - (lot.isSweetDeal ? 4 : 0)), 68, 98);
     if (!lot.isBad) {
         return {
             status: 'good',
+            score,
+            riskLevel: score >= 88 ? 'Низкий риск' : 'Средний риск',
+            recommendation: score >= 88 ? 'Можно брать: запас маржи подтверждён.' : 'Брать только с гарантом или после торга.',
             verdict: '🟢 Юридически чист: Без ДТП, залогов, арестов и скрытых дефектов.',
             details: [
                 '✅ Реестр залогов Федеральной нотариальной палаты: обременений нет',
@@ -1711,7 +1914,14 @@ function generateAutotekaReport(lot) {
         verdict = '🔴 СКАМ: Владелец восстановил аккаунт!';
         details = ['❌ Заявка на восстановление через техподдержку', '❌ Привязана резервная почта мошенника', '❌ Риск потери доступа 100%'];
     }
-    return { status: 'bad', verdict, details };
+    return {
+        status: 'bad',
+        score,
+        riskLevel: 'Критический риск',
+        recommendation: 'Не покупать без гарантии: вероятны потери, арест или дорогой ремонт.',
+        verdict,
+        details
+    };
 }
 
 function createLot(t) {
@@ -1823,9 +2033,14 @@ function renderMarket() {
                     <div style="font-weight:bold; color:${cr.status === 'bad' ? 'var(--red)' : 'var(--green)'}; margin-bottom:2px;">
                         ${esc(cr.verdict)}
                     </div>
+                    <div class="verification-grid">
+                        <div class="verification-cell">Скоринг: <b style="color:${num(cr.score, cr.status === 'bad' ? 20 : 85) >= 70 ? 'var(--green)' : 'var(--red)'};">${num(cr.score, cr.status === 'bad' ? 20 : 85)}/100</b></div>
+                        <div class="verification-cell">Риск: <b>${esc(cr.riskLevel || (cr.status === 'bad' ? 'Критический риск' : 'Проверен'))}</b></div>
+                    </div>
                     <div class="tiny muted" style="line-height:1.3;">
                         ${cr.details.map(d => `• ${esc(d)}`).join('<br>')}
                     </div>
+                    <div class="tiny" style="margin-top:4px; color:${cr.status === 'bad' ? 'var(--red)' : 'var(--cyan)'};">Рекомендация: ${esc(cr.recommendation || 'Изучите отчёт перед покупкой.')}</div>
                 </div>`;
         }
 
@@ -1844,6 +2059,11 @@ function renderMarket() {
             }
         }
 
+        const dealScore = lot.checked && lot.checkReport
+            ? num(lot.checkReport.score, lot.isBad ? 20 : 85)
+            : clamp(Math.round(78 - lot.risk * 70 + (lot.isSweetDeal ? 8 : 0)), 18, 91);
+        const dealScoreColor = dealScore >= 75 ? 'var(--green)' : dealScore >= 50 ? 'var(--yellow)' : 'var(--red)';
+        const dealScoreHtml = `<div class="deal-score"><b style="color:${dealScoreColor};">Индекс сделки ${dealScore}/100</b><div class="deal-score-bar"><div class="deal-score-fill" style="width:${dealScore}%; background:${dealScoreColor};"></div></div><span class="tiny muted">${lot.checked ? 'проверено' : 'предварительно'}</span></div>`;
         const estProfit = Math.floor(lot.realValue * (1 - BALANCE.market.feeRatio) - lot.price);
         const estProfitHtml = estProfit > 0 ? `<div class="tiny" style="color:var(--green); font-weight:600;">Потенциал перепродажи: ~+${fmtExact(estProfit)}</div>` : '';
         const chCost = lotCheckCost(lot);
@@ -1860,6 +2080,7 @@ function renderMarket() {
             <div style="font-size:0.8rem; margin:2px 0;"><b>${fmtExact(shown)}</b>
                 <span class="tiny muted">(Рынок: ~${fmtExact(lot.realValue)})</span>
             </div>
+            ${dealScoreHtml}
             ${estProfitHtml}
             <div class="row-between tiny" style="margin:2px 0 4px;">
                 <span class="muted">${sArch.icon} Продавец: ${sArch.name}</span>
@@ -4115,6 +4336,14 @@ function applyOffline() {
     const miningTicks = Math.floor(ms / BALANCE.mining.tickMs) * eff;
     if (miningTicks > 0) miningTick(miningTicks);
 
+    const businessTicks = Math.floor(ms / 1000) * eff;
+    const businessGain = totalBusinessIncome() * businessTicks;
+    if (businessGain > 0) {
+        state.balance = Math.min(BALANCE.maxMoney, state.balance + businessGain);
+        state.businessEarned = (state.businessEarned || 0) + businessGain;
+        state.statsEarned += businessGain;
+    }
+
     const depositTicks = Math.floor(ms / 10000);
     if (state.deposit > 0 && depositTicks > 0) {
         state.deposit = Math.min(depositCap(), state.deposit * Math.pow(1 + BALANCE.bank.depositRatePer10s * eff, depositTicks));
@@ -4241,6 +4470,7 @@ function rebuildAll() {
     generateMarket();
     renderGarage();
     renderAuction();
+    renderBusinesses();
     renderNews();
     resetCasinoUI();
     syncBotUI();
@@ -4359,6 +4589,19 @@ if (auctionWin) {
     });
 }
 
+/* Бизнес-центр */
+const businessWin = $('app-business');
+if (businessWin) {
+    businessWin.addEventListener('click', e => {
+        const buy = e.target.closest('button[data-business-buy]');
+        if (buy) return buyBusiness(buy.dataset.businessBuy);
+        const upgrade = e.target.closest('button[data-business-upgrade]');
+        if (upgrade) return upgradeBusiness(upgrade.dataset.businessUpgrade);
+        const staff = e.target.closest('button[data-business-staff]');
+        if (staff) return hireBusinessManager(staff.dataset.businessStaff);
+    });
+}
+
 /* Крипта */
 $('exchange-tabs').addEventListener('click', e => {
     const tab = e.target.closest('.tab');
@@ -4460,6 +4703,7 @@ setInterval(() => {
     checkBuyerOffers();
     updateListingTimers();
     rentTick();
+    businessTick();
     mechanicTick();
     auctionTick();
     newsTick();
