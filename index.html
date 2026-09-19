@@ -83,6 +83,7 @@
             transition: background 0.15s, transform 0.05s; outline: none;
         }
         .btn:active { transform: scale(0.96); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-warning { background: var(--yellow); color: #1e293b; }
         .btn-success { background: var(--green); color: white; }
@@ -308,18 +309,15 @@
                 <button class="casino-tab" onclick="switchCasinoGame('dice')">🎲 Кости</button>
             </div>
 
-            <!-- КРАШ / РАКЕТА С CANVAS -->
+            <!-- КРАШ / РАКЕТА (ИСПРАВЛЕННАЯ ВЕРСИЯ) -->
             <div class="casino-game active" id="game-crash">
                 <div class="item-card" style="text-align:center;">
                     <div style="font-size:0.75rem; color:var(--text-muted);">Ракета</div>
-                    <canvas id="crash-canvas" height="110"></canvas>
+                    <canvas id="crash-canvas" height="120"></canvas>
                     <div id="crash-mult" style="font-size:1.8rem; font-weight:bold; color:var(--accent); margin:4px 0;">1.00x</div>
                     <label style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
                     <input type="number" id="crash-bet" class="casino-input" value="100">
-                    <div style="display:flex; gap:6px;">
-                        <button class="btn btn-success" id="crash-btn-start" style="flex:1;" onclick="startCrash()">Запустить</button>
-                        <button class="btn btn-warning" id="crash-btn-cash" style="flex:1;" onclick="cashoutCrash()" disabled>Забрать</button>
-                    </div>
+                    <button class="btn btn-success" id="crash-action-btn" style="width:100%; font-size:0.85rem; padding:8px 0;" onclick="handleCrashClick()">СТАРТ</button>
                 </div>
             </div>
 
@@ -575,7 +573,6 @@
         if (state.deposit > 0) state.deposit += state.deposit * 0.01;
         if (state.loan > 0 && secCounter % 10 === 0) state.loan += state.loan * 0.01;
 
-        // Случайные глобальные события (раз в 45 секунд)
         if (secCounter % 45 === 0 && Math.random() < 0.6) {
             triggerRandomEvent();
         }
@@ -830,7 +827,7 @@
         const history = document.getElementById('chat-history');
 
         if (action === 'discount') {
-            const discountPercent = 0.85 - (state.perks.charisma * 0.05); // Перк Харизмы
+            const discountPercent = 0.85 - (state.perks.charisma * 0.05);
             const proposedPrice = Math.floor(h.currentPrice * discountPercent);
             if (proposedPrice < h.minPrice) {
                 history.innerHTML += `<div class="msg msg-them">Это крайняя цена (${h.currentPrice} ₽)!</div>`;
@@ -853,7 +850,7 @@
         if (state.balance < price) return alert('❌ Недостаточно денег!');
         state.balance -= price;
 
-        const effectiveRisk = risk * (1 - state.perks.antiRisk * 0.25); // Перк Анти-риска
+        const effectiveRisk = risk * (1 - state.perks.antiRisk * 0.25);
 
         if (Math.random() < effectiveRisk) {
             showPush('❌', `Лот "${title}" восстановлен!`);
@@ -987,7 +984,7 @@
         showPush('✅', 'Кредит погашен!');
     }
 
-    /* --- ЛОГИКА КАЗИНО (С CANVAS РАКЕТОЙ) --- */
+    /* --- ЛОГИКА КАЗИНО --- */
     function switchCasinoGame(gameId) {
         document.querySelectorAll('.casino-tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.casino-game').forEach(g => g.classList.remove('active'));
@@ -995,24 +992,39 @@
         document.getElementById(`game-${gameId}`).classList.add('active');
     }
 
+    /* ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ РАКЕТА (CRASH) */
     let crashTimer = null;
     let crashMult = 1.00;
     let crashBet = 0;
     let crashCrashPoint = 0;
     let crashPoints = [];
+    let isCrashRunning = false;
+
+    function handleCrashClick() {
+        if (!isCrashRunning) {
+            startCrash();
+        } else {
+            cashoutCrash();
+        }
+    }
 
     function startCrash() {
         const bet = parseFloat(document.getElementById('crash-bet').value);
-        if (!bet || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
+        if (isNaN(bet) || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
 
         state.balance -= bet;
         crashBet = bet;
         crashMult = 1.00;
         crashPoints = [1.00];
+        isCrashRunning = true;
+        
         crashCrashPoint = (Math.random() < 0.05) ? 1.00 : parseFloat((1 + Math.random() * Math.random() * 8).toFixed(2));
         
-        document.getElementById('crash-btn-start').disabled = true;
-        document.getElementById('crash-btn-cash').disabled = false;
+        const btn = document.getElementById('crash-action-btn');
+        btn.innerText = 'ЗАБРАТЬ';
+        btn.className = 'btn btn-warning';
+        document.getElementById('crash-bet').disabled = true;
+
         updateUI();
 
         crashTimer = setInterval(() => {
@@ -1023,12 +1035,11 @@
 
             if (crashMult >= crashCrashPoint) {
                 clearInterval(crashTimer);
-                document.getElementById('crash-mult').innerText = '💥 ' + crashMult.toFixed(2) + 'x (ВЗРЫВ!)';
-                document.getElementById('crash-btn-start').disabled = false;
-                document.getElementById('crash-btn-cash').disabled = true;
+                isCrashRunning = false;
+                document.getElementById('crash-mult').innerText = '💥 ' + crashCrashPoint.toFixed(2) + 'x (ВЗРЫВ!)';
+                
                 drawCrashChart(true);
 
-                // Кэшбэк перк
                 if (state.perks.casinoCashback > 0) {
                     const cb = Math.floor(crashBet * (state.perks.casinoCashback * 0.05));
                     state.balance += cb;
@@ -1036,19 +1047,31 @@
                 } else {
                     showPush('💥', 'Ракета взорвалась!');
                 }
+
+                resetCrashControls();
                 updateUI();
             }
-        }, 150);
+        }, 120);
     }
 
     function cashoutCrash() {
+        if (!isCrashRunning) return;
         clearInterval(crashTimer);
+        isCrashRunning = false;
+
         const win = Math.floor(crashBet * crashMult);
         state.balance += win;
         showPush('🚀', `Забрал ${win} ₽ (${crashMult.toFixed(2)}x)!`);
-        document.getElementById('crash-btn-start').disabled = false;
-        document.getElementById('crash-btn-cash').disabled = true;
+        
+        resetCrashControls();
         updateUI();
+    }
+
+    function resetCrashControls() {
+        const btn = document.getElementById('crash-action-btn');
+        btn.innerText = 'СТАРТ';
+        btn.className = 'btn btn-success';
+        document.getElementById('crash-bet').disabled = false;
     }
 
     function drawCrashChart(crashed) {
@@ -1293,7 +1316,7 @@
     /* --- БОТ И ТЕМЫ --- */
     function toggleBot() {
         state.botActive = !state.botActive;
-        const intervalTime = 3000 - (state.perks.botSpeed * 750); // Ускорение от перка
+        const intervalTime = 3000 - (state.perks.botSpeed * 750);
         if (state.botActive) {
             document.getElementById('bot-status').innerText = 'Работает';
             document.getElementById('bot-status').style.color = 'var(--green)';
