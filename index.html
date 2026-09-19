@@ -21,7 +21,7 @@
         * { 
             box-sizing: border-box; margin: 0; padding: 0; 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent; /* Убирает синюю вспышку при клике */
+            -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
 
@@ -171,7 +171,7 @@
         <div class="app-content">
             <div class="item-card">
                 <div style="font-size:0.8rem; font-weight:bold;">Скрипт авто-выкупа</div>
-                <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">Выкупает дешёвые лоты на 30% ниже рынка.</div>
+                <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">Выкупает дешёвые лоты со скидкой от 30% ниже рынка.</div>
                 <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-size:0.75rem;">Статус: <b id="bot-status" style="color:var(--red);">Выкл</b></span>
                     <button class="btn btn-purple" id="bot-btn" onclick="toggleBot()">Включить</button>
@@ -211,11 +211,22 @@
         botInterval: null
     };
 
+    // Точечно настроенные категории товаров и адекватные рыночные цены
     const itemTemplates = [
-        { title: 'Brawl Stars | 28k кубков', category: 'Brawl Stars', min: 300, max: 600, real: 900 },
-        { title: 'Ключ Minecraft Java', category: 'Ключи', min: 200, max: 400, real: 650 },
-        { title: 'Steam | CS2 Prime', category: 'Steam', min: 800, max: 1200, real: 1800 },
-        { title: 'PSN Turkey | FC 24', category: 'PSN', min: 1000, max: 1700, real: 2700 }
+        // Мелкие лоты (для разгона начального баланса)
+        { title: 'Brawl Stars | 12k кубков + Лега', category: 'Brawl Stars', min: 250, max: 350, real: 450 },
+        { title: 'Ключ Minecraft Java Edition', category: 'Ключи', min: 380, max: 520, real: 650 },
+        { title: 'Telegram Premium (3 месяца)', category: 'Подписки', min: 600, max: 750, real: 900 },
+
+        // Средний сегмент (Основной оборот рынка)
+        { title: 'Brawl Stars | 28k кубков + 50 скинов', category: 'Brawl Stars', min: 1100, max: 1450, real: 1800 },
+        { title: 'Steam | CS2 Prime + Inventory 20$', category: 'Steam', min: 1600, max: 2100, real: 2600 },
+        { title: 'PSN Turkey | FC 25 + GTA V', category: 'PSN', min: 2200, max: 2700, real: 3400 },
+
+        // Дорогой сегмент (Редкие жирные сделки)
+        { title: 'Steam | 100+ игр + Личный аккаунт', category: 'Steam', min: 2800, max: 3500, real: 5200 },
+        { title: 'PSN | PS Plus Deluxe (12 месяцев)', category: 'PSN', min: 3200, max: 4000, real: 5800 },
+        { title: 'Brawl Stars | 50k кубков + Фулл Тэг', category: 'Brawl Stars', min: 3900, max: 4800, real: 7500 }
     ];
 
     function openApp(id) {
