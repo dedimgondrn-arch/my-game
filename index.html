@@ -314,6 +314,10 @@
             <div class="icon-box" style="background: linear-gradient(135deg, #ef4444, #b91c1c);">🎰<span class="lock-badge" hidden>🔒</span></div>
             <span class="app-label">Казино</span>
         </button>
+        <button class="app-icon" data-app="app-containers" aria-label="Конфискат">
+            <div class="icon-box" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">📦</div>
+            <span class="app-label">Конфискат</span>
+        </button>
         <button class="app-icon" data-app="app-bot" aria-label="Авто-Бот">
             <div class="icon-box" style="background: linear-gradient(135deg, #a855f7, #7e22ce);">🤖<span class="lock-badge" hidden>🔒</span></div>
             <span class="app-label">Авто-Бот</span>
@@ -366,6 +370,28 @@
                 <button class="btn btn-primary btn-xs" onclick="updateChatUI()" style="width: 100%;">🔄 Обновить входящие сообщения</button>
             </div>
         </div>
+    </div>
+</div>
+    <!-- АУКЦИОН КОНФИСКАТА -->
+<div class="app-window" id="app-containers" hidden>
+    <div class="app-header">
+        <span class="title-sm">📦 Таможенный Конфискат</span>
+        <span class="badge badge-green">Слепой аукцион</span>
+    </div>
+    <div class="app-content" style="text-align: center;">
+        <div class="item-card" style="margin-bottom: 12px; padding: 15px;">
+            <div style="font-size: 3rem; margin-bottom: 8px;" id="container-icon">📦</div>
+            <div class="title-sm" id="container-title">Контейнер #1488 (Забытый груз)</div>
+            <div class="tiny muted" style="margin-top: 4px;">Цена выкупа: <b style="color:var(--yellow);">95 000 ₽</b></div>
+        </div>
+
+        <div id="container-result" style="min-height: 50px; font-size: 0.9rem; margin-bottom: 12px;" class="tiny muted">
+            Испытай удачу: внутри может быть как хлам, так и топовая электроника!
+        </div>
+
+        <button class="btn btn-success" onclick="openContainer()" style="width: 100%; padding: 10px; font-weight: bold;">
+            🔓 Выкупить и вскрыть (95 000 ₽)
+        </button>
     </div>
 </div>
 
@@ -5504,6 +5530,63 @@ function handleTradeAction(action) {
     }
 
     chatBox.scrollTop = chatBox.scrollHeight;
+}
+/* =====================================================================
+   АУКЦИОН КОНФИСКАТА / КОНТЕЙНЕРЫ
+   ===================================================================== */
+function openContainer() {
+    const cost = 15000;
+    const resDiv = document.getElementById('container-result');
+    const iconDiv = document.getElementById('container-icon');
+    
+    // Проверяем баланс
+    if ((state.money || 0) < cost) {
+        if (resDiv) resDiv.innerHTML = `<span style="color:#ef4444;">❌ Не хватает денег! Нужные 15 000 ₽.</span>`;
+        return;
+    }
+
+    // Списываем стоимость
+    state.money -= cost;
+
+    // Список возможного лута
+    const lootTable = [
+        { name: "Старый сломанный утюг", val: 500, icon: "🔌", color: "#ef4444" },
+        { name: "Коробка с кабелями micro-USB", val: 2500, icon: "📦", color: "#ef4444" },
+        { name: "Пачка китайских чехлов", val: 7000, icon: "📱", color: "#f59e0b" },
+        { name: "Партия наушников AirPods (Копии)", val: 18000, icon: "🎧", color: "#10b981" },
+        { name: "Видеокарта RTX 3070", val: 42000, icon: "🖥️", color: "#10b981" },
+        { name: "Заблокированный iPhone 15 Pro", val: 65000, icon: "📱", color: "#3b82f6" },
+        { name: "Флешка с кошельком (0.05 BTC)", val: 150000, icon: "🔑", color: "#a855f7" }
+    ];
+
+    // Анимация вскрытия
+    if (iconDiv) iconDiv.innerText = "⏳";
+    if (resDiv) resDiv.innerHTML = `<i>Вскрываем замок контейнера...</i>`;
+
+    setTimeout(() => {
+        // Выбираем случайный предмет
+        const drop = lootTable[Math.floor(Math.random() * lootTable.length)];
+        
+        // Начисляем стоимость выпавшего предмета в деньги (выручка от продажи)
+        state.money += drop.val;
+
+        // Обновляем UI и сохраняем
+        if (typeof renderHUD === 'function') renderHUD();
+        if (typeof saveGame === 'function') saveGame();
+
+        if (iconDiv) iconDiv.innerText = drop.icon;
+        if (resDiv) {
+            const profit = drop.val - cost;
+            const profitText = profit >= 0 
+                ? `<b style="color:#10b981;">+${profit.toLocaleString()} ₽ профита!</b>` 
+                : `<b style="color:#ef4444;">${profit.toLocaleString()} ₽ убытка</b>`;
+
+            resDiv.innerHTML = `
+                Внутри найден: <b style="color:${drop.color};">${drop.name}</b>!<br>
+                Продано авто-выкупом за: <b>${drop.val.toLocaleString()} ₽</b> (${profitText})
+            `;
+        }
+    }, 600);
 }
 </script>
 </body>
