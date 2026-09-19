@@ -3,289 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P2P RESELLER: Симулятор Перекупа</title>
+    <title>P2P RESELLER: PRO Edition</title>
     <style>
         :root {
-            --bg-color: #0f172a;
+            --bg-color: #0b0f19;
             --card-bg: #1e293b;
             --accent: #6366f1;
             --accent-hover: #4f46e5;
             --green: #22c55e;
             --red: #ef4444;
+            --yellow: #eab308;
             --text: #f8fafc;
             --text-muted: #94a3b8;
             --border: #334155;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 10px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #020617; color: var(--text); display: flex; justify-content: center; min-height: 100vh; padding: 10px; }
 
         .app {
-            width: 100%;
-            max-width: 480px;
-            background: #0b0f19;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            height: 95vh;
-            overflow: hidden;
+            width: 100%; max-width: 480px; background: var(--bg-color);
+            border: 1px solid var(--border); border-radius: 16px;
+            display: flex; flex-direction: column; height: 95vh; overflow: hidden; position: relative;
         }
 
-        /* Шапка с балансом и профилем */
         .header {
-            background: var(--card-bg);
-            padding: 15px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: var(--card-bg); padding: 12px 15px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
         }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .balance { font-size: 1.1rem; font-weight: bold; color: var(--green); text-align: right; }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .nav { display: flex; background: var(--card-bg); border-bottom: 1px solid var(--border); }
+        .nav-btn { flex: 1; padding: 10px; background: none; border: none; color: var(--text-muted); font-weight: bold; cursor: pointer; border-bottom: 2px solid transparent; font-size: 0.8rem; }
+        .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
+        .content { flex: 1; padding: 12px; overflow-y: auto; }
+        .section { display: none; }
+        .section.active { display: block; }
 
-        .stats {
-            text-align: right;
-        }
+        .item-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .item-title { font-weight: bold; font-size: 0.9rem; }
+        .item-badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: #334155; color: #cbd5e1; }
+        .item-price { font-size: 1rem; font-weight: bold; }
 
-        .balance {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--green);
-        }
-
-        .rating {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        /* Навигация */
-        .nav {
-            display: flex;
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .nav-btn {
-            flex: 1;
-            padding: 12px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-weight: bold;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-        }
-
-        .nav-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-        }
-
-        /* Контентная область */
-        .content {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        /* Карточки товаров */
-        .item-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .item-title {
-            font-weight: bold;
-            font-size: 0.95rem;
-        }
-
-        .item-badge {
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: #334155;
-            color: #cbd5e1;
-        }
-
-        .item-price {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--text);
-        }
-
-        .item-seller {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .item-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 5px;
-        }
-
-        /* Кнопки */
-        .btn {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
+        .btn { padding: 6px 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
         .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover { background: var(--accent-hover); }
         .btn-success { background: var(--green); color: white; }
+        .btn-warning { background: var(--yellow); color: #000; }
         .btn-danger { background: var(--red); color: white; }
 
-        /* Лог событий */
-        .log-item {
-            font-size: 0.8rem;
-            padding: 8px;
-            background: var(--card-bg);
-            border-left: 3px solid var(--accent);
-            margin-bottom: 8px;
-            border-radius: 0 6px 6px 0;
-        }
+        .modal { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10; padding: 15px; flex-direction: column; justify-content: center; }
+        .modal.active { display: flex; }
+        .chat-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 10px; max-height: 80%; }
+        .chat-history { height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #0f172a; padding: 10px; border-radius: 8px; font-size: 0.85rem; }
+        .msg { padding: 6px 10px; border-radius: 6px; max-width: 80%; }
+        .msg-them { background: #334155; align-self: flex-start; }
+        .msg-me { background: var(--accent); align-self: flex-end; }
+
+        .log-item { font-size: 0.75rem; padding: 8px; background: var(--card-bg); border-left: 3px solid var(--accent); margin-bottom: 6px; border-radius: 0 6px 6px 0; }
     </style>
 </head>
 <body>
 
 <div class="app">
-    <!-- Шапка -->
     <div class="header">
         <div class="user-info">
             <div class="avatar">SS</div>
             <div>
-                <div style="font-weight: bold; font-size: 0.9rem;">SSSTY1 (Перекуп)</div>
-                <div class="rating">⭐ 5.0 (0 отзывов)</div>
+                <div style="font-weight: bold; font-size: 0.85rem;">SSSTY1</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);" id="user-stats">⭐ 5.0 (0) | Уровень 1</div>
             </div>
         </div>
-        <div class="stats">
+        <div>
             <div class="balance" id="balance">1 000 ₽</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Баланс</div>
         </div>
     </div>
 
-    <!-- Вкладки -->
     <div class="nav">
-        <button class="nav-btn active" onclick="switchTab('market')">🛒 Рынок</button>
-        <button class="nav-btn" onclick="switchTab('inventory')">🎒 Мои Лоты</button>
-        <button class="nav-btn" onclick="switchTab('logs')">🔔 Уведомления</button>
+        <button class="nav-btn active" onclick="switchTab('market', event)">🛒 Рынок</button>
+        <button class="nav-btn" onclick="switchTab('inventory', event)">🎒 Инвентарь</button>
+        <button class="nav-btn" onclick="switchTab('profile', event)">📈 Прогресс</button>
+        <button class="nav-btn" onclick="switchTab('logs', event)">🔔 Логи</button>
     </div>
 
-    <!-- Контент -->
     <div class="content">
-        <!-- Секция: Рынок -->
         <div id="market" class="section active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <span style="font-size: 0.85rem; color: var(--text-muted);">Лента предложений:</span>
-                <button class="btn btn-primary" style="flex: none; padding: 4px 10px; font-size: 0.75rem;" onclick="generateMarketItem()">Обновить рынок</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Лента предложений:</span>
+                <button class="btn btn-primary" onclick="generateMarketItem()">Обновить</button>
             </div>
             <div id="market-list"></div>
         </div>
 
-        <!-- Секция: Инвентарь -->
         <div id="inventory" class="section">
-            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Купленные товары на перепродажу:</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Купленные товары:</div>
             <div id="inventory-list"></div>
         </div>
 
-        <!-- Секция: Уведомления -->
+        <div id="profile" class="section">
+            <div class="item-card">
+                <div style="font-weight: bold;">Уровень учетной записи</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);" id="level-desc">Уровень 1: Доступны ключи и Brawl Stars.</div>
+                <div style="margin-top: 10px;">
+                    <button class="btn btn-warning" style="width: 100%;" onclick="upgradeLevel()">Повысить уровень (2 500 ₽)</button>
+                </div>
+            </div>
+        </div>
+
         <div id="logs" class="section">
-            <div id="log-list">
-                <div class="log-item">🚀 Добро пожаловать на биржу! Покупай дешевле, продавай дороже.</div>
+            <div id="log-list"><div class="log-item">🚀 Симулятор запущен. Удачной торговли!</div></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно чата (Торг) -->
+    <div class="modal" id="chat-modal">
+        <div class="chat-box">
+            <div style="font-weight: bold;" id="chat-title">Чат с продавцом</div>
+            <div class="chat-history" id="chat-history"></div>
+            <div style="display: flex; gap: 6px;">
+                <button class="btn btn-primary" onclick="haggleAction('discount')">Скинь 15%</button>
+                <button class="btn btn-warning" onclick="haggleAction('buy_now')">Заберу прямо сейчас</button>
+                <button class="btn btn-danger" onclick="closeChat()">Закрыть</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Игровое состояние
     let state = {
         balance: 1000,
+        level: 1,
         rating: 5.0,
         reviews: 0,
         inventory: [],
-        logs: []
+        activeHaggle: null
     };
 
-    // База категорий и товаров для генерации
-    const categories = ['PSN Турция', 'Steam Аккаунты', 'Brawl Stars', 'Ключи Игр'];
-    
+    const categoriesByLevel = {
+        1: ['Brawl Stars', 'Ключи Игр'],
+        2: ['Brawl Stars', 'Ключи Игр', 'Steam Аккаунты', 'PSN Турция'],
+        3: ['Brawl Stars', 'Ключи Игр', 'Steam Аккаунты', 'PSN Турция', 'P2P Крипта']
+    };
+
     const itemTemplates = [
-        { title: 'PSN Turkey | FC 24 + GTA V', category: 'PSN Турция', minPrice: 400, maxPrice: 900, realValue: 1200 },
-        { title: 'Steam | CS2 Prime (1,200 hrs)', category: 'Steam Аккаунты', minPrice: 800, maxPrice: 1500, realValue: 2100 },
-        { title: 'Brawl Stars | 28к кубков + 45 скин', category: 'Brawl Stars', minPrice: 300, maxPrice: 700, realValue: 1000 },
-        { title: 'Ключ Minecraft Java + Bedrock', category: 'Ключи Игр', minPrice: 200, maxPrice: 500, realValue: 750 }
+        { title: 'Brawl Stars | 25k кубков', category: 'Brawl Stars', min: 300, max: 600, real: 800, lvl: 1 },
+        { title: 'Ключ Minecraft Java', category: 'Ключи Игр', min: 200, max: 400, real: 600, lvl: 1 },
+        { title: 'Steam | CS2 Prime', category: 'Steam Аккаунты', min: 800, max: 1400, real: 2000, lvl: 2 },
+        { title: 'PSN Turkey | FC 24', category: 'PSN Турция', min: 1000, max: 1800, real: 2500, lvl: 2 }
     ];
 
-    const fakeSellers = ['NoobMaster', 'FastSell_99', 'Gamer77', 'ProTrader', 'DarkSeller'];
-
-    // Переключение вкладок
-    function switchTab(tabId) {
+    function switchTab(tabId, e) {
         document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-        
-        event.target.classList.add('active');
+        e.target.classList.add('active');
         document.getElementById(tabId).classList.add('active');
-    }
-
-    // Обновление UI
-    function updateUI() {
-        document.getElementById('balance').innerText = state.balance.toLocaleString() + ' ₽';
-        renderInventory();
     }
 
     function addLog(msg) {
@@ -296,25 +170,25 @@
         logList.prepend(log);
     }
 
-    // Генерация случайного лота на рынке
+    function updateUI() {
+        document.getElementById('balance').innerText = state.balance.toLocaleString() + ' ₽';
+        document.getElementById('user-stats').innerText = `⭐ ${state.rating.toFixed(1)} (${state.reviews}) | Уровень ${state.level}`;
+        renderInventory();
+    }
+
     function generateMarketItem() {
         const marketList = document.getElementById('market-list');
         marketList.innerHTML = '';
 
+        const allowedCats = categoriesByLevel[state.level];
+        const filteredTemplates = itemTemplates.filter(t => allowedCats.includes(t.category));
+
         for (let i = 0; i < 3; i++) {
-            const template = itemTemplates[Math.floor(Math.random() * itemTemplates.length)];
-            const seller = fakeSellers[Math.floor(Math.random() * fakeSellers.length)];
-            
-            // Расчет случайной цены (бывают оверпрайс и сочные сливы)
-            const price = Math.floor(Math.random() * (template.maxPrice - template.minPrice + 1)) + template.minPrice;
-            const item = {
-                id: Date.now() + i,
-                title: template.title,
-                category: template.category,
-                price: price,
-                realValue: template.realValue,
-                seller: seller
-            };
+            const template = filteredTemplates[Math.floor(Math.random() * filteredTemplates.length)];
+            const price = Math.floor(Math.random() * (template.max - template.min + 1)) + template.min;
+            const isScam = Math.random() < 0.25; // 25% шанс восстановляемого аккаунта
+
+            const item = { id: Date.now() + i, title: template.title, category: template.category, price, realValue: template.real, isScam };
 
             const card = document.createElement('div');
             card.className = 'item-card';
@@ -323,44 +197,58 @@
                     <span class="item-title">${item.title}</span>
                     <span class="item-badge">${item.category}</span>
                 </div>
-                <div class="item-seller">Продавец: ${item.seller}</div>
-                <div class="item-price">${item.price.toLocaleString()} ₽</div>
-                <div class="item-actions">
-                    <button class="btn btn-primary" onclick="buyItem(${item.id}, '${item.title}', ${item.price}, ${item.realValue})">Купить</button>
+                <div class="item-price">${item.price} ₽ <span style="font-size:0.7rem; color:var(--text-muted);">(Рынок: ~${item.realValue} ₽)</span></div>
+                <div style="display:flex; gap:6px; margin-top:4px;">
+                    <button class="btn btn-primary" onclick="buyItem(${item.id}, '${item.title}', ${item.price}, ${item.realValue}, ${item.isScam})">Купить</button>
+                    <button class="btn btn-warning" onclick="openChat(${item.id}, '${item.title}', ${item.price}, ${item.realValue}, ${item.isScam})">💬 Торг</button>
                 </div>
             `;
             marketList.appendChild(card);
         }
     }
 
-    // Покупка товара
-    function buyItem(id, title, price, realValue) {
-        if (state.balance < price) {
-            alert('❌ Недостаточно средств на балансе!');
-            return;
-        }
-
+    function buyItem(id, title, price, realValue, isScam) {
+        if (state.balance < price) return alert('❌ Недостаточно денег!');
         state.balance -= price;
-        state.inventory.push({
-            id: Date.now(),
-            title: title,
-            buyPrice: price,
-            realValue: realValue,
-            sellPrice: Math.floor(realValue * 1.1) // Дефолтная цена наценки
-        });
-
-        addLog(`🛍️ Вы купили "${title}" за ${price} ₽`);
+        state.inventory.push({ id: Date.now(), title, buyPrice: price, realValue, sellPrice: Math.floor(realValue * 1.1), cleaned: false, isScam });
+        addLog(`🛍️ Куплен лот "${title}" за ${price} ₽`);
         updateUI();
         generateMarketItem();
     }
 
-    // Рендер инвентаря
+    function openChat(id, title, price, realValue, isScam) {
+        state.activeHaggle = { id, title, price, realValue, isScam };
+        document.getElementById('chat-title').innerText = `Торг: ${title}`;
+        document.getElementById('chat-history').innerHTML = `<div class="msg msg-them">Привет! Продаю за ${price} ₽. Берут быстро, но могу немного скинуть.</div>`;
+        document.getElementById('chat-modal').classList.add('active');
+    }
+
+    function closeChat() { document.getElementById('chat-modal').classList.remove('active'); }
+
+    function haggleAction(type) {
+        const h = state.activeHaggle;
+        const history = document.getElementById('chat-history');
+
+        if (type === 'discount') {
+            const newPrice = Math.floor(h.price * 0.85);
+            history.innerHTML += `<div class="msg msg-me">Скинь до ${newPrice} ₽, забрал бы прямо сейчас.</div>`;
+            if (Math.random() > 0.4) {
+                history.innerHTML += `<div class="msg msg-them">Ладно, по рукам! Забирай за ${newPrice} ₽.</div>`;
+                h.price = newPrice;
+            } else {
+                history.innerHTML += `<div class="msg msg-them">Не, братан, и так дешёво отдаю.</div>`;
+            }
+        } else if (type === 'buy_now') {
+            buyItem(h.id, h.title, h.price, h.realValue, h.isScam);
+            closeChat();
+        }
+    }
+
     function renderInventory() {
         const invList = document.getElementById('inventory-list');
         invList.innerHTML = '';
-
         if (state.inventory.length === 0) {
-            invList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem;">Инвентарь пуст. Купите товары на рынке!</div>';
+            invList.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem;">Инвентарь пуст.</div>';
             return;
         }
 
@@ -370,48 +258,62 @@
             card.innerHTML = `
                 <div class="item-header">
                     <span class="item-title">${item.title}</span>
+                    <span class="item-badge" style="background:${item.cleaned ? 'var(--green)' : 'var(--red)'}">${item.cleaned ? 'Чистый' : 'Без проверки'}</span>
                 </div>
-                <div style="font-size: 0.8rem; color: var(--text-muted);">Куплено за: ${item.buyPrice} ₽ | Рыночная стоимость: ~${item.realValue} ₽</div>
-                <div style="display: flex; gap: 8px; align-items: center; margin-top: 5px;">
-                    <label style="font-size: 0.8rem;">Ваша цена:</label>
-                    <input type="number" id="price-input-${index}" value="${item.sellPrice}" style="width: 100px; padding: 4px; background: #0f172a; border: 1px solid var(--border); color: white; border-radius: 4px;">
-                    <button class="btn btn-success" onclick="sellItem(${index})">Выставить</button>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Покупка: ${item.buyPrice} ₽ | Рыночная: ~${item.realValue} ₽</div>
+                <div style="display:flex; gap:6px; align-items:center; margin-top:6px;">
+                    <input type="number" id="price-${index}" value="${item.sellPrice}" style="width:80px; padding:4px; background:#0f172a; border:1px solid var(--border); color:white; border-radius:4px;">
+                    <button class="btn btn-success" onclick="sellItem(${index})">Продать</button>
+                    ${!item.cleaned ? `<button class="btn btn-warning" onclick="cleanItem(${index})">🧹 Перепривязать (150 ₽)</button>` : ''}
                 </div>
             `;
             invList.appendChild(card);
         });
     }
 
-    // Продажа товара (Симуляция ИИ-покупателя)
+    function cleanItem(index) {
+        if (state.balance < 150) return alert('❌ Недостаточно средств!');
+        state.balance -= 150;
+        state.inventory[index].cleaned = true;
+        state.inventory[index].isScam = false; // Чистка сводит шанс рефанда к 0
+        addLog(`🧹 Лот "${state.inventory[index].title}" полностью перепривязан. Данные сменены.`);
+        updateUI();
+    }
+
     function sellItem(index) {
         const item = state.inventory[index];
-        const inputPrice = parseInt(document.getElementById(`price-input-${index}`).value);
+        const setPrice = parseInt(document.getElementById(`price-${index}`).value);
+        const ratio = setPrice / item.realValue;
 
-        if (!inputPrice || inputPrice <= 0) {
-            alert('Введите корректную цену!');
-            return;
-        }
-
-        // Логика согласия ИИ-покупателя
-        // Чем выше цена от realValue, тем ниже шанс быстро выкупить
-        const ratio = inputPrice / item.realValue;
-        let chance = 0.8; // Шанс при адекватной цене
-
-        if (ratio > 1.3) chance = 0.2; // Сильный оверпрайс
-        if (ratio > 1.6) chance = 0.05;
-
-        if (Math.random() < chance) {
-            state.balance += inputPrice;
-            const profit = inputPrice - item.buyPrice;
-            addLog(`💰 ТОВАР ПРОДАН! "${item.title}" за ${inputPrice} ₽ (Профит: +${profit} ₽)`);
+        if (Math.random() < (ratio > 1.3 ? 0.2 : 0.75)) {
+            // Успешная продажа
+            if (item.isScam && !item.cleaned && Math.random() < 0.6) {
+                // Владелец восстановил аккаунт (Скам/Диспут)
+                state.rating = Math.max(1.0, state.rating - 0.4);
+                addLog(`🚨 ДИСПУТ! Продавец восстановил аккаунт "${item.title}". Покупатель потребовал возврат. Рейтинг снижен!`);
+            } else {
+                state.balance += setPrice;
+                state.reviews += 1;
+                state.rating = Math.min(5.0, state.rating + 0.1);
+                addLog(`💰 ПРОДАНО! "${item.title}" за ${setPrice} ₽. +1 отзыв!`);
+            }
             state.inventory.splice(index, 1);
             updateUI();
         } else {
-            addLog(`⏳ Покупатели считают цену ${inputPrice} ₽ за "${item.title}" слишком высокой. Снизьте цену или подождите.`);
+            addLog(`⏳ Покупатели игнорируют цену ${setPrice} ₽ за "${item.title}". Слишком дорого.`);
         }
     }
 
-    // Старт
+    function upgradeLevel() {
+        if (state.level >= 3) return alert('У вас максимальный уровень!');
+        if (state.balance < 2500) return alert('❌ Нужно 2 500 ₽ для повышения!');
+        state.balance -= 2500;
+        state.level += 1;
+        document.getElementById('level-desc').innerText = `Уровень ${state.level}: Открыты новые категории товаров!`;
+        addLog(`🎉 Уровень повышен до ${state.level}! Открыт доступ к новым категориям на рынке.`);
+        updateUI();
+    }
+
     generateMarketItem();
     updateUI();
 </script>
