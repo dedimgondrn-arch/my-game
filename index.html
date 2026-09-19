@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Phone OS: P2P Resell Ultimate Pro</title>
     <style>
         :root {
@@ -29,27 +29,47 @@
             --phone-bg: radial-gradient(circle at top, #333300, #000000);
         }
 
-        * { 
-            box-sizing: border-box; margin: 0; padding: 0; 
+        * {
+            box-sizing: border-box; margin: 0; padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent; user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none; user-select: none;
+        }
+        /* Без этого на iOS Safari поля ввода не редактируются */
+        input, textarea {
+            -webkit-user-select: text; user-select: text;
         }
 
         body { background-color: #020617; color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
 
         .phone {
-            width: 380px; height: 760px; background: #000;
+            width: 380px; height: min(760px, calc(100vh - 20px)); max-width: 100%; background: #000;
             border: 10px solid #1e293b; border-radius: 48px;
             display: flex; flex-direction: column; overflow: hidden; position: relative;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 2px #334155;
         }
+        @supports (height: 100dvh) {
+            .phone { height: min(760px, calc(100dvh - 20px)); }
+        }
+        /* Маленькие экраны: телефон занимает весь экран */
+        @media (max-width: 480px) {
+            body { padding: 0; min-height: 100vh; }
+            .phone { width: 100vw; height: 100vh; border: none; border-radius: 0; box-shadow: none; }
+            .notch { display: none; }
+        }
+        @supports (height: 100dvh) {
+            @media (max-width: 480px) {
+                body { min-height: 100dvh; }
+                .phone { height: 100dvh; }
+            }
+        }
 
         .notch { width: 130px; height: 22px; background: #1e293b; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-radius: 0 0 14px 14px; z-index: 100; }
-        .status-bar { height: 30px; background: rgba(0,0,0,0.5); padding: 6px 20px 0; display: flex; justify-content: space-between; font-size: 0.7rem; color: #fff; z-index: 90; }
+        .status-bar { height: 30px; background: rgba(0,0,0,0.5); padding: 6px 20px 0; display: flex; justify-content: space-between; font-size: 0.7rem; color: #fff; z-index: 90; flex-shrink: 0; }
 
         .push-notif {
             position: absolute; top: -60px; left: 10px; right: 10px; background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(8px); border: 1px solid var(--accent); border-radius: 12px; padding: 8px 12px;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid var(--accent); border-radius: 12px; padding: 8px 12px;
             z-index: 200; transition: top 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 8px;
         }
         .push-notif.active { top: 35px; }
@@ -57,7 +77,7 @@
         .desktop {
             flex: 1; background: var(--phone-bg);
             padding: 45px 12px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-content: start;
-            transition: background 0.3s;
+            transition: background 0.3s; overflow-y: auto;
         }
 
         .app-icon { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
@@ -77,20 +97,23 @@
         .app-content { flex: 1; padding: 10px; overflow-y: auto; }
 
         .item-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 8px; }
-        
+
         .btn {
             padding: 6px 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.72rem;
-            transition: background 0.15s, transform 0.05s; outline: none;
+            transition: background 0.15s, transform 0.05s, opacity 0.15s; outline: none;
         }
         .btn:active { transform: scale(0.96); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-warning { background: var(--yellow); color: #1e293b; }
         .btn-success { background: var(--green); color: white; }
         .btn-danger { background: var(--red); color: white; }
         .btn-purple { background: var(--purple); color: white; }
         .btn-cyan { background: var(--cyan); color: #0f172a; }
+        .btn-dark { background: #334155; color: white; }
 
-        .phone-nav { height: 35px; background: #000; display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .phone-nav { height: 35px; background: #000; display: flex; justify-content: center; align-items: center; z-index: 100; flex-shrink: 0; }
         .home-bar-btn { width: 110px; height: 5px; background: #ffffff; border-radius: 3px; opacity: 0.7; cursor: pointer; }
 
         .chat-modal {
@@ -108,13 +131,16 @@
         .progress-bar { width: 100%; height: 6px; background: #0f172a; border-radius: 3px; overflow: hidden; margin-top: 4px; }
         .progress-fill { height: 100%; transition: width 0.3s; }
 
-        /* Вкладки для казино */
+        .price-input { width: 75px; padding: 4px; background: #0f172a; border: 1px solid var(--border); color: white; border-radius: 4px; font-size: 0.75rem; }
+
         .casino-tabs { display: flex; gap: 4px; overflow-x: auto; margin-bottom: 10px; padding-bottom: 4px; }
         .casino-tab { padding: 5px 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; font-size: 0.68rem; color: #fff; cursor: pointer; white-space: nowrap; }
         .casino-tab.active { background: var(--accent); border-color: var(--accent); }
         .casino-game { display: none; }
         .casino-game.active { display: block; }
         .casino-input { width: 100%; padding: 6px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 0.75rem; margin: 4px 0 8px; }
+
+        .bot-log { font-size: 0.68rem; color: var(--text-muted); padding: 4px 0; border-bottom: 1px solid var(--border); }
     </style>
 </head>
 <body>
@@ -122,7 +148,7 @@
 <div class="phone">
     <div class="notch"></div>
     <div class="status-bar">
-        <span>09:41</span>
+        <span id="clock">09:41</span>
         <span>5G 🔋 100%</span>
     </div>
 
@@ -171,7 +197,7 @@
     <div class="app-window" id="app-resell">
         <div class="app-header">
             <span style="font-weight:bold; font-size:0.8rem;">P2P Market</span>
-            <span style="font-size:0.75rem; color:var(--yellow);" id="trust-score-display">⭐ 5.0</span>
+            <span style="font-size:0.75rem; color:var(--yellow);" id="trust-score-display">⭐ 5.00</span>
             <span style="color:var(--green); font-weight:bold; font-size:0.8rem;" class="global-balance-display">1 000 ₽</span>
         </div>
         <div class="app-content">
@@ -218,7 +244,7 @@
                     <span style="font-weight:bold; font-size:0.8rem;">GPU RTX 4090</span>
                     <span style="color:var(--green); font-weight:bold; font-size:0.75rem;">15 000 ₽</span>
                 </div>
-                <div style="font-size:0.68rem; color:var(--text-muted); margin-bottom:6px;">Добыча: 0.02 ETH/сек | Свет: 5 ₽/сек</div>
+                <div style="font-size:0.68rem; color:var(--text-muted); margin-bottom:6px;">Добыча: 0.02 ETH / 3 с | Свет: 5 ₽ / 3 с</div>
                 <button class="btn btn-success" style="width:100%;" onclick="buyRig('gpu')">Купить GPU</button>
             </div>
 
@@ -227,7 +253,7 @@
                     <span style="font-weight:bold; font-size:0.8rem;">ASIC Antminer S19</span>
                     <span style="color:var(--green); font-weight:bold; font-size:0.75rem;">45 000 ₽</span>
                 </div>
-                <div style="font-size:0.68rem; color:var(--text-muted); margin-bottom:6px;">Добыча: 0.01 BTC/сек | Свет: 20 ₽/сек</div>
+                <div style="font-size:0.68rem; color:var(--text-muted); margin-bottom:6px;">Добыча: 0.01 BTC / 3 с | Свет: 20 ₽ / 3 с</div>
                 <button class="btn btn-success" style="width:100%;" onclick="buyRig('asic')">Купить ASIC</button>
             </div>
 
@@ -262,7 +288,7 @@
         </div>
     </div>
 
-    <!-- КАЗИНО (НОВОЕ ПРИЛОЖЕНИЕ) -->
+    <!-- КАЗИНО -->
     <div class="app-window" id="app-casino">
         <div class="app-header">
             <span style="font-weight:bold; font-size:0.85rem;">🎰 Royal Casino</span>
@@ -270,20 +296,20 @@
         </div>
         <div class="app-content">
             <div class="casino-tabs">
-                <button class="casino-tab active" onclick="switchCasinoGame('crash')">🚀 Краш</button>
-                <button class="casino-tab" onclick="switchCasinoGame('blackjack')">🃏 Блэкджек</button>
-                <button class="casino-tab" onclick="switchCasinoGame('roulette')">🎯 Рулетка</button>
-                <button class="casino-tab" onclick="switchCasinoGame('coin')">🪙 Орел/Решка</button>
-                <button class="casino-tab" onclick="switchCasinoGame('dice')">🎲 Кости</button>
+                <button class="casino-tab active" onclick="switchCasinoGame('crash', this)">🚀 Краш</button>
+                <button class="casino-tab" onclick="switchCasinoGame('blackjack', this)">🃏 Блэкджек</button>
+                <button class="casino-tab" onclick="switchCasinoGame('roulette', this)">🎯 Рулетка</button>
+                <button class="casino-tab" onclick="switchCasinoGame('coin', this)">🪙 Орел/Решка</button>
+                <button class="casino-tab" onclick="switchCasinoGame('dice', this)">🎲 Кости</button>
             </div>
 
-            <!-- КРАШ / РАКЕТА -->
+            <!-- КРАШ -->
             <div class="casino-game active" id="game-crash">
                 <div class="item-card" style="text-align:center;">
                     <div style="font-size:0.75rem; color:var(--text-muted);">Ракета</div>
                     <div id="crash-mult" style="font-size:2.2rem; font-weight:bold; color:var(--accent); margin:10px 0;">1.00x</div>
-                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
-                    <input type="number" id="crash-bet" class="casino-input" value="100">
+                    <label for="crash-bet" style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
+                    <input type="number" inputmode="numeric" min="1" step="1" id="crash-bet" class="casino-input" value="100">
                     <div style="display:flex; gap:6px;">
                         <button class="btn btn-success" id="crash-btn-start" style="flex:1;" onclick="startCrash()">Запустить</button>
                         <button class="btn btn-warning" id="crash-btn-cash" style="flex:1;" onclick="cashoutCrash()" disabled>Забрать</button>
@@ -296,8 +322,8 @@
                 <div class="item-card">
                     <div style="font-size:0.7rem; color:var(--text-muted);">Дилер: <span id="bj-dealer-hand" style="color:#fff; font-weight:bold;">-</span> (<span id="bj-dealer-score">0</span>)</div>
                     <div style="font-size:0.7rem; color:var(--text-muted); margin-top:6px;">Вы: <span id="bj-player-hand" style="color:#fff; font-weight:bold;">-</span> (<span id="bj-player-score">0</span>)</div>
-                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:8px;">Ставка (₽):</label>
-                    <input type="number" id="bj-bet" class="casino-input" value="100">
+                    <label for="bj-bet" style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:8px;">Ставка (₽):</label>
+                    <input type="number" inputmode="numeric" min="1" step="1" id="bj-bet" class="casino-input" value="100">
                     <div style="display:flex; gap:6px;">
                         <button class="btn btn-primary" id="bj-btn-deal" style="flex:1;" onclick="bjDeal()">Раздать</button>
                         <button class="btn btn-success" id="bj-btn-hit" style="flex:1;" onclick="bjHit()" disabled>+1 Карту</button>
@@ -310,12 +336,12 @@
             <div class="casino-game" id="game-roulette">
                 <div class="item-card" style="text-align:center;">
                     <div id="roulette-wheel" style="font-size:1.8rem; font-weight:bold; margin:10px 0;">🎰</div>
-                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
-                    <input type="number" id="roulette-bet" class="casino-input" value="100">
+                    <label for="roulette-bet" style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
+                    <input type="number" inputmode="numeric" min="1" step="1" id="roulette-bet" class="casino-input" value="100">
                     <div style="display:flex; gap:4px;">
                         <button class="btn btn-danger" style="flex:1;" onclick="playRoulette('red')">Красное (x2)</button>
                         <button class="btn btn-success" style="flex:1;" onclick="playRoulette('green')">Зеро (x14)</button>
-                        <button class="btn btn-primary" style="flex:1; background:#334155;" onclick="playRoulette('black')">Черное (x2)</button>
+                        <button class="btn btn-dark" style="flex:1;" onclick="playRoulette('black')">Черное (x2)</button>
                     </div>
                 </div>
             </div>
@@ -324,8 +350,8 @@
             <div class="casino-game" id="game-coin">
                 <div class="item-card" style="text-align:center;">
                     <div id="coin-icon" style="font-size:2.5rem; margin:10px 0;">🪙</div>
-                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
-                    <input type="number" id="coin-bet" class="casino-input" value="100">
+                    <label for="coin-bet" style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
+                    <input type="number" inputmode="numeric" min="1" step="1" id="coin-bet" class="casino-input" value="100">
                     <div style="display:flex; gap:6px;">
                         <button class="btn btn-warning" style="flex:1;" onclick="playCoin('heads')">Орёл (x2)</button>
                         <button class="btn btn-cyan" style="flex:1;" onclick="playCoin('tails')">Решка (x2)</button>
@@ -340,12 +366,11 @@
                         <div>Вы: <span id="dice-player">🎲</span></div>
                         <div>Дилер: <span id="dice-dealer">🎲</span></div>
                     </div>
-                    <label style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
-                    <input type="number" id="dice-bet" class="casino-input" value="100">
+                    <label for="dice-bet" style="font-size:0.7rem; color:var(--text-muted); display:block; text-align:left;">Ставка (₽):</label>
+                    <input type="number" inputmode="numeric" min="1" step="1" id="dice-bet" class="casino-input" value="100">
                     <button class="btn btn-purple" style="width:100%;" onclick="playDice()">Бросить кости</button>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -370,7 +395,7 @@
         <div class="app-header"><span style="font-weight:bold; font-size:0.85rem;">Статистика</span></div>
         <div class="app-content">
             <div class="item-card">
-                <div class="stat-row"><span style="color:var(--text-muted);">Рейтинг доверия:</span><b id="stat-trust">5.0 ⭐</b></div>
+                <div class="stat-row"><span style="color:var(--text-muted);">Рейтинг доверия:</span><b id="stat-trust">5.00 ⭐</b></div>
                 <div class="stat-row"><span style="color:var(--text-muted);">Успешных сделок:</span><b id="stat-sales">0</b></div>
                 <div class="stat-row"><span style="color:var(--text-muted);">Заработано всего:</span><b id="stat-earned" style="color:var(--green);">0 ₽</b></div>
                 <div class="stat-row"><span style="color:var(--text-muted);">Оборот Крипты:</span><b id="stat-crypto-volume" style="color:var(--yellow);">0 ₽</b></div>
@@ -392,7 +417,7 @@
             </div>
             <div class="item-card">
                 <div style="font-weight:bold; font-size:0.8rem; margin-bottom:4px;">Сброс системы</div>
-                <button class="btn btn-danger" style="width:100%;" onclick="resetProgress()">Сбросить прогресс</button>
+                <button class="btn btn-danger" id="reset-btn" style="width:100%;" onclick="resetProgress()">Сбросить прогресс</button>
             </div>
         </div>
     </div>
@@ -405,8 +430,8 @@
         </div>
         <div class="chat-history" id="chat-history"></div>
         <div style="display:flex; gap:6px;">
-            <button class="btn btn-warning" style="flex:1;" onclick="haggle('discount')">Сбить 15%</button>
-            <button class="btn btn-success" style="flex:1;" onclick="haggle('buy')">Забрать</button>
+            <button class="btn btn-warning" style="flex:1;" onclick="haggleAction('discount')">Сбить 15%</button>
+            <button class="btn btn-success" style="flex:1;" onclick="haggleAction('buy')">Забрать</button>
         </div>
     </div>
 
@@ -414,641 +439,1077 @@
 </div>
 
 <script>
-    const DEFAULT_STATE = {
-        balance: 1000,
-        crypto: {
-            usdt: { name: 'USDT', balance: 0, rate: 90, baseRate: 90 },
-            btc: { name: 'Bitcoin (BTC)', balance: 0, rate: 300, baseRate: 300 },
-            eth: { name: 'Ethereum (ETH)', balance: 0, rate: 180, baseRate: 180 }
-        },
-        inventory: [], activeHaggle: null,
-        botActive: false, trustScore: 5.0, statsSales: 0, statsEarned: 0, statsCryptoVolume: 0,
-        deposit: 0, loan: 0, electricityBill: 0, rigs: [], theme: 'default'
+'use strict';
+
+/* =====================================================================
+   КОНСТАНТЫ И НАЧАЛЬНОЕ СОСТОЯНИЕ
+   ===================================================================== */
+const STORAGE_KEY = 'p2p_game_save';
+const THEMES = ['default', 'neon', 'cyberpunk'];
+const MAX_MONEY = 1e15; // защита от переполнения в Infinity
+
+const DEFAULT_STATE = {
+    balance: 1000,
+    crypto: {
+        usdt: { name: 'USDT',          balance: 0, rate: 90,  baseRate: 90 },
+        btc:  { name: 'Bitcoin (BTC)', balance: 0, rate: 300, baseRate: 300 },
+        eth:  { name: 'Ethereum (ETH)', balance: 0, rate: 180, baseRate: 180 }
+    },
+    inventory: [],
+    botActive: false,
+    trustScore: 5.0,
+    statsSales: 0,
+    statsEarned: 0,
+    statsCryptoVolume: 0,
+    deposit: 0,
+    loan: 0,
+    electricityBill: 0,
+    rigs: [],
+    theme: 'default'
+};
+
+const RIG_TYPES = {
+    gpu:  { name: 'GPU RTX 4090',      price: 15000, income: 0.02, powerCost: 5,  startTemp: 45, coin: 'eth' },
+    asic: { name: 'ASIC Antminer S19', price: 45000, income: 0.01, powerCost: 20, startTemp: 55, coin: 'btc' }
+};
+
+const itemTemplates = [
+    { title: 'Brawl Stars | 12k кубков',    min: 200,  max: 300,  real: 450,  risk: 0.25, vip: false },
+    { title: 'Ключ Minecraft Java',         min: 350,  max: 480,  real: 650,  risk: 0.05, vip: false },
+    { title: 'Telegram Premium 3 мес',      min: 550,  max: 700,  real: 900,  risk: 0.0,  vip: false },
+    { title: 'Steam | CS2 Prime',           min: 1400, max: 1900, real: 2600, risk: 0.15, vip: false },
+    { title: 'PSN Turkey | FC 25',          min: 2000, max: 2500, real: 3400, risk: 0.10, vip: false },
+    { title: '👑 VIP: Steam | 200+ Игр',    min: 3000, max: 3800, real: 6500, risk: 0.05, vip: true },
+    { title: '👑 VIP: Brawl Stars | 60k кубков', min: 4000, max: 5000, real: 8500, risk: 0.10, vip: true }
+];
+
+/* =====================================================================
+   УТИЛИТЫ
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+const num = (v, d) => (typeof v === 'number' && Number.isFinite(v)) ? v : d;
+const round2 = v => Math.round(v * 100) / 100;
+const round6 = v => Math.round(v * 1e6) / 1e6;
+const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const fmt = n => Math.floor(n).toLocaleString('ru-RU') + ' ₽';
+// Долги округляем ВВЕРХ, чтобы то, что видит игрок, совпадало с суммой к оплате
+const debtDue = n => Math.max(0, Math.ceil(n - 1e-6));
+const fmtDebt = n => debtDue(n).toLocaleString('ru-RU') + ' ₽';
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+let uidCounter = Date.now();
+const uid = () => ++uidCounter;
+
+/* =====================================================================
+   ЗАГРУЗКА / СОХРАНЕНИЕ (глубокий merge с DEFAULT_STATE)
+   ===================================================================== */
+function mergeDefaults(def, saved) {
+    if (Array.isArray(def)) return Array.isArray(saved) ? saved.slice() : [];
+    if (def && typeof def === 'object') {
+        const src = (saved && typeof saved === 'object' && !Array.isArray(saved)) ? saved : {};
+        const out = {};
+        for (const k of Object.keys(def)) out[k] = mergeDefaults(def[k], src[k]);
+        return out;
+    }
+    if (typeof def === 'number')  return num(saved, def);
+    if (typeof def === 'boolean') return typeof saved === 'boolean' ? saved : def;
+    if (typeof def === 'string')  return typeof saved === 'string' ? saved : def;
+    return def;
+}
+
+function normalizeState(s) {
+    s.trustScore = clamp(round2(s.trustScore), 1, 5);
+    s.balance = Math.max(0, s.balance);
+    s.deposit = clamp(s.deposit, 0, MAX_MONEY);
+    s.loan = clamp(s.loan, 0, MAX_MONEY);
+    s.electricityBill = Math.max(0, s.electricityBill);
+    if (!THEMES.includes(s.theme)) s.theme = 'default';
+
+    const usedIds = new Set();
+    const takeId = id => {
+        if (typeof id !== 'number' || !Number.isFinite(id) || usedIds.has(id)) id = uid();
+        usedIds.add(id);
+        return id;
     };
 
-    let state = JSON.parse(localStorage.getItem('p2p_game_save')) || JSON.parse(JSON.stringify(DEFAULT_STATE));
-    let botInterval = null;
-
-    function sanitizeState() {
-        if (isNaN(state.balance) || state.balance === null) state.balance = 1000;
-        if (isNaN(state.electricityBill) || state.electricityBill === null) state.electricityBill = 0;
-        if (isNaN(state.deposit) || state.deposit === null) state.deposit = 0;
-        if (isNaN(state.loan) || state.loan === null) state.loan = 0;
-        if (isNaN(state.trustScore) || state.trustScore === null) state.trustScore = 5.0;
-        if (!Array.isArray(state.rigs)) state.rigs = [];
-
-        state.rigs.forEach(rig => {
-            if (isNaN(rig.powerCost) || !rig.powerCost) rig.powerCost = rig.type === 'asic' ? 20 : 5;
-            if (isNaN(rig.temp)) rig.temp = 45;
-            if (isNaN(rig.durability)) rig.durability = 100;
-            if (isNaN(rig.income)) rig.income = rig.type === 'asic' ? 0.01 : 0.02;
-        });
-    }
-    sanitizeState();
-
-    const itemTemplates = [
-        { title: 'Brawl Stars | 12k кубков', category: 'BS', min: 200, max: 300, real: 450, risk: 0.25, vip: false },
-        { title: 'Ключ Minecraft Java', category: 'Ключи', min: 350, max: 480, real: 650, risk: 0.05, vip: false },
-        { title: 'Telegram Premium 3 мес', category: 'ТГ', min: 550, max: 700, real: 900, risk: 0.0, vip: false },
-        { title: 'Steam | CS2 Prime', category: 'Steam', min: 1400, max: 1900, real: 2600, risk: 0.15, vip: false },
-        { title: 'PSN Turkey | FC 25', category: 'PSN', min: 2000, max: 2500, real: 3400, risk: 0.10, vip: false },
-        { title: '👑 VIP: Steam | 200+ Игр', category: 'VIP', min: 3000, max: 3800, real: 6500, risk: 0.05, vip: true },
-        { title: '👑 VIP: Brawl Stars | 60k кубков', category: 'VIP', min: 4000, max: 5000, real: 8500, risk: 0.10, vip: true }
-    ];
-
-    function saveGame() {
-        localStorage.setItem('p2p_game_save', JSON.stringify(state));
-    }
-
-    function showPush(icon, text) {
-        const notif = document.getElementById('push-notif');
-        document.getElementById('push-icon').innerText = icon;
-        document.getElementById('push-text').innerText = text;
-        notif.classList.add('active');
-        setTimeout(() => notif.classList.remove('active'), 3000);
-    }
-
-    function openApp(id) {
-        document.querySelectorAll('.app-window').forEach(app => app.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        updateUI();
-    }
-
-    function closeApps() {
-        document.querySelectorAll('.app-window').forEach(app => app.classList.remove('active'));
-        closeChat();
-    }
-
-    function updateUI() {
-        sanitizeState();
-
-        document.querySelectorAll('.global-balance-display').forEach(el => {
-            el.innerText = Math.floor(state.balance).toLocaleString() + ' ₽';
-        });
-        
-        document.getElementById('trust-score-display').innerText = `⭐ ${state.trustScore.toFixed(1)}`;
-        document.getElementById('stat-trust').innerText = state.trustScore.toFixed(1) + ' ⭐';
-        document.getElementById('stat-sales').innerText = state.statsSales;
-        document.getElementById('stat-earned').innerText = Math.floor(state.statsEarned).toLocaleString() + ' ₽';
-        document.getElementById('stat-crypto-volume').innerText = Math.floor(state.statsCryptoVolume).toLocaleString() + ' ₽';
-        
-        document.getElementById('bank-deposit-val').innerText = Math.floor(state.deposit).toLocaleString() + ' ₽';
-        document.getElementById('bank-loan-val').innerText = Math.floor(state.loan).toLocaleString() + ' ₽';
-        document.getElementById('elec-bill').innerText = Math.floor(state.electricityBill).toLocaleString() + ' ₽';
-
-        renderCrypto();
-        renderInventory();
-        renderRigs();
-        setTheme(state.theme);
-        saveGame();
-    }
-
-    /* --- ТАЙМЕРЫ И ДИНАМИКА --- */
-    let secCounter = 0;
-    setInterval(() => {
-        secCounter++;
-        if (state.deposit > 0) {
-            state.deposit += state.deposit * 0.01;
-        }
-        if (state.loan > 0 && secCounter % 10 === 0) {
-            state.loan += state.loan * 0.01;
-        }
-        updateUI();
-    }, 1000);
-
-    setInterval(() => {
-        for (let key in state.crypto) {
-            let coin = state.crypto[key];
-            coin.rate += 2;
-            if (coin.rate > 1000) {
-                coin.rate = coin.baseRate;
-                showPush('📉', `Курс ${coin.name} сбросился!`);
-            }
-        }
-        updateUI();
-    }, 5000);
-
-    /* --- МАЙНИНГ ФЕРМЫ --- */
-    setInterval(() => {
-        if (state.rigs.length === 0) return;
-        let activePowerUsage = 0;
-
-        state.rigs.forEach(rig => {
-            if (rig.durability <= 0) return;
-
-            const cost = Number(rig.powerCost) || (rig.type === 'asic' ? 20 : 5);
-            activePowerUsage += cost;
-
-            rig.temp = Math.min(100, rig.temp + (Math.random() * 1.5));
-            let wear = rig.temp > 85 ? 2.5 : 0.8; 
-            rig.durability = Math.max(0, rig.durability - wear);
-
-            if (rig.durability > 0) {
-                if (rig.type === 'gpu') state.crypto.eth.balance += (rig.income || 0.02);
-                if (rig.type === 'asic') state.crypto.btc.balance += (rig.income || 0.01);
-            }
+    s.inventory = s.inventory
+        .filter(i => i && typeof i === 'object' && typeof i.title === 'string')
+        .map(i => {
+            const realValue = Math.max(1, num(i.realValue, 1));
+            return {
+                id: takeId(i.id),
+                title: i.title,
+                buyPrice: Math.max(0, num(i.buyPrice, 0)),
+                realValue,
+                sellPrice: Math.max(1, Math.floor(num(i.sellPrice, realValue * 1.05)))
+            };
         });
 
-        state.electricityBill = (state.electricityBill || 0) + activePowerUsage;
-        updateUI();
-    }, 3000);
-
-    function buyRig(type) {
-        if (type === 'gpu') {
-            if (state.balance < 15000) return alert('❌ Нужно 15 000 ₽!');
-            state.balance -= 15000;
-            state.rigs.push({ id: Date.now(), name: 'GPU RTX 4090', type: 'gpu', income: 0.02, powerCost: 5, temp: 45, durability: 100 });
-            showPush('⛏️', 'Куплена GPU RTX 4090');
-        } else if (type === 'asic') {
-            if (state.balance < 45000) return alert('❌ Нужно 45 000 ₽!');
-            state.balance -= 45000;
-            state.rigs.push({ id: Date.now(), name: 'ASIC Antminer S19', type: 'asic', income: 0.01, powerCost: 20, temp: 55, durability: 100 });
-            showPush('⛏️', 'Куплен ASIC S19');
-        }
-        updateUI();
-    }
-
-    function serviceRig(index) {
-        const rig = state.rigs[index];
-        const cost = Math.floor((100 - rig.durability) * 15 + (rig.temp - 40) * 5);
-        if (cost <= 0) return alert('⚙️ Оборудование в идеальном состоянии!');
-        
-        if (state.balance < cost) return alert(`❌ Для обслуживания нужно ${cost} ₽!`);
-        state.balance -= cost;
-        rig.durability = 100;
-        rig.temp = 40;
-        showPush('🔧', `Обслужено: ${rig.name}`);
-        updateUI();
-    }
-
-    function payElectricity() {
-        sanitizeState();
-        if (state.electricityBill <= 0) return alert('✅ У вас нет задолженности!');
-        if (state.balance < state.electricityBill) return alert('❌ Недостаточно средств!');
-        
-        state.balance -= state.electricityBill;
-        state.electricityBill = 0;
-        
-        showPush('⚡', 'Счёт за свет оплачен!');
-        updateUI();
-    }
-
-    function renderRigs() {
-        const list = document.getElementById('rigs-list');
-        list.innerHTML = '';
-        if (state.rigs.length === 0) {
-            list.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted);">У вас пока нет ферм.</div>';
-            return;
-        }
-
-        state.rigs.forEach((rig, idx) => {
-            const isBroken = rig.durability <= 0;
-            const tempColor = rig.temp > 85 ? 'var(--red)' : (rig.temp > 70 ? 'var(--yellow)' : 'var(--green)');
-            const serviceCost = Math.floor((100 - rig.durability) * 15 + (rig.temp - 40) * 5);
-
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:0.8rem;">
-                    <span>${rig.name}</span>
-                    <span style="color:${isBroken ? 'var(--red)' : 'var(--green)'}">${isBroken ? 'СЛОМАН' : 'МАЙНИТ'}</span>
-                </div>
-                <div style="font-size:0.7rem; color:var(--text-muted); margin:4px 0;">
-                    Температура: <b style="color:${tempColor};">${Math.floor(rig.temp)}°C</b> | Прочность: <b>${Math.floor(rig.durability)}%</b>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width:${rig.durability}%; background:${rig.durability < 30 ? 'var(--red)' : 'var(--cyan)'};"></div>
-                </div>
-                <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:0.65rem; color:var(--text-muted);">Обслуживание: ~${Math.max(0, serviceCost)} ₽</span>
-                    <button class="btn btn-cyan" onclick="serviceRig(${idx})">Обслужить</button>
-                </div>
-            `;
-            list.appendChild(card);
+    s.rigs = s.rigs
+        .filter(r => r && typeof r === 'object' && RIG_TYPES[r.type])
+        .map(r => {
+            const def = RIG_TYPES[r.type];
+            return {
+                id: takeId(r.id),
+                type: r.type,
+                name: def.name,
+                income: num(r.income, def.income),
+                powerCost: num(r.powerCost, def.powerCost) > 0 ? r.powerCost : def.powerCost,
+                temp: clamp(num(r.temp, def.startTemp), 0, 100),
+                durability: clamp(num(r.durability, 100), 0, 100)
+            };
         });
-    }
+}
 
-    /* --- P2P ТОРГОВЛЯ И БУМАГИ --- */
-    function renderCrypto() {
-        const list = document.getElementById('crypto-list');
-        list.innerHTML = '';
-        for (let key in state.crypto) {
-            const coin = state.crypto[key];
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                    <span style="font-weight:bold; font-size:0.8rem;">${coin.name}</span>
-                    <span style="color:var(--yellow); font-size:0.75rem; font-weight:bold;">Баланс: ${coin.balance.toFixed(3)}</span>
-                </div>
-                <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Курс: <b style="color:var(--green);">${coin.rate} ₽</b></div>
-                <div style="display:flex; gap:6px;">
-                    <button class="btn btn-success" style="flex:1;" onclick="tradeCrypto('${key}', 'buy')">Купить 1 unit</button>
-                    <button class="btn btn-danger" style="flex:1;" onclick="tradeCrypto('${key}', 'sell')">Продать 1 unit</button>
-                </div>
-            `;
-            list.appendChild(card);
-        }
-    }
+function loadState() {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) { saved = null; }
+    const s = mergeDefaults(DEFAULT_STATE, saved);
+    normalizeState(s);
+    return s;
+}
 
-    function tradeCrypto(key, type) {
+let state = loadState();
+let dirty = false;
+
+function saveGame() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* приватный режим / нет места */ }
+    dirty = false;
+}
+function flushSave() { if (dirty) saveGame(); }
+
+/* =====================================================================
+   РАНТАЙМ-ПЕРЕМЕННЫЕ (не сохраняются)
+   ===================================================================== */
+let market = [];          // текущие лоты на рынке
+let haggleState = null;   // активный торг
+let botTimer = null;
+let pushTimer = null;
+let secCounter = 0;
+let gameEpoch = 0;        // растёт при сбросе, отменяет "висящие" таймауты казино
+
+/* =====================================================================
+   УВЕДОМЛЕНИЯ
+   ===================================================================== */
+function showPush(icon, text) {
+    const notif = $('push-notif');
+    $('push-icon').textContent = icon;
+    $('push-text').textContent = text;
+    notif.classList.add('active');
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(() => notif.classList.remove('active'), 3000);
+}
+const warn = text => showPush('❌', text);
+
+/* =====================================================================
+   ОТРИСОВКА: значения обновляем на месте, списки перерисовываем
+   только при структурных изменениях (иначе клики и ввод теряются)
+   ===================================================================== */
+function refresh(saveNow = false) {
+    renderHUD();
+    updateCrypto();
+    updateRigs();
+    dirty = true;
+    if (saveNow) saveGame();
+}
+
+function renderHUD() {
+    const bal = fmt(state.balance);
+    document.querySelectorAll('.global-balance-display').forEach(el => { el.textContent = bal; });
+
+    $('trust-score-display').textContent = `⭐ ${state.trustScore.toFixed(2)}`;
+    $('stat-trust').textContent = `${state.trustScore.toFixed(2)} ⭐`;
+    $('stat-sales').textContent = state.statsSales;
+    $('stat-earned').textContent = fmt(state.statsEarned);
+    $('stat-crypto-volume').textContent = fmt(state.statsCryptoVolume);
+
+    $('bank-deposit-val').textContent = fmt(state.deposit);
+    $('bank-loan-val').textContent = fmtDebt(state.loan);
+    $('elec-bill').textContent = fmtDebt(state.electricityBill);
+}
+
+function changeTrust(delta) {
+    state.trustScore = clamp(round2(state.trustScore + delta), 1, 5);
+}
+
+/* --- Навигация --- */
+function openApp(id) {
+    document.querySelectorAll('.app-window').forEach(app => app.classList.remove('active'));
+    $(id).classList.add('active');
+    refresh();
+}
+
+function closeApps() {
+    document.querySelectorAll('.app-window').forEach(app => app.classList.remove('active'));
+    closeChat();
+}
+
+function switchCasinoGame(gameId, btn) {
+    document.querySelectorAll('.casino-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.casino-game').forEach(g => g.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    $(`game-${gameId}`).classList.add('active');
+}
+
+/* --- Часы --- */
+function updateClock() {
+    $('clock').textContent = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+}
+
+/* --- Темы --- */
+function applyTheme() {
+    document.body.className = state.theme === 'default' ? '' : `theme-${state.theme}`;
+}
+function setTheme(theme) {
+    if (!THEMES.includes(theme)) return;
+    state.theme = theme;
+    applyTheme();
+    refresh(true);
+}
+
+/* =====================================================================
+   КРИПТА
+   ===================================================================== */
+function buildCrypto() {
+    const list = $('crypto-list');
+    list.innerHTML = '';
+    for (const key of Object.keys(state.crypto)) {
         const coin = state.crypto[key];
-        if (type === 'buy') {
-            if (state.balance < coin.rate) return alert('❌ Недостаточно рублей!');
-            state.balance -= coin.rate;
-            coin.balance += 1;
-            state.statsCryptoVolume += coin.rate;
-        } else {
-            if (coin.balance < 1) return alert('❌ Недостаточно монет!');
-            coin.balance -= 1;
-            state.balance += coin.rate;
-            state.statsCryptoVolume += coin.rate;
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="font-weight:bold; font-size:0.8rem;">${esc(coin.name)}</span>
+                <span style="color:var(--yellow); font-size:0.75rem; font-weight:bold;" id="crypto-bal-${key}"></span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Курс: <b style="color:var(--green);" id="crypto-rate-${key}"></b></div>
+            <div style="display:flex; gap:6px;">
+                <button class="btn btn-success" style="flex:1;" data-trade="buy" data-coin="${key}">Купить 1 unit</button>
+                <button class="btn btn-danger" style="flex:1;" data-trade="sell" data-coin="${key}">Продать 1 unit</button>
+            </div>`;
+        list.appendChild(card);
+    }
+    updateCrypto();
+}
+
+function updateCrypto() {
+    for (const key of Object.keys(state.crypto)) {
+        const coin = state.crypto[key];
+        const bal = $(`crypto-bal-${key}`), rate = $(`crypto-rate-${key}`);
+        if (bal) bal.textContent = `Баланс: ${coin.balance.toFixed(3)}`;
+        if (rate) rate.textContent = `${coin.rate} ₽`;
+    }
+}
+
+function tradeCrypto(key, type) {
+    const coin = state.crypto[key];
+    if (!coin) return;
+    if (type === 'buy') {
+        if (state.balance < coin.rate) return warn('Недостаточно рублей!');
+        state.balance -= coin.rate;
+        coin.balance = round6(coin.balance + 1);
+    } else {
+        if (coin.balance < 1 - 1e-9) return warn('Недостаточно монет!');
+        coin.balance = Math.max(0, round6(coin.balance - 1));
+        state.balance += coin.rate;
+    }
+    state.statsCryptoVolume += coin.rate;
+    refresh(true);
+}
+
+/* =====================================================================
+   МАЙНИНГ
+   ===================================================================== */
+function rigServiceCost(rig) {
+    return Math.max(0, Math.floor((100 - rig.durability) * 15 + (rig.temp - 40) * 5));
+}
+
+function renderRigs() {
+    const list = $('rigs-list');
+    list.innerHTML = '';
+    if (state.rigs.length === 0) {
+        list.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted);">У вас пока нет ферм.</div>';
+        return;
+    }
+    state.rigs.forEach(rig => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.dataset.rig = rig.id;
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:0.8rem;">
+                <span>${esc(rig.name)}</span>
+                <span class="rig-status"></span>
+            </div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin:4px 0;">
+                Температура: <b class="rig-temp"></b> | Прочность: <b class="rig-dur"></b>
+            </div>
+            <div class="progress-bar"><div class="progress-fill rig-fill"></div></div>
+            <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.65rem; color:var(--text-muted);">Обслуживание: ~<span class="rig-cost"></span> ₽</span>
+                <button class="btn btn-cyan" data-service="${rig.id}">Обслужить</button>
+            </div>`;
+        list.appendChild(card);
+    });
+    updateRigs();
+}
+
+function updateRigs() {
+    const list = $('rigs-list');
+    const cards = list.querySelectorAll('[data-rig]');
+    if (cards.length !== state.rigs.length) { renderRigs(); return; }
+    state.rigs.forEach(rig => {
+        const card = list.querySelector(`[data-rig="${rig.id}"]`);
+        if (!card) return;
+        const broken = rig.durability <= 0;
+        const tempColor = rig.temp > 85 ? 'var(--red)' : (rig.temp > 70 ? 'var(--yellow)' : 'var(--green)');
+        const status = card.querySelector('.rig-status');
+        status.textContent = broken ? 'СЛОМАН' : 'МАЙНИТ';
+        status.style.color = broken ? 'var(--red)' : 'var(--green)';
+        const temp = card.querySelector('.rig-temp');
+        temp.textContent = `${Math.floor(rig.temp)}°C`;
+        temp.style.color = tempColor;
+        card.querySelector('.rig-dur').textContent = `${Math.floor(rig.durability)}%`;
+        const fill = card.querySelector('.rig-fill');
+        fill.style.width = `${rig.durability}%`;
+        fill.style.background = rig.durability < 30 ? 'var(--red)' : 'var(--cyan)';
+        card.querySelector('.rig-cost').textContent = rigServiceCost(rig);
+    });
+}
+
+function buyRig(type) {
+    const def = RIG_TYPES[type];
+    if (!def) return;
+    if (state.balance < def.price) return warn(`Нужно ${def.price.toLocaleString('ru-RU')} ₽!`);
+    state.balance -= def.price;
+    state.rigs.push({
+        id: uid(), name: def.name, type,
+        income: def.income, powerCost: def.powerCost,
+        temp: def.startTemp, durability: 100
+    });
+    showPush('⛏️', `Куплено: ${def.name}`);
+    renderRigs();
+    refresh(true);
+}
+
+function serviceRig(id) {
+    const rig = state.rigs.find(r => r.id === id);
+    if (!rig) return;
+    const cost = rigServiceCost(rig);
+    if (cost <= 0) return showPush('⚙️', 'Оборудование в идеальном состоянии!');
+    if (state.balance < cost) return warn(`Для обслуживания нужно ${cost} ₽!`);
+    state.balance -= cost;
+    rig.durability = 100;
+    rig.temp = 40;
+    showPush('🔧', `Обслужено: ${rig.name}`);
+    refresh(true);
+}
+
+function payElectricity() {
+    const due = debtDue(state.electricityBill);
+    if (due <= 0) return showPush('✅', 'У вас нет задолженности!');
+    if (state.balance < due) return warn('Недостаточно средств!');
+    state.balance -= due;
+    state.electricityBill = 0;
+    showPush('⚡', 'Счёт за свет оплачен!');
+    refresh(true);
+}
+
+/* =====================================================================
+   P2P РЫНОК
+   ===================================================================== */
+function availableTemplates() {
+    return itemTemplates.filter(t => !t.vip || state.trustScore >= 4.5);
+}
+
+function createLot(t) {
+    return {
+        id: uid(),
+        title: t.title,
+        price: randInt(t.min, t.max),
+        realValue: t.real,
+        risk: t.risk,
+        isBad: Math.random() < t.risk, // судьба лота определяется сразу — Чекер показывает правду
+        checked: false
+    };
+}
+
+function generateMarket() {
+    closeChat();
+    const pool = availableTemplates();
+    market = [];
+    for (let i = 0; i < 3; i++) market.push(createLot(pool[randInt(0, pool.length - 1)]));
+    renderMarket();
+}
+
+function renderMarket() {
+    const list = $('market-list');
+    list.innerHTML = '';
+    market.forEach(lot => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        let checkLine = '';
+        if (lot.checked) {
+            checkLine = lot.isBad
+                ? '<div style="font-size:0.68rem; color:var(--red); margin-bottom:4px;">⚠️ ЧЕКЕР: Лот подозрительный!</div>'
+                : '<div style="font-size:0.68rem; color:var(--green); margin-bottom:4px;">✅ ЧЕКЕР: Лот чистый!</div>';
         }
-        updateUI();
+        card.innerHTML = `
+            <div style="font-weight:bold; font-size:0.8rem;">${esc(lot.title)}</div>
+            <div style="font-size:0.8rem; margin:2px 0;"><b>${lot.price} ₽</b> <span style="font-size:0.65rem; color:var(--text-muted);">(Рынок: ~${lot.realValue} ₽)</span></div>
+            <div style="font-size:0.65rem; color:${lot.risk > 0.1 ? 'var(--red)' : 'var(--green)'}; margin-bottom:4px;">Риск восстановления: ${Math.round(lot.risk * 100)}%</div>
+            ${checkLine}
+            <div style="display:flex; gap:4px;">
+                <button class="btn btn-primary" style="flex:1;" data-act="buy" data-lot="${lot.id}">Купить</button>
+                <button class="btn btn-purple" data-act="check" data-lot="${lot.id}">🔍 Чекер (50₽)</button>
+                <button class="btn btn-warning" data-act="chat" data-lot="${lot.id}">💬</button>
+            </div>`;
+        list.appendChild(card);
+    });
+}
+
+/* Покупка лота. Возвращает 'ok' | 'bad' | false */
+function buyLot(lot, price, silent = false) {
+    if (state.balance < price) {
+        if (!silent) warn('Недостаточно денег!');
+        return false;
     }
-
-    function generateMarket() {
-        const list = document.getElementById('market-list');
-        list.innerHTML = '';
-        for (let i = 0; i < 3; i++) {
-            let available = itemTemplates.filter(t => !t.vip || (t.vip && state.trustScore >= 4.5));
-            const t = available[Math.floor(Math.random() * available.length)];
-            const price = Math.floor(Math.random() * (t.max - t.min + 1)) + t.min;
-            const item = { id: Date.now() + i, title: t.title, price, realValue: t.real, risk: t.risk };
-
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.innerHTML = `
-                <div style="font-weight:bold; font-size:0.8rem;">${item.title}</div>
-                <div style="font-size:0.8rem; margin:2px 0;"><b>${item.price} ₽</b> <span style="font-size:0.65rem; color:var(--text-muted);">(Рынок: ~${item.realValue} ₽)</span></div>
-                <div style="font-size:0.65rem; color:${item.risk > 0.1 ? 'var(--red)' : 'var(--green)'}; margin-bottom:4px;">Риск восстановления: ${(item.risk * 100)}%</div>
-                <div style="display:flex; gap:4px;">
-                    <button class="btn btn-primary" style="flex:1;" onclick="buyItem(${item.price}, '${item.title}', ${item.realValue}, ${item.risk})">Купить</button>
-                    <button class="btn btn-purple" onclick="checkItem(${item.risk})">🔍 Чекер (50₽)</button>
-                    <button class="btn btn-warning" onclick="openChat('${item.title}', ${item.price}, ${item.realValue}, ${item.risk})">💬</button>
-                </div>
-            `;
-            list.appendChild(card);
-        }
+    state.balance -= price;
+    if (lot.isBad) {
+        showPush('❌', `Лот "${lot.title}" восстановлен!`);
+        changeTrust(-0.2);
+        return 'bad';
     }
+    state.inventory.push({
+        id: uid(), title: lot.title, buyPrice: price, realValue: lot.realValue,
+        sellPrice: Math.floor(lot.realValue * 1.05)
+    });
+    showPush('🛍️', `Куплен лот "${lot.title}"`);
+    renderInventory();
+    return 'ok';
+}
 
-    function checkItem(risk) {
-        if (state.balance < 50) return alert('❌ Недостаточно 50 ₽!');
-        state.balance -= 50;
-        updateUI();
-        if (risk > 0.15 && Math.random() < risk) alert('⚠️ ЧЕКЕР: Лот подозрительный!');
-        else alert('✅ ЧЕКЕР: Лот чистый!');
-    }
+function manualBuy(lot, price) {
+    if (!buyLot(lot, price)) return;
+    refresh(true);
+    generateMarket();
+}
 
-    function openChat(title, price, realValue, risk) {
-        state.activeHaggle = { title, price, currentPrice: price, realValue, risk, minPrice: Math.floor(price * 0.75) };
-        document.getElementById('chat-title').innerText = `Торг: ${title}`;
-        document.getElementById('chat-history').innerHTML = `<div class="msg msg-them">Привет! Отдам за ${price} ₽.</div>`;
-        document.getElementById('chat-modal').classList.add('active');
-    }
+function checkLot(lot) {
+    if (lot.checked) return showPush('🔍', 'Этот лот уже проверен.');
+    if (state.balance < 50) return warn('Недостаточно 50 ₽!');
+    state.balance -= 50;
+    lot.checked = true;
+    renderMarket();
+    refresh(true);
+}
 
-    function closeChat() { document.getElementById('chat-modal').classList.remove('active'); }
+$('market-list').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    const lot = market.find(l => l.id === Number(btn.dataset.lot));
+    if (!lot) return;
+    if (btn.dataset.act === 'buy') manualBuy(lot, lot.price);
+    else if (btn.dataset.act === 'check') checkLot(lot);
+    else if (btn.dataset.act === 'chat') openChat(lot);
+});
 
-    function haggle(action) {
-        const h = state.activeHaggle;
-        const history = document.getElementById('chat-history');
+/* --- Торг --- */
+function addMsg(cls, text) {
+    const history = $('chat-history');
+    const div = document.createElement('div');
+    div.className = `msg ${cls}`;
+    div.textContent = text;
+    history.appendChild(div);
+    history.scrollTop = history.scrollHeight;
+}
 
-        if (action === 'discount') {
-            const proposedPrice = Math.floor(h.currentPrice * 0.85);
-            if (proposedPrice < h.minPrice) {
-                history.innerHTML += `<div class="msg msg-them">Это крайняя цена (${h.currentPrice} ₽)!</div>`;
-            } else {
-                history.innerHTML += `<div class="msg msg-me">Скинешь до ${proposedPrice} ₽?</div>`;
-                if (Math.random() > 0.35) {
-                    h.currentPrice = proposedPrice;
-                    history.innerHTML += `<div class="msg msg-them">По рукам! Забирай за ${proposedPrice} ₽.</div>`;
-                } else {
-                    history.innerHTML += `<div class="msg msg-them">Не, это слишком дешево.</div>`;
-                }
-            }
-        } else if (action === 'buy') {
-            buyItem(h.currentPrice, h.title, h.realValue, h.risk);
-            closeChat();
-        }
-    }
+function openChat(lot) {
+    haggleState = { lot, currentPrice: lot.price, minPrice: Math.floor(lot.price * 0.75) };
+    $('chat-title').textContent = `Торг: ${lot.title}`;
+    $('chat-history').innerHTML = '';
+    addMsg('msg-them', `Привет! Отдам за ${lot.price} ₽.`);
+    $('chat-modal').classList.add('active');
+}
 
-    function buyItem(price, title, realValue, risk) {
-        if (state.balance < price) return alert('❌ Недостаточно денег!');
-        state.balance -= price;
+function closeChat() {
+    haggleState = null;
+    $('chat-modal').classList.remove('active');
+}
 
-        if (Math.random() < risk) {
-            showPush('❌', `Лот "${title}" восстановлен!`);
-            state.trustScore = Math.max(1.0, state.trustScore - 0.2);
-        } else {
-            state.inventory.push({ title, buyPrice: price, realValue, sellPrice: Math.floor(realValue * 1.05) });
-            showPush('🛍️', `Куплен лот "${title}"`);
-        }
-        updateUI();
-        generateMarket();
-    }
+function haggleAction(action) {
+    const h = haggleState;
+    if (!h) return;
 
-    function renderInventory() {
-        const inv = document.getElementById('inventory-list');
-        inv.innerHTML = '';
-        if (state.inventory.length === 0) {
-            inv.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted);">Инвентарь пуст.</div>';
+    if (action === 'discount') {
+        const proposed = Math.floor(h.currentPrice * 0.85);
+        if (proposed < h.minPrice) {
+            addMsg('msg-them', `Это крайняя цена (${h.currentPrice} ₽)!`);
             return;
         }
-        state.inventory.forEach((item, index) => {
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.innerHTML = `
-                <div style="font-weight:bold; font-size:0.8rem;">${item.title}</div>
-                <div style="display:flex; gap:6px; margin-top:4px; align-items:center;">
-                    <input type="number" id="sell-price-${index}" value="${item.sellPrice}" style="width:75px; padding:4px; background:#0f172a; border:1px solid var(--border); color:white; border-radius:4px; font-size:0.75rem;">
-                    <button class="btn btn-success" style="flex:1;" onclick="sellItem(${index})">Выставить</button>
-                </div>
-            `;
-            inv.appendChild(card);
-        });
-    }
-
-    function sellItem(index) {
-        const item = state.inventory[index];
-        const setPrice = parseInt(document.getElementById(`sell-price-${index}`).value);
-        if (!setPrice || setPrice <= 0) return;
-
-        const ratio = setPrice / item.realValue;
-        let buyChance = ratio <= 0.9 ? 0.95 : (ratio <= 1.1 ? 0.70 : (ratio <= 1.3 ? 0.30 : 0.0));
-
-        if (Math.random() < buyChance) {
-            state.balance += setPrice;
-            state.statsSales += 1;
-            state.statsEarned += (setPrice - item.buyPrice);
-            state.trustScore = Math.min(5.0, state.trustScore + 0.1);
-            showPush('💰', `Продано за ${setPrice} ₽!`);
-            state.inventory.splice(index, 1);
-            updateUI();
+        addMsg('msg-me', `Скинешь до ${proposed} ₽?`);
+        if (Math.random() > 0.35) {
+            h.currentPrice = proposed;
+            addMsg('msg-them', `По рукам! Забирай за ${proposed} ₽.`);
         } else {
-            state.trustScore = Math.max(1.0, state.trustScore - 0.05);
-            alert('❌ Оверпрайс! Покупатели отказываются.');
-            updateUI();
+            addMsg('msg-them', 'Не, это слишком дешево.');
         }
+    } else if (action === 'buy') {
+        const { lot, currentPrice } = h;
+        closeChat();
+        manualBuy(lot, currentPrice);
+    }
+}
+
+/* --- Инвентарь --- */
+function syncSellInputs() {
+    state.inventory.forEach(item => {
+        const el = $(`sell-price-${item.id}`);
+        if (el) {
+            const v = Math.floor(Number(el.value));
+            if (Number.isFinite(v) && v > 0) item.sellPrice = v;
+        }
+    });
+}
+
+function renderInventory() {
+    syncSellInputs(); // сохраняем введённые, но ещё не выставленные цены
+    const inv = $('inventory-list');
+    inv.innerHTML = '';
+    if (state.inventory.length === 0) {
+        inv.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted);">Инвентарь пуст.</div>';
+        return;
+    }
+    state.inventory.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `
+            <div style="font-weight:bold; font-size:0.8rem;">${esc(item.title)}</div>
+            <div style="display:flex; gap:6px; margin-top:4px; align-items:center;">
+                <input type="number" inputmode="numeric" min="1" step="1" class="price-input" id="sell-price-${item.id}" value="${item.sellPrice}">
+                <button class="btn btn-success" style="flex:1;" data-sell="${item.id}">Выставить</button>
+            </div>`;
+        inv.appendChild(card);
+    });
+}
+
+function sellItem(id) {
+    const idx = state.inventory.findIndex(i => i.id === id);
+    if (idx < 0) return;
+    const item = state.inventory[idx];
+    const setPrice = Math.floor(Number($(`sell-price-${id}`).value));
+    if (!Number.isFinite(setPrice) || setPrice <= 0) return warn('Введите корректную цену.');
+
+    const ratio = setPrice / item.realValue;
+    const buyChance = ratio <= 0.9 ? 0.95 : (ratio <= 1.1 ? 0.70 : (ratio <= 1.3 ? 0.30 : 0.0));
+
+    if (Math.random() < buyChance) {
+        state.balance += setPrice;
+        state.statsSales += 1;
+        state.statsEarned += (setPrice - item.buyPrice);
+        changeTrust(0.1);
+        showPush('💰', `Продано за ${setPrice} ₽!`);
+        state.inventory.splice(idx, 1);
+        renderInventory();
+    } else {
+        item.sellPrice = setPrice;
+        changeTrust(-0.05);
+        warn('Оверпрайс! Покупатели отказываются.');
+    }
+    refresh(true);
+}
+
+$('inventory-list').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-sell]');
+    if (btn) sellItem(Number(btn.dataset.sell));
+});
+$('crypto-list').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-trade]');
+    if (btn) tradeCrypto(btn.dataset.coin, btn.dataset.trade);
+});
+$('rigs-list').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-service]');
+    if (btn) serviceRig(Number(btn.dataset.service));
+});
+
+/* =====================================================================
+   БАНК
+   ===================================================================== */
+function bankDeposit(amt) {
+    if (state.balance < amt) return warn('Недостаточно средств!');
+    state.balance -= amt;
+    state.deposit += amt;
+    refresh(true);
+}
+function bankWithdraw() {
+    const sum = Math.floor(state.deposit);
+    if (sum <= 0) return showPush('🏦', 'На вкладе пусто.');
+    state.balance += sum;
+    state.deposit = 0;
+    refresh(true);
+}
+function takeLoan(amt) {
+    if (state.loan > 0) return warn('Погасите текущий кредит!');
+    state.loan = Math.floor(amt * 1.10);
+    state.balance += amt;
+    showPush('💳', `Взято ${amt} ₽ в кредит.`);
+    refresh(true);
+}
+function payLoan() {
+    const due = debtDue(state.loan);
+    if (due <= 0) return showPush('✅', 'Кредита нет.');
+    if (state.balance < due) return warn('Недостаточно денег!');
+    state.balance -= due;
+    state.loan = 0;
+    showPush('✅', 'Кредит погашен!');
+    refresh(true);
+}
+
+/* =====================================================================
+   КАЗИНО
+   ===================================================================== */
+function readBet(inputId) {
+    const bet = Math.floor(Number($(inputId).value));
+    if (!Number.isFinite(bet) || bet < 1) { warn('Введите ставку от 1 ₽'); return null; }
+    if (bet > state.balance) { warn('Недостаточно средств!'); return null; }
+    return bet;
+}
+function setDisabled(selector, value) {
+    document.querySelectorAll(selector).forEach(b => { b.disabled = value; });
+}
+
+/* --- 1. Краш --- */
+const crash = { timer: null, ticks: 0, mult: 1, bet: 0, point: 0, running: false };
+
+function setCrashButtons(running) {
+    $('crash-btn-start').disabled = running;
+    $('crash-btn-cash').disabled = !running;
+}
+function stopCrash() {
+    clearInterval(crash.timer);
+    crash.timer = null;
+    crash.running = false;
+    setCrashButtons(false);
+}
+
+function startCrash() {
+    if (crash.running) return;
+    const bet = readBet('crash-bet');
+    if (bet === null) return;
+
+    state.balance -= bet;
+    crash.bet = bet;
+    crash.ticks = 0;
+    crash.mult = 1;
+    crash.running = true;
+    crash.point = Math.random() < 0.05 ? 1 : Number((1 + Math.random() * Math.random() * 8).toFixed(2));
+
+    const el = $('crash-mult');
+    el.style.color = 'var(--accent)';
+    el.textContent = '1.00x';
+    setCrashButtons(true);
+    refresh(true);
+
+    crash.timer = setInterval(() => {
+        crash.ticks++;
+        crash.mult = round2(1 + crash.ticks * 0.05);
+        if (crash.mult >= crash.point) {
+            stopCrash();
+            el.textContent = `💥 ${crash.point.toFixed(2)}x (ВЗРЫВ!)`;
+            el.style.color = 'var(--red)';
+            showPush('💥', 'Ракета взорвалась!');
+            refresh(true);
+            return;
+        }
+        el.textContent = `${crash.mult.toFixed(2)}x`;
+    }, 150);
+}
+
+function cashoutCrash() {
+    if (!crash.running) return;
+    stopCrash();
+    const win = Math.floor(crash.bet * crash.mult);
+    state.balance += win;
+    const el = $('crash-mult');
+    el.textContent = `✅ ${crash.mult.toFixed(2)}x`;
+    el.style.color = 'var(--green)';
+    showPush('🚀', `Забрал ${win} ₽ (${crash.mult.toFixed(2)}x)!`);
+    refresh(true);
+}
+
+/* --- 2. Блэкджек --- */
+const SUITS = ['♠', '♥', '♦', '♣'];
+const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+const bj = { active: false, deck: [], player: [], dealer: [], bet: 0 };
+
+function newDeck() {
+    const deck = [];
+    for (const s of SUITS) for (const r of RANKS) deck.push({ rank: r, suit: s });
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    return deck;
+}
+const cardValue = c => c.rank === 'A' ? 11 : (['10', 'J', 'Q', 'K'].includes(c.rank) ? 10 : Number(c.rank));
+const cardText = c => c.rank + c.suit;
+
+function calcScore(hand) {
+    let sum = hand.reduce((a, c) => a + cardValue(c), 0);
+    let aces = hand.filter(c => c.rank === 'A').length;
+    while (sum > 21 && aces > 0) { sum -= 10; aces--; }
+    return sum;
+}
+
+function renderBJ() {
+    $('bj-player-hand').textContent = bj.player.length ? bj.player.map(cardText).join(' ') : '-';
+    $('bj-player-score').textContent = calcScore(bj.player);
+    if (bj.active) {
+        // вторая карта дилера скрыта, пока раздача идёт
+        $('bj-dealer-hand').textContent = `${cardText(bj.dealer[0])} ?`;
+        $('bj-dealer-score').textContent = calcScore([bj.dealer[0]]);
+    } else {
+        $('bj-dealer-hand').textContent = bj.dealer.length ? bj.dealer.map(cardText).join(' ') : '-';
+        $('bj-dealer-score').textContent = calcScore(bj.dealer);
+    }
+}
+
+function setBJButtons(active) {
+    $('bj-btn-deal').disabled = active;
+    $('bj-btn-hit').disabled = !active;
+    $('bj-btn-stand').disabled = !active;
+}
+
+function bjDeal() {
+    if (bj.active) return;
+    const bet = readBet('bj-bet');
+    if (bet === null) return;
+
+    state.balance -= bet;
+    bj.bet = bet;
+    bj.deck = newDeck();
+    bj.player = [bj.deck.pop(), bj.deck.pop()];
+    bj.dealer = [bj.deck.pop(), bj.deck.pop()];
+    bj.active = true;
+    setBJButtons(true);
+    renderBJ();
+    refresh(true);
+
+    if (calcScore(bj.player) === 21) bjSettle(); // натуральный блэкджек
+}
+
+function bjHit() {
+    if (!bj.active) return;
+    bj.player.push(bj.deck.pop());
+    const p = calcScore(bj.player);
+    if (p >= 21) bjSettle();   // перебор или ровно 21 — раздача заканчивается
+    else renderBJ();
+}
+
+function bjStand() {
+    if (!bj.active) return;
+    bjSettle();
+}
+
+function bjSettle() {
+    bj.active = false;
+    setBJButtons(false);
+
+    const p = calcScore(bj.player);
+    if (p > 21) {
+        renderBJ();
+        showPush('💥', 'Перебор! Вы проиграли.');
+        refresh(true);
+        return;
     }
 
-    /* --- БАНК --- */
-    function bankDeposit(amt) {
-        if (state.balance < amt) return alert('❌ Недостаточно средств!');
-        state.balance -= amt; state.deposit += amt; updateUI();
-    }
-    function bankWithdraw() {
-        state.balance += state.deposit; state.deposit = 0; updateUI();
-    }
-    function takeLoan(amt) {
-        if (state.loan > 0) return alert('❌ Погасите текущий кредит!');
-        state.loan = Math.floor(amt * 1.10); state.balance += amt; updateUI();
-        showPush('💳', `Взято ${amt} ₽ в кредит.`);
-    }
-    function payLoan() {
-        if (state.balance < state.loan) return alert('❌ Недостаточно денег!');
-        state.balance -= state.loan; state.loan = 0; updateUI();
-        showPush('✅', 'Кредит погашен!');
-    }
+    while (calcScore(bj.dealer) < 17) bj.dealer.push(bj.deck.pop());
+    renderBJ();
 
-    /* --- ЛОГИКА КАЗИНО --- */
-    function switchCasinoGame(gameId) {
-        document.querySelectorAll('.casino-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.casino-game').forEach(g => g.classList.remove('active'));
-        event.target.classList.add('active');
-        document.getElementById(`game-${gameId}`).classList.add('active');
-    }
+    const d = calcScore(bj.dealer);
+    const playerNatural = bj.player.length === 2 && p === 21;
+    const dealerNatural = bj.dealer.length === 2 && d === 21;
 
-    // 1. КРАШ / РАКЕТА
-    let crashTimer = null;
-    let crashMult = 1.00;
-    let crashBet = 0;
-    let crashCrashPoint = 0;
-
-    function startCrash() {
-        const bet = parseFloat(document.getElementById('crash-bet').value);
-        if (!bet || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
-
-        state.balance -= bet;
-        crashBet = bet;
-        crashMult = 1.00;
-        crashCrashPoint = (Math.random() < 0.05) ? 1.00 : (1 + Math.random() * Math.random() * 8).toFixed(2);
-        
-        document.getElementById('crash-btn-start').disabled = true;
-        document.getElementById('crash-btn-cash').disabled = false;
-        updateUI();
-
-        crashTimer = setInterval(() => {
-            crashMult += 0.05;
-            document.getElementById('crash-mult').innerText = crashMult.toFixed(2) + 'x';
-
-            if (crashMult >= crashCrashPoint) {
-                clearInterval(crashTimer);
-                document.getElementById('crash-mult').innerText = '💥 ' + crashMult.toFixed(2) + 'x (ВЗРЫВ!)';
-                document.getElementById('crash-btn-start').disabled = false;
-                document.getElementById('crash-btn-cash').disabled = true;
-                showPush('💥', 'Ракета взорвалась!');
-            }
-        }, 150);
-    }
-
-    function cashoutCrash() {
-        clearInterval(crashTimer);
-        const win = Math.floor(crashBet * crashMult);
+    if (playerNatural && !dealerNatural) {
+        const win = Math.floor(bj.bet * 2.5);
         state.balance += win;
-        showPush('🚀', `Забрал ${win} ₽ (${crashMult.toFixed(2)}x)!`);
-        document.getElementById('crash-btn-start').disabled = false;
-        document.getElementById('crash-btn-cash').disabled = true;
-        updateUI();
+        showPush('🃏', `Блэкджек! Выиграли ${win} ₽`);
+    } else if (playerNatural && dealerNatural) {
+        state.balance += bj.bet;
+        showPush('🤝', 'У обоих блэкджек — ничья!');
+    } else if (d > 21 || p > d) {
+        const win = bj.bet * 2;
+        state.balance += win;
+        showPush('🃏', `Победа! Выиграли ${win} ₽`);
+    } else if (p === d) {
+        state.balance += bj.bet;
+        showPush('🤝', 'Ничья!');
+    } else {
+        showPush('❌', 'Дилер выиграл!');
     }
+    refresh(true);
+}
 
-    // 2. БЛЭКДЖЕК
-    let bjDeck = [], bjPlayer = [], bjDealer = [], bjBetAmt = 0;
+/* --- 3. Рулетка --- */
+let rouletteBusy = false;
 
-    function bjDeal() {
-        const bet = parseFloat(document.getElementById('bj-bet').value);
-        if (!bet || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
+function playRoulette(color) {
+    if (rouletteBusy) return;
+    const bet = readBet('roulette-bet');
+    if (bet === null) return;
 
-        state.balance -= bet;
-        bjBetAmt = bet;
-        bjDeck = [2,3,4,5,6,7,8,9,10,10,10,10,11, 2,3,4,5,6,7,8,9,10,10,10,10,11];
-        bjPlayer = [getCard(), getCard()];
-        bjDealer = [getCard()];
+    state.balance -= bet;
+    rouletteBusy = true;
+    setDisabled('#game-roulette .btn', true);
+    refresh(true);
 
-        document.getElementById('bj-btn-deal').disabled = true;
-        document.getElementById('bj-btn-hit').disabled = false;
-        document.getElementById('bj-btn-stand').disabled = false;
+    const res = Math.floor(Math.random() * 15); // 0 = зелёный, 1-7 = красный, 8-14 = чёрный
+    const resColor = res === 0 ? 'green' : (res <= 7 ? 'red' : 'black');
+    const wheel = $('roulette-wheel');
+    wheel.textContent = '🌀 Вращение...';
+    const epoch = gameEpoch;
 
-        renderBJ();
-        updateUI();
-    }
-
-    function getCard() {
-        const idx = Math.floor(Math.random() * bjDeck.length);
-        return bjDeck.splice(idx, 1)[0];
-    }
-
-    function calcScore(hand) {
-        let sum = hand.reduce((a,b) => a+b, 0);
-        if (sum > 21 && hand.includes(11)) sum -= 10;
-        return sum;
-    }
-
-    function renderBJ() {
-        document.getElementById('bj-player-hand').innerText = bjPlayer.join(', ');
-        document.getElementById('bj-player-score').innerText = calcScore(bjPlayer);
-        document.getElementById('bj-dealer-hand').innerText = bjDealer.join(', ');
-        document.getElementById('bj-dealer-score').innerText = calcScore(bjDealer);
-    }
-
-    function bjHit() {
-        bjPlayer.push(getCard());
-        renderBJ();
-        if (calcScore(bjPlayer) > 21) {
-            showPush('💥', 'Перебор! Вы проиграли.');
-            endBJ(false);
-        }
-    }
-
-    function bjStand() {
-        while (calcScore(bjDealer) < 17) bjDealer.push(getCard());
-        renderBJ();
-        const pScore = calcScore(bjPlayer);
-        const dScore = calcScore(bjDealer);
-
-        if (dScore > 21 || pScore > dScore) {
-            const win = bjBetAmt * 2;
+    setTimeout(() => {
+        if (epoch !== gameEpoch) return;
+        wheel.textContent = resColor === 'green' ? '🟢 ЗЕРО' : (resColor === 'red' ? '🔴 КРАСНОЕ' : '⚫ ЧЕРНОЕ');
+        if (color === resColor) {
+            const win = bet * (resColor === 'green' ? 14 : 2);
             state.balance += win;
-            showPush('🃏', `Победа! Выиграли ${win} ₽`);
-        } else if (pScore === dScore) {
-            state.balance += bjBetAmt;
-            showPush('🤝', 'Ничья!');
+            showPush('🎯', `Выигрыш ${win} ₽!`);
         } else {
-            showPush('❌', 'Дилер выиграл!');
+            showPush('❌', 'Не угадали!');
         }
-        endBJ(true);
-    }
+        rouletteBusy = false;
+        setDisabled('#game-roulette .btn', false);
+        refresh(true);
+    }, 1000);
+}
 
-    function endBJ() {
-        document.getElementById('bj-btn-deal').disabled = false;
-        document.getElementById('bj-btn-hit').disabled = true;
-        document.getElementById('bj-btn-stand').disabled = true;
-        updateUI();
-    }
+/* --- 4. Орёл и решка --- */
+let coinBusy = false;
 
-    // 3. РУЛЕТКА
-    function playRoulette(color) {
-        const bet = parseFloat(document.getElementById('roulette-bet').value);
-        if (!bet || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
+function playCoin(choice) {
+    if (coinBusy) return;
+    const bet = readBet('coin-bet');
+    if (bet === null) return;
 
-        state.balance -= bet;
-        const res = Math.floor(Math.random() * 15); // 0 = зеленый, 1-7 = красный, 8-14 = черный
-        let resColor = res === 0 ? 'green' : (res <= 7 ? 'red' : 'black');
+    state.balance -= bet;
+    coinBusy = true;
+    setDisabled('#game-coin .btn', true);
+    refresh(true);
 
-        const wheel = document.getElementById('roulette-wheel');
-        wheel.innerText = '🌀 Вращение...';
+    const result = Math.random() < 0.5 ? 'heads' : 'tails';
+    const icon = $('coin-icon');
+    icon.textContent = '🌀';
+    const epoch = gameEpoch;
 
-        setTimeout(() => {
-            const colorName = resColor === 'green' ? '🟢 ЗЕРО' : (resColor === 'red' ? '🔴 КРАСНОЕ' : '⚫ ЧЕРНОЕ');
-            wheel.innerText = colorName;
-
-            if (color === resColor) {
-                const mult = resColor === 'green' ? 14 : 2;
-                const win = bet * mult;
-                state.balance += win;
-                showPush('🎯', `Выигрыш ${win} ₽!`);
-            } else {
-                showPush('❌', 'Не угадали!');
-            }
-            updateUI();
-        }, 1000);
-    }
-
-    // 4. ОРЕЛ И РЕШКА
-    function playCoin(choice) {
-        const bet = parseFloat(document.getElementById('coin-bet').value);
-        if (!bet || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
-
-        state.balance -= bet;
-        const result = Math.random() < 0.5 ? 'heads' : 'tails';
-        const icon = document.getElementById('coin-icon');
-        icon.innerText = '🌀';
-
-        setTimeout(() => {
-            icon.innerText = result === 'heads' ? '🦅' : '🪙';
-            if (choice === result) {
-                state.balance += bet * 2;
-                showPush('🪙', `Угадали! +${bet * 2} ₽`);
-            } else {
-                showPush('❌', 'Не угадали!');
-            }
-            updateUI();
-        }, 600);
-    }
-
-    // 5. КОСТИ
-    function playDice() {
-        const bet = parseFloat(document.getElementById('dice-bet').value);
-        if (!bet || bet <= 0 || state.balance < bet) return alert('❌ Недостаточно средств!');
-
-        state.balance -= bet;
-        const pDice = Math.floor(Math.random() * 6) + 1;
-        const dDice = Math.floor(Math.random() * 6) + 1;
-
-        document.getElementById('dice-player').innerText = pDice;
-        document.getElementById('dice-dealer').innerText = dDice;
-
-        if (pDice > dDice) {
+    setTimeout(() => {
+        if (epoch !== gameEpoch) return;
+        icon.textContent = result === 'heads' ? '🦅' : '🪙';
+        if (choice === result) {
             state.balance += bet * 2;
-            showPush('🎲', `Выиграли ${bet * 2} ₽!`);
-        } else if (pDice === dDice) {
-            state.balance += bet;
-            showPush('🤝', 'Ничья!');
+            showPush('🪙', `Угадали! +${bet * 2} ₽`);
         } else {
-            showPush('❌', 'Дилер победил!');
+            showPush('❌', 'Не угадали!');
         }
-        updateUI();
-    }
+        coinBusy = false;
+        setDisabled('#game-coin .btn', false);
+        refresh(true);
+    }, 600);
+}
 
-    /* --- БОТ И ТЕМЫ --- */
-    function toggleBot() {
-        state.botActive = !state.botActive;
-        if (state.botActive) {
-            document.getElementById('bot-status').innerText = 'Работает';
-            document.getElementById('bot-status').style.color = 'var(--green)';
-            botInterval = setInterval(runBot, 3000);
-        } else {
-            document.getElementById('bot-status').innerText = 'Выкл';
-            document.getElementById('bot-status').style.color = 'var(--red)';
-            clearInterval(botInterval);
+/* --- 5. Кости --- */
+function playDice() {
+    const bet = readBet('dice-bet');
+    if (bet === null) return;
+
+    state.balance -= bet;
+    const pDice = randInt(1, 6);
+    const dDice = randInt(1, 6);
+    $('dice-player').textContent = pDice;
+    $('dice-dealer').textContent = dDice;
+
+    if (pDice > dDice) {
+        state.balance += bet * 2;
+        showPush('🎲', `Выиграли ${bet * 2} ₽!`);
+    } else if (pDice === dDice) {
+        state.balance += bet;
+        showPush('🤝', 'Ничья!');
+    } else {
+        showPush('❌', 'Дилер победил!');
+    }
+    refresh(true);
+}
+
+function resetCasinoUI() {
+    stopCrash();
+    crash.ticks = 0; crash.mult = 1;
+    const cm = $('crash-mult');
+    cm.textContent = '1.00x'; cm.style.color = 'var(--accent)';
+
+    bj.active = false; bj.player = []; bj.dealer = []; bj.deck = [];
+    setBJButtons(false);
+    renderBJ();
+
+    rouletteBusy = false; coinBusy = false;
+    setDisabled('#game-roulette .btn', false);
+    setDisabled('#game-coin .btn', false);
+    $('roulette-wheel').textContent = '🎰';
+    $('coin-icon').textContent = '🪙';
+    $('dice-player').textContent = '🎲';
+    $('dice-dealer').textContent = '🎲';
+}
+
+/* =====================================================================
+   АВТО-БОТ
+   ===================================================================== */
+function botLog(text) {
+    const logs = $('bot-logs');
+    const div = document.createElement('div');
+    div.className = 'bot-log';
+    div.textContent = text;
+    logs.prepend(div);
+    while (logs.children.length > 8) logs.removeChild(logs.lastChild);
+}
+
+function startBot() {
+    stopBot();
+    botTimer = setInterval(runBot, 3000);
+}
+function stopBot() {
+    if (botTimer) { clearInterval(botTimer); botTimer = null; }
+}
+function syncBotUI() {
+    const status = $('bot-status');
+    status.textContent = state.botActive ? 'Работает' : 'Выкл';
+    status.style.color = state.botActive ? 'var(--green)' : 'var(--red)';
+    $('bot-btn').textContent = state.botActive ? 'Выключить' : 'Включить';
+}
+function toggleBot() {
+    state.botActive = !state.botActive;
+    if (state.botActive) startBot(); else stopBot();
+    syncBotUI();
+    refresh(true);
+}
+
+function runBot() {
+    let bought = false;
+    for (const t of availableTemplates()) {
+        const lot = createLot(t);
+        if (lot.price < t.real * 0.65 && state.balance >= lot.price) {
+            const result = buyLot(lot, lot.price, true);
+            if (result === 'ok')  { botLog(`🤖 Куплено: ${lot.title} за ${lot.price} ₽`); bought = true; }
+            if (result === 'bad') { botLog(`🤖 Лот восстановлен: ${lot.title} (−${lot.price} ₽)`); bought = true; }
         }
-        updateUI();
     }
+    refresh(bought);
+}
 
-    function runBot() {
-        itemTemplates.forEach(t => {
-            const price = Math.floor(Math.random() * (t.max - t.min + 1)) + t.min;
-            if (price < t.real * 0.65 && state.balance >= price) {
-                buyItem(price, t.title, t.real, t.risk);
-            }
-        });
+/* =====================================================================
+   СБРОС ПРОГРЕССА (подтверждение двойным нажатием)
+   ===================================================================== */
+let resetArmed = false, resetTimer = null;
+
+function disarmReset() {
+    resetArmed = false;
+    clearTimeout(resetTimer);
+    $('reset-btn').textContent = 'Сбросить прогресс';
+}
+
+function resetProgress() {
+    if (!resetArmed) {
+        resetArmed = true;
+        $('reset-btn').textContent = 'Нажмите ещё раз для подтверждения';
+        resetTimer = setTimeout(disarmReset, 4000);
+        return;
     }
+    disarmReset();
 
-    function setTheme(theme) {
-        state.theme = theme;
-        document.body.className = theme === 'default' ? '' : `theme-${theme}`;
-    }
+    gameEpoch++;
+    stopBot();
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+    state = mergeDefaults(DEFAULT_STATE, null);
 
-    function resetProgress() {
-        if (confirm('Сбросить весь прогресс?')) {
-            localStorage.removeItem('p2p_game_save');
-            if (botInterval) clearInterval(botInterval);
-            state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-            generateMarket(); updateUI();
-        }
-    }
-
+    $('bot-logs').innerHTML = '';
+    resetCasinoUI();
+    closeChat();
+    applyTheme();
+    buildCrypto();
+    renderRigs();
+    renderInventory();
     generateMarket();
-    updateUI();
+    syncBotUI();
+    refresh(true);
+    showPush('♻️', 'Прогресс сброшен');
+}
+
+/* =====================================================================
+   ТАЙМЕРЫ
+   ===================================================================== */
+// Финансы: вклад и кредит
+setInterval(() => {
+    secCounter++;
+    if (state.deposit > 0) state.deposit = Math.min(MAX_MONEY, state.deposit * 1.01);
+    if (state.loan > 0 && secCounter % 10 === 0) state.loan = Math.min(MAX_MONEY, state.loan * 1.01);
+    refresh();
+}, 1000);
+
+// Курсы криптовалют
+setInterval(() => {
+    for (const key of Object.keys(state.crypto)) {
+        const coin = state.crypto[key];
+        coin.rate += 2;
+        if (coin.rate > 1000) {
+            coin.rate = coin.baseRate;
+            showPush('📉', `Курс ${coin.name} сбросился!`);
+        }
+    }
+    refresh();
+}, 5000);
+
+// Майнинг
+setInterval(() => {
+    if (state.rigs.length === 0) return;
+    let power = 0;
+    for (const rig of state.rigs) {
+        if (rig.durability <= 0) continue;
+        power += rig.powerCost;
+
+        rig.temp = Math.min(100, rig.temp + Math.random() * 1.5);
+        rig.durability = Math.max(0, rig.durability - (rig.temp > 85 ? 2.5 : 0.8));
+
+        if (rig.durability > 0) {
+            const coin = state.crypto[RIG_TYPES[rig.type].coin];
+            coin.balance = round6(coin.balance + rig.income);
+        } else {
+            showPush('🔧', `${rig.name} сломался!`);
+        }
+    }
+    state.electricityBill += power;
+    refresh();
+}, 3000);
+
+// Автосохранение (не чаще раза в 5 секунд) и сохранение при выходе
+setInterval(flushSave, 5000);
+document.addEventListener('visibilitychange', () => { if (document.hidden) flushSave(); });
+window.addEventListener('pagehide', flushSave);
+window.addEventListener('beforeunload', flushSave);
+
+setInterval(updateClock, 10000);
+
+/* =====================================================================
+   СТАРТ
+   ===================================================================== */
+applyTheme();
+buildCrypto();
+renderRigs();
+renderInventory();
+generateMarket();
+resetCasinoUI();
+syncBotUI();
+if (state.botActive) startBot(); // бот продолжает работать после перезагрузки
+updateClock();
+refresh(true);
 </script>
 </body>
 </html>
