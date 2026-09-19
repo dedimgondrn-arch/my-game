@@ -347,21 +347,23 @@
             <span class="app-label">Настройки</span>
         </button>
     </div>
- <!-- МЕССЕНДЖЕР / СДЕЛКИ -->
+    <!-- МЕССЕНДЖЕР / СДЕЛКИ -->
 <div class="app-window" id="app-messenger" hidden>
     <div class="app-header">
         <span class="title-sm">💬 DarkChat / Переговоры</span>
-        <span class="badge badge-green" id="messenger-status">Активные входящие</span>
+        <span class="badge badge-green" id="messenger-status">Активно</span>
     </div>
     <div class="app-content">
-        <div class="item-card" id="active-chat-card" style="margin-bottom: 10px;">
-            <!-- Сюда JS сам подставит реальный товар, имя покупателя и диалог -->
-            <div id="chat-messages" style="height: 180px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; margin-bottom: 10px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px;">
-                <div class="tiny muted" style="text-align:center;">Ожидание новых сообщений от покупателей...</div>
+        <div class="item-card" style="margin-bottom: 10px;">
+            <div id="chat-item-info">
+                <div class="tiny muted" style="text-align:center; padding: 20px 0;">Ожидание предложений от покупателей...</div>
+            </div>
+            
+            <div id="chat-messages" style="height: 150px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; margin: 10px 0; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px;">
             </div>
 
-            <div id="chat-controls" class="row" style="flex-direction: column; gap: 6px;">
-                <button class="btn btn-primary btn-xs" onclick="generateNewOffer()" style="width: 100%;">🔄 Подождать новый запрос от покупателя</button>
+            <div id="chat-buttons" class="row" style="flex-direction: column; gap: 6px;">
+                <button class="btn btn-primary btn-xs" onclick="updateChatUI()" style="width: 100%;">🔄 Обновить входящие сообщения</button>
             </div>
         </div>
     </div>
@@ -5339,28 +5341,79 @@ function getAdjustedPrice(basePrice, category = "electronics") {
 
 }
 /* =====================================================================
-   МЕССЕНДЖЕР И ПЕРЕГОВОРЫ (Интеграция с движком игры)
+   ЛОГИКА ЧАТА С РЕАЛЬНЫМИ ОФФЕРАМИ ИЗ STATE.OFFERS
    ===================================================================== */
 
-// Функция ответа покупателю из твоего чата
+// Обновление интерфейса чата на основе текущих предложений в игре
+function updateChatUI() {
+    const itemInfo = document.getElementById('chat-item-info');
+    const chatBox = document.getElementById('chat-messages');
+    const btnBox = document.getElementById('chat-buttons');
+    if (!itemInfo || !chatBox || !btnBox) return;
+
+    // Берем первый активный оффер из движка игры
+    const offer = (state.offers && state.offers.length > 0) ? state.offers[0] : null;
+
+    if (!offer) {
+        itemInfo.innerHTML = `<div class="tiny muted" style="text-align:center; padding: 10px 0;">Покупатели пока молчат. Выстави товары на Маркет или подожди пару секунд!</div>`;
+        chatBox.innerHTML = '';
+        btnBox.innerHTML = `<button class="btn btn-primary btn-xs" onclick="updateChatUI()" style="width: 100%;">🔄 Проверить сообщения</button>`;
+        return;
+    }
+
+    const itemName = offer.title || offer.name || offer.itemName || 'Твой товар';
+    const buyerName = offer.buyer || offer.buyerName || 'Покупатель';
+    const offerPrice = offer.price || 0;
+    const marketPrice = offer.marketPrice || Math.round(offerPrice * 1.15);
+
+    itemInfo.innerHTML = `
+        <div class="row-between">
+            <div class="title-sm">📦 ${itemName}</div>
+            <span class="tiny muted">Предложение</span>
+        </div>
+        <div class="tiny muted" style="margin-top: 4px;">
+            Покупатель: <b>${buyerName}</b> | Предлагает: <b style="color:var(--green);">${typeof fmt === 'function' ? fmt(offerPrice) : offerPrice + ' ₽'}</b>
+        </div>
+    `;
+
+    chatBox.innerHTML = `
+        <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
+            <b style="color:#10b981;">${buyerName}:</b> Привет! По поводу ${itemName}. Заберу за ${typeof fmt === 'function' ? fmt(offerPrice) : offerPrice + ' ₽'}, уступишь?
+        </div>
+    `;
+
+    btnBox.innerHTML = `
+        <button class="btn btn-success btn-xs" onclick="replyTrade('agree')" style="width: 100%;">🤝 Продать за ${typeof fmt === 'function' ? fmt(offerPrice) : offerPrice + ' ₽'}</button>
+        <button class="btn btn-warning btn-xs" onclick="replyTrade('haggle')" style="width: 100%;">😏 Попросить больше</button>
+        <button class="btn btn-danger btn-xs" onclick="replyTrade('reject')" style="width: 100%;">❌ Отказать</button>
+    `;
+}
+
+// Обработка кнопок ответа
 function replyTrade(action) {
     const chatBox = document.getElementById('chat-messages');
-    if (!chatBox) return;
+    const btnBox = document.getElementById('chat-buttons');
+    const offer = (state.offers && state.offers.length > 0) ? state.offers[0] : null;
 
-    // Проверяем, есть ли активные офферы в игре или выложенные товары
-    const activeOffer = (state.offers && state.offers.length > 0) ? state.offers[0] : null;
+    if (!offer && action !== 'agree_fallback') {
+        updateChatUI();
+        return;
+    }
+
+    const offerPrice = offer ? (offer.price || 0) : 35000;
+    const offerId = offer ? (offer.id || 0) : null;
 
     if (action === 'agree') {
-        // Если есть системный оффер — принимаем его
-        if (activeOffer && typeof acceptOffer === 'function') {
-            acceptOffer(activeOffer.id || 0);
+        // Применяем системный acceptOffer из движка, если он есть
+        if (typeof acceptOffer === 'function' && offerId !== null) {
+            acceptOffer(offerId);
         } else {
-            // Фолбэк-начисление в родной state.money
-            const gain = 35000;
-            state.money = (state.money || 0) + gain;
-            if (typeof renderHUD === 'function') renderHUD();
-            if (typeof saveGame === 'function') saveGame();
+            state.money = (state.money || 0) + offerPrice;
+            if (state.offers) state.offers.shift(); // Удаляем обработанный оффер
         }
+
+        if (typeof renderHUD === 'function') renderHUD();
+        if (typeof saveGame === 'function') saveGame();
 
         chatBox.innerHTML += `
             <div style="background: rgba(16, 185, 129, 0.2); padding: 8px 10px; border-radius: 6px; align-self: flex-end; max-width: 85%; text-align: right;">
@@ -5370,45 +5423,62 @@ function replyTrade(action) {
                 <b style="color:#10b981;">Покупатель:</b> Отлично, перевел деньги!
             </div>`;
 
+        btnBox.innerHTML = `<button class="btn btn-primary btn-xs" onclick="updateChatUI()" style="width: 100%;">🔄 Следующее сообщение</button>`;
+
     } else if (action === 'haggle') {
+        const hPrice = Math.round(offerPrice * 1.1);
         chatBox.innerHTML += `
             <div style="background: rgba(16, 185, 129, 0.2); padding: 8px 10px; border-radius: 6px; align-self: flex-end; max-width: 85%; text-align: right;">
-                <b>Вы:</b> Слишком мало, давай побольше.
+                <b>Вы:</b> Давай за ${typeof fmt === 'function' ? fmt(hPrice) : hPrice + ' ₽'}?
             </div>`;
-        
+
         setTimeout(() => {
-            const success = Math.random() > 0.4;
-            if (success) {
-                const gain = 38000;
-                state.money = (state.money || 0) + gain;
+            if (Math.random() > 0.4) {
+                if (typeof acceptOffer === 'function' && offerId !== null) {
+                    acceptOffer(offerId);
+                }
+                state.money = (state.money || 0) + hPrice;
+                if (state.offers) state.offers.shift();
+
                 if (typeof renderHUD === 'function') renderHUD();
                 if (typeof saveGame === 'function') saveGame();
 
                 chatBox.innerHTML += `
                     <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
-                        <b style="color:#10b981;">Покупатель:</b> Эх, ладно, уговорил! Покупаю!
+                        <b style="color:#10b981;">Покупатель:</b> Ладно, давай за ${typeof fmt === 'function' ? fmt(hPrice) : hPrice + ' ₽'}. Договорились!
                     </div>`;
             } else {
+                if (typeof rejectOffer === 'function' && offerId !== null) {
+                    rejectOffer(offerId);
+                } else if (state.offers) {
+                    state.offers.shift();
+                }
+
                 chatBox.innerHTML += `
                     <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
-                        <b style="color:#ef4444;">Покупатель:</b> Не, это дорого. Я пас.
+                        <b style="color:#ef4444;">Покупатель:</b> Нет, это слишком дорого. Я отменяю сделку.
                     </div>`;
             }
+            btnBox.innerHTML = `<button class="btn btn-primary btn-xs" onclick="updateChatUI()" style="width: 100%;">🔄 Следующее сообщение</button>`;
             chatBox.scrollTop = chatBox.scrollHeight;
         }, 700);
 
     } else if (action === 'reject') {
-        if (activeOffer && typeof rejectOffer === 'function') {
-            rejectOffer(activeOffer.id || 0);
+        if (typeof rejectOffer === 'function' && offerId !== null) {
+            rejectOffer(offerId);
+        } else if (state.offers) {
+            state.offers.shift();
         }
 
         chatBox.innerHTML += `
             <div style="background: rgba(16, 185, 129, 0.2); padding: 8px 10px; border-radius: 6px; align-self: flex-end; max-width: 85%; text-align: right;">
-                <b>Вы:</b> Без торга.
+                <b>Вы:</b> Нет, отказ.
             </div>
             <div style="background: rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 6px; max-width: 85%;">
-                <b style="color:#ef4444;">Покупатель:</b> Удачи дальше продавать.
+                <b style="color:#ef4444;">Покупатель:</b> Ну и ладно.
             </div>`;
+
+        btnBox.innerHTML = `<button class="btn btn-primary btn-xs" onclick="updateChatUI()" style="width: 100%;">🔄 Следующее сообщение</button>`;
     }
 
     chatBox.scrollTop = chatBox.scrollHeight;
