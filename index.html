@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -192,6 +192,46 @@
         .banner { border-radius: 8px; padding: 6px 8px; font-size: 0.68rem; margin-bottom: 8px; }
         .banner-red { background: rgba(239,68,68,0.15); border: 1px solid var(--red); color: #fecaca; }
         .banner-yellow { background: rgba(234,179,8,0.12); border: 1px solid var(--yellow); color: #fde68a; }
+
+        /* Новости и бегущая строка */
+        .news-ticker {
+            background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border); border-radius: 8px;
+            padding: 5px 8px; font-size: 0.65rem; color: #e2e8f0; display: flex; align-items: center;
+            gap: 6px; margin-bottom: 8px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+        }
+        .news-tag {
+            background: var(--accent); color: #fff; padding: 1px 5px; border-radius: 4px;
+            font-weight: bold; font-size: 0.58rem; flex-shrink: 0;
+        }
+
+        /* Торг в чате */
+        .haggling-options { display: grid; grid-template-columns: 1fr; gap: 5px; margin-top: 6px; }
+        .haggling-btn {
+            padding: 7px 10px; font-size: 0.68rem; border-radius: 8px; border: 1px solid var(--border);
+            background: #1e293b; color: #f8fafc; cursor: pointer; text-align: left; transition: all 0.15s;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .haggling-btn:hover { border-color: var(--accent); background: #334155; }
+        .haggling-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Автотека */
+        .autoteka-box {
+            background: #0f172a; border-radius: 8px; padding: 6px 8px; margin: 4px 0;
+            border-left: 3px solid var(--green); font-size: 0.65rem;
+        }
+        .autoteka-box.bad { border-left-color: var(--red); background: rgba(239, 68, 68, 0.08); }
+
+        /* Аукционы */
+        .auction-card {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(234, 179, 8, 0.1));
+            border: 1px solid #ec4899; border-radius: 12px; padding: 12px; margin-bottom: 10px;
+        }
+
+        /* Гараж */
+        .garage-tier-card {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.12), rgba(15, 23, 42, 0.9));
+            border: 1px solid #f97316; border-radius: 12px; padding: 10px; margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -235,6 +275,14 @@
             <div class="icon-box" style="background: linear-gradient(135deg, #a855f7, #7e22ce);">🤖<span class="lock-badge" hidden>🔒</span></div>
             <span class="app-label">Авто-Бот</span>
         </button>
+        <button class="app-icon" data-app="app-garage" aria-label="Гараж и Сервис">
+            <div class="icon-box" style="background: linear-gradient(135deg, #f97316, #c2410c);">🛠️<span class="lock-badge" hidden>🔒</span></div>
+            <span class="app-label">Сервис</span>
+        </button>
+        <button class="app-icon" data-app="app-auction" aria-label="Аукционы">
+            <div class="icon-box" style="background: linear-gradient(135deg, #ec4899, #be185d);">🔨<span class="lock-badge" hidden>🔒</span></div>
+            <span class="app-label">Аукционы</span>
+        </button>
         <button class="app-icon" data-app="app-stats" aria-label="Статистика">
             <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">📊</div>
             <span class="app-label">Статистика</span>
@@ -253,6 +301,11 @@
             <span style="color:var(--green); font-weight:bold; font-size:0.8rem;" class="global-balance-display">1 000 ₽</span>
         </div>
         <div class="app-content">
+            <div class="news-ticker" id="news-ticker">
+                <span class="news-tag" id="news-tag">НОВОСТИ</span>
+                <span id="news-text" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Рынок стабилен: следите за скачками цен!</span>
+            </div>
+            <div id="rent-income-summary" class="tiny" style="color:var(--green); font-weight:bold; margin-bottom:6px; display:none;"></div>
             <div class="banner banner-red" id="ban-banner" hidden></div>
             <div class="tabs" id="cat-tabs" role="tablist"></div>
             <div class="tiny muted" id="demand-info" style="margin-bottom:6px;"></div>
@@ -273,10 +326,10 @@
             </div>
             <div id="market-list"></div>
 
-            <div class="section-title">🎒 Инвентарь/гараж (Склад перекупа)</div>
+            <div class="section-title">🎒 Инвентарь (Склад перекупа)</div>
             <div id="inventory-list"></div>
 
-            <div class="section-title">📤 Активные объявления на Рынке</div>
+            <div class="section-title">📤 Активные объявления на Авито</div>
             <div id="listings-list"></div>
 
             <div class="section-title">⚖️ Споры и диспуты</div>
@@ -525,6 +578,33 @@
         </div>
     </div>
 
+    <!-- ГАРАЖ & АВТОСЕРВИС -->
+    <div class="app-window" id="app-garage">
+        <div class="app-header">
+            <span class="title-sm">🛠️ Гараж & Автосервис</span>
+            <span style="color:var(--green); font-weight:bold; font-size:0.8rem;" class="global-balance-display">0 ₽</span>
+        </div>
+        <div class="app-content">
+            <div class="garage-tier-card" id="garage-status-card"></div>
+            <div class="item-card" id="mechanic-card" style="margin-bottom:10px;"></div>
+            <div class="section-title">🔧 Тюнинг и обслуживание склада</div>
+            <div id="garage-inventory-list"></div>
+        </div>
+    </div>
+
+    <!-- АУКЦИОНЫ / ТОРГИ ПО БАНКРОТСТВУ -->
+    <div class="app-window" id="app-auction">
+        <div class="app-header">
+            <span class="title-sm">🔨 Торги по банкротству</span>
+            <span style="color:var(--green); font-weight:bold; font-size:0.8rem;" class="global-balance-display">0 ₽</span>
+        </div>
+        <div class="app-content">
+            <div class="auction-card" id="auction-card"></div>
+            <div class="section-title">🏆 Выигранный конфискат</div>
+            <div id="auction-won-list"></div>
+        </div>
+    </div>
+
     <!-- НАСТРОЙКИ -->
     <div class="app-window" id="app-settings">
         <div class="app-header"><span class="title-sm">Настройки</span></div>
@@ -570,16 +650,25 @@
         </div>
     </div>
 
-    <!-- МЕНЮ ТОРГА -->
+    <!-- МЕНЮ ТОРГА (МИНИ-ИГРА В ЧАТЕ) -->
     <div class="chat-modal" id="chat-modal">
-        <div class="row-between">
-            <span class="title-sm" id="chat-title">Торг по лоту</span>
+        <div class="row-between" style="border-bottom:1px solid var(--border); padding-bottom:6px;">
+            <div>
+                <div class="title-sm" id="chat-title">Торг по лоту</div>
+                <div class="tiny muted" id="chat-seller-type">Продавец: Студент</div>
+            </div>
             <button class="btn btn-danger" style="padding:2px 6px;" id="chat-close-btn" aria-label="Закрыть торг">✕</button>
         </div>
-        <div class="chat-history" id="chat-history"></div>
-        <div class="row">
-            <button class="btn btn-warning" style="flex:1;" id="haggle-discount-btn">Сбить цену</button>
-            <button class="btn btn-success" style="flex:1;" id="haggle-buy-btn">Забрать</button>
+        <div class="chat-history" id="chat-history" style="max-height:130px;"></div>
+        <div class="row-between" style="margin:4px 0;">
+            <div class="tiny" id="chat-price-info" style="font-weight:bold; color:var(--green);">0 ₽</div>
+            <div class="tiny muted" id="chat-anger-info">Настроение: Спокойный</div>
+        </div>
+        <div class="haggling-options" id="haggling-options">
+            <button class="haggling-btn" data-haggle="cash"><span>💵 «Заберу прямо сейчас за наличку!»</span><b style="color:var(--green);">−12%</b></button>
+            <button class="haggling-btn" data-haggle="gas"><span>⛽ «Брат, скинь на дорогу / бензин!»</span><b style="color:var(--yellow);">−8%</b></button>
+            <button class="haggling-btn" data-haggle="flaw"><span>🔎 «Вижу скрытый косяк, скидывай треть!»</span><b style="color:var(--red);">−25%</b></button>
+            <button class="btn btn-success" id="haggle-buy-btn" style="width:100%; margin-top:4px;">🤝 По рукам, забираю!</button>
         </div>
     </div>
 
@@ -740,7 +829,9 @@ const UNLOCKS = {
     'app-market': 1,
     'app-bank': 2,
     'app-crypto': 2,
+    'app-garage': 2,
     'app-casino': 3,
+    'app-auction': 3,
     'app-mining': 4,
     'app-bot': 5,
     'app-stats': 1,
@@ -749,7 +840,8 @@ const UNLOCKS = {
 
 const APP_NAMES = {
     'app-market': 'P2P & Авито', 'app-bank': 'Банк', 'app-crypto': 'Crypto Hub',
-    'app-casino': 'Казино', 'app-mining': 'Майнинг', 'app-bot': 'Авто-Бот',
+    'app-garage': 'Гараж/Сервис', 'app-casino': 'Казино', 'app-auction': 'Аукционы',
+    'app-mining': 'Майнинг', 'app-bot': 'Авто-Бот',
     'app-stats': 'Статистика', 'app-settings': 'Настройки'
 };
 
@@ -872,7 +964,12 @@ const ACHIEVEMENTS = [
     { id: 'millionaire',name: 'Миллионер',              desc: '1 000 000 ₽ чистого капитала',      test: s => netWorth() >= 1000000 },
     { id: 'prestige1',  name: 'Новый круг',             desc: 'Уйти в престиж',                    test: s => s.prestige >= 1 },
     { id: 'scammer',    name: 'Тёмная сторона',         desc: 'Успешно продать скам-лот',          test: s => s.statsScamSales >= 1 },
-    { id: 'lawyer',     name: 'Юрист',                  desc: 'Выиграть диспут',                   test: s => s.statsDisputesWon >= 1 }
+    { id: 'lawyer',     name: 'Юрист',                  desc: 'Выиграть диспут',                   test: s => s.statsDisputesWon >= 1 },
+    { id: 'haggler',    name: 'Король торга',           desc: 'Сбить цену в чате 5 раз',           test: s => (s.statsHaggled || 0) >= 5 },
+    { id: 'autotekaPro',name: 'Детектив Автотеки',      desc: 'Проверить 5 лотов по базам',        test: s => (s.statsChecked || 0) >= 5 },
+    { id: 'landlord',   name: 'Рантье-рантье',          desc: 'Сдать объект в аренду',             test: s => s.inventory.some(i => i.rented) },
+    { id: 'garageBoss', name: 'Автомагнат',             desc: 'Улучшить гараж и нанять механика',  test: s => s.garageLevel >= 1 && s.mechanicHired },
+    { id: 'auctionKing',name: 'Король конфиската',      desc: 'Выиграть лот на торгах банкротства',test: s => (s.statsAuctionsWon || 0) >= 1 }
 ];
 
 /* =====================================================================
@@ -957,6 +1054,16 @@ function defaultState() {
         statsDisputesWon: 0,
         statsSweetDeals: 0,
         statsRefurbished: 0,
+        statsHaggled: 0,
+        statsChecked: 0,
+        statsAuctionsWon: 0,
+        rentIncomeTotal: 0,
+        garageLevel: 0,
+        mechanicHired: false,
+        mechanicTimer: 0,
+        auctionsWonList: [],
+        currentNews: null,
+        newsTimer: 0,
         deposit: 0,
         loan: 0,
         loanDueAt: 0,
@@ -1032,6 +1139,15 @@ function normalizeState(s) {
     s.prestige = Math.max(0, Math.floor(s.prestige));
     s.statsSweetDeals = Math.max(0, num(s.statsSweetDeals, 0));
     s.statsRefurbished = Math.max(0, num(s.statsRefurbished, 0));
+    s.statsHaggled = Math.max(0, num(s.statsHaggled, 0));
+    s.statsChecked = Math.max(0, num(s.statsChecked, 0));
+    s.statsAuctionsWon = Math.max(0, num(s.statsAuctionsWon, 0));
+    s.rentIncomeTotal = Math.max(0, num(s.rentIncomeTotal, 0));
+    s.garageLevel = clamp(Math.floor(num(s.garageLevel, 0)), 0, 3);
+    s.mechanicHired = s.mechanicHired === true;
+    s.mechanicTimer = Math.max(0, num(s.mechanicTimer, 0));
+    s.auctionsWonList = Array.isArray(s.auctionsWonList) ? s.auctionsWonList.slice(-20) : [];
+    s.newsTimer = Math.max(0, num(s.newsTimer, 0));
     if (!THEMES.includes(s.theme)) s.theme = 'default';
 
     for (const key of Object.keys(COINS)) {
@@ -1067,6 +1183,8 @@ function normalizeState(s) {
                 realValue,
                 isBad: i.isBad === true,
                 refurbished: i.refurbished === true,
+                rented: i.rented === true,
+                prepTier: clamp(Math.floor(num(i.prepTier, 0)), 0, 3),
                 sellPrice: Math.max(1, Math.floor(num(i.sellPrice, realValue)))
             };
         });
@@ -1546,17 +1664,77 @@ function availableTemplates() {
         && (activeCategory === 'all' || t.category === activeCategory));
 }
 
+const SELLER_ARCHETYPES = {
+    student:  { name: 'Студент (Спешит)', icon: '🎓', patience: 4, desc: 'Любит наличку сразу, пугается обвинений' },
+    grandpa:  { name: 'Дед из гаража',   icon: '👴', patience: 3, desc: 'Скинет на бензин, ненавидит умников' },
+    reseller: { name: 'Перекуп Марат',   icon: '🏎️', patience: 3, desc: 'Жёсткий торг, но скинет 25% за реальный дефект' },
+    calm:     { name: 'Обычный продавец', icon: '👨', patience: 4, desc: 'Адекватный и спокойный' }
+};
+
+function generateAutotekaReport(lot) {
+    if (!lot.isBad) {
+        return {
+            status: 'good',
+            verdict: '🟢 Юридически чист: Без ДТП, залогов, арестов и скрытых дефектов.',
+            details: [
+                '✅ Реестр залогов Федеральной нотариальной палаты: обременений нет',
+                '✅ База розыска и приставов ФССП: арестов и ограничений нет',
+                '✅ Компьютерная диагностика: заводские параметры, 1 владелец'
+            ]
+        };
+    }
+    let verdict = '⚠️ ВНИМАНИЕ: Скрытый дефект или обременение!';
+    let details = [];
+    if (lot.category === 'auto') {
+        const issues = [
+            { v: '🔴 ДТП: Сильный удар, тотал, сварен из распилов!', d: ['❌ Сработали подушки безопасности', '❌ Геометрия кузова нарушена', '❌ Пробег смотан с 320 000 до 85 000 км'] },
+            { v: '🚨 ЗАЛОГ: Автомобиль в залоге у МФО!', d: ['❌ Запрет на регистрационные действия', '❌ Долг прежнего владельца 380 000 ₽', '❌ Риск изъятия приставами на первом посту'] },
+            { v: '🔴 СТУК В ДВИГАТЕЛЕ: Задиры в цилиндрах!', d: ['❌ Двигатель ест 2 литра масла на 100 км', '❌ Вырезан катализатор, ошибка Check Engine', '❌ Требуется капиталка'] }
+        ];
+        const p = pick(issues);
+        verdict = p.v; details = p.d;
+    } else if (lot.category === 'realty') {
+        const issues = [
+            { v: '🚨 АРЕСТ ФССП: Квартира арестована за долги!', d: ['❌ Запрет на совершение сделок', '❌ Долг по коммунальным платежам: 140 000 ₽', '❌ Иск в районном суде'] },
+            { v: '🔴 ОБРЕМЕНЕНИЕ: Прописаны третьи лица!', d: ['❌ Несовершеннолетние жильцы без права выписки', '❌ Незаконная перепланировка несущих стен', '❌ Аварийный статус подъезда'] }
+        ];
+        const p = pick(issues);
+        verdict = p.v; details = p.d;
+    } else if (lot.category === 'gadgets') {
+        const issues = [
+            { v: '🔴 ПОДДЕЛКА / КИТАЙСКИЙ РЕФАРБ!', d: ['❌ Дешёвый неоригинальный экран с плохим тачем', '❌ Аккумулятор вздут (остаток 48%)', '❌ Плата паялась после утопления'] },
+            { v: '🚨 КОРПОРАТИВНЫЙ MDM-ПРОФИЛЬ!', d: ['❌ Удалённая блокировка организацией', '❌ Серийный номер в стоп-листе', '❌ Face ID / Touch ID не работает'] }
+        ];
+        const p = pick(issues);
+        verdict = p.v; details = p.d;
+    } else {
+        verdict = '🔴 СКАМ: Владелец восстановил аккаунт!';
+        details = ['❌ Заявка на восстановление через техподдержку', '❌ Привязана резервная почта мошенника', '❌ Риск потери доступа 100%'];
+    }
+    return { status: 'bad', verdict, details };
+}
+
 function createLot(t) {
-    // 28% шанс, что продавец «не шарит» / «дурачок» и продает товар за лоу-прайс (скидка 55-75% от рынка)
     const isSweetDeal = Math.random() < 0.28;
     let price;
     let sellerNote = '';
     if (isSweetDeal) {
-        const discountRatio = randRange(0.25, 0.45); // за 25-45% от реальной стоимости
+        const discountRatio = randRange(0.25, 0.45);
         price = Math.max(100, Math.floor(t.real * discountRatio));
         sellerNote = pick(SELLER_NOTES);
     } else {
         price = randInt(t.min, t.max);
+    }
+
+    let sellerType = 'calm';
+    if (isSweetDeal) {
+        sellerType = Math.random() < 0.65 ? 'student' : 'grandpa';
+    } else {
+        const r = Math.random();
+        if (r < 0.25) sellerType = 'student';
+        else if (r < 0.50) sellerType = 'grandpa';
+        else if (r < 0.75) sellerType = 'reseller';
+        else sellerType = 'calm';
     }
 
     return {
@@ -1568,8 +1746,10 @@ function createLot(t) {
         risk: t.risk,
         isBad: Math.random() < t.risk,
         checked: false,
+        checkReport: null,
         isSweetDeal,
-        sellerNote
+        sellerNote,
+        sellerType
     };
 }
 
@@ -1597,7 +1777,7 @@ function generateMarket(paid = false) {
 function useGuarantor() { return $('guarantor-toggle').checked; }
 
 function lotCheckCost(lot) {
-    return Math.max(50, Math.min(2500, Math.floor(lot.price * 0.008)));
+    return Math.max(80, Math.min(2500, Math.floor(lot.price * 0.008)));
 }
 
 function renderMarket() {
@@ -1634,16 +1814,26 @@ function renderMarket() {
     listLots.forEach(lot => {
         const card = document.createElement('div');
         card.className = 'item-card' + (lot.isSweetDeal ? ' sweet-card' : '');
-        let checkLine = '';
-        if (lot.checked) {
-            checkLine = lot.isBad
-                ? '<div class="tiny" style="color:var(--red); margin-bottom:4px; font-weight:bold;">⚠️ ДИАГНОСТИКА: Обнаружен скрытый дефект / восстановлен!</div>'
-                : '<div class="tiny" style="color:var(--green); margin-bottom:4px; font-weight:bold;">✅ ДИАГНОСТИКА: Чистый лот без дефектов и залогов!</div>';
+        
+        let autotekaHtml = '';
+        if (lot.checked && lot.checkReport) {
+            const cr = lot.checkReport;
+            autotekaHtml = `
+                <div class="autoteka-box ${cr.status === 'bad' ? 'bad' : ''}">
+                    <div style="font-weight:bold; color:${cr.status === 'bad' ? 'var(--red)' : 'var(--green)'}; margin-bottom:2px;">
+                        ${esc(cr.verdict)}
+                    </div>
+                    <div class="tiny muted" style="line-height:1.3;">
+                        ${cr.details.map(d => `• ${esc(d)}`).join('<br>')}
+                    </div>
+                </div>`;
         }
+
         const guarPrice = Math.ceil(lot.price * (1 + BALANCE.market.guarantorFee));
         const shown = useGuarantor() ? guarPrice : lot.price;
         const discountPct = Math.max(1, Math.round((1 - lot.price / lot.realValue) * 100));
         const catObj = CATEGORIES[lot.category] || { name: lot.category, icon: '📦' };
+        const sArch = SELLER_ARCHETYPES[lot.sellerType] || SELLER_ARCHETYPES.calm;
 
         let sweetBadge = '';
         let quoteBox = '';
@@ -1668,15 +1858,21 @@ function renderMarket() {
             </div>
             ${quoteBox}
             <div style="font-size:0.8rem; margin:2px 0;"><b>${fmtExact(shown)}</b>
-                <span class="tiny muted">(Рыночная оценка: ~${fmtExact(lot.realValue)})</span>
+                <span class="tiny muted">(Рынок: ~${fmtExact(lot.realValue)})</span>
             </div>
             ${estProfitHtml}
-            <div class="tiny" style="color:${lot.risk > 0.12 ? 'var(--red)' : 'var(--green)'}; margin:2px 0 4px;">
-                Риск дефекта: ${Math.round(lot.risk * 100)}%${useGuarantor() ? ' · покрыт гарантом' : ''}</div>
-            ${checkLine}
-            <div class="row" style="gap:4px;">
+            <div class="row-between tiny" style="margin:2px 0 4px;">
+                <span class="muted">${sArch.icon} Продавец: ${sArch.name}</span>
+                <span style="color:${lot.risk > 0.12 ? 'var(--red)' : 'var(--green)'};">
+                    Риск брака: ${Math.round(lot.risk * 100)}%${useGuarantor() ? ' (Гарант 🛡️)' : ''}
+                </span>
+            </div>
+            ${autotekaHtml}
+            <div class="row" style="gap:4px; margin-top:4px;">
                 <button class="btn btn-primary" style="flex:1;" data-act="buy" data-lot="${lot.id}">Купить</button>
-                <button class="btn btn-purple" data-act="check" data-lot="${lot.id}">🔍 ${fmt(chCost)}</button>
+                <button class="btn btn-purple" data-act="check" data-lot="${lot.id}" title="Проверка по базам Автотеки / реестрам">
+                    🔍 ${lot.checked ? 'База' : fmt(chCost)}
+                </button>
                 <button class="btn btn-warning" data-act="chat" data-lot="${lot.id}" aria-label="Торг">💬 Торг</button>
             </div>`;
         list.appendChild(card);
@@ -1703,7 +1899,7 @@ function buyLot(lot, price, opts = {}) {
 
     if (lot.isBad) {
         if (guarantor) {
-            state.balance += price; // гарант возвращает стоимость лота, комиссия сгорает
+            state.balance += price;
             showPush('🛡️', `Гарант отклонил дефектный лот "${lot.title}" — деньги возвращены`, 'good');
             return 'saved';
         }
@@ -1712,13 +1908,16 @@ function buyLot(lot, price, opts = {}) {
         state.inventory.push({
             id: uid(), title: lot.title, category: lot.category,
             buyPrice: total, realValue: Math.floor(lot.realValue * 0.35),
-            isBad: true, refurbished: false, sellPrice: Math.floor(lot.realValue * 0.35)
+            isBad: true, refurbished: false, rented: false, prepTier: 0,
+            checked: lot.checked === true,
+            uninspectedBad: lot.checked !== true,
+            sellPrice: Math.floor(lot.realValue * 0.35)
         });
         state.disputes.push({
             id: uid(), title: lot.title, amount: total, checked: lot.checked,
             reason: 'Лот с дефектом или залогом'
         });
-        showPush('❌', `Лот "${lot.title}" с дефектом! Можно сделать предпродажку или открыть диспут.`, 'bad');
+        showPush('❌', `Лот "${lot.title}" с дефектом! Можно сделать предпродажку в Гараже или открыть диспут.`, 'bad');
         renderInventory();
         renderDisputes();
         return 'bad';
@@ -1727,7 +1926,10 @@ function buyLot(lot, price, opts = {}) {
     state.inventory.push({
         id: uid(), title: lot.title, category: lot.category,
         buyPrice: total, realValue: lot.realValue, isBad: false,
-        refurbished: false, sellPrice: Math.floor(lot.realValue * 1.02)
+        refurbished: false, rented: false, prepTier: 0,
+        checked: lot.checked === true,
+        uninspectedBad: false,
+        sellPrice: Math.floor(lot.realValue * 1.02)
     });
     if (lot.isSweetDeal) {
         showPush('🔥', `Снайп лоу-прайса! "${lot.title}" куплен за ${fmtExact(price)} (рынок ~${fmtExact(lot.realValue)})`, 'good');
@@ -1747,18 +1949,22 @@ function manualBuy(lot, price) {
 }
 
 function checkLot(lot) {
-    if (lot.checked) return showPush('🔍', 'Этот лот уже проверен.');
+    if (lot.checked && lot.checkReport) {
+        return showPush('🔍', lot.isBad ? '⚠️ Отчёт: Лот проблемный!' : '✅ Отчёт: Лот чистый!', lot.isBad ? 'bad' : 'good');
+    }
     const cost = lotCheckCost(lot);
-    if (state.balance < cost) return warn(`Недостаточно ${fmtExact(cost)} для диагностики!`);
+    if (state.balance < cost) return warn(`Недостаточно ${fmtExact(cost)} для отчёта Автотеки!`);
     state.balance -= cost;
     state.statsFees += cost;
     lot.checked = true;
-    showPush('🔍', lot.isBad ? '⚠️ Внимание: найден дефект / залог!' : '✅ Диагностика: лот чистый!', lot.isBad ? 'bad' : 'good');
+    lot.checkReport = generateAutotekaReport(lot);
+    state.statsChecked = (state.statsChecked || 0) + 1;
+    showPush('🔍', lot.isBad ? '⚠️ Внимание: найден дефект / залог!' : '✅ Автотека: лот чистый!', lot.isBad ? 'bad' : 'good');
     renderMarket();
     refresh(true);
 }
 
-/* --- Торг --- */
+/* --- Торг в чате (Мини-игра) --- */
 function addMsg(cls, text) {
     const history = $('chat-history');
     const div = document.createElement('div');
@@ -1768,16 +1974,53 @@ function addMsg(cls, text) {
     history.scrollTop = history.scrollHeight;
 }
 
+function updateChatUI() {
+    const h = haggleState;
+    if (!h) return;
+    $('chat-price-info').textContent = `Текущая цена: ${fmtExact(h.currentPrice)}`;
+    let angerLabel = 'Спокойный 🟢';
+    if (h.anger >= 80) angerLabel = 'В ярости! 🔴';
+    else if (h.anger >= 50) angerLabel = 'Раздражён 🟠';
+    else if (h.anger >= 25) angerLabel = 'Сомневается 🟡';
+    $('chat-anger-info').textContent = `Настроение: ${angerLabel}`;
+
+    const locked = h.anger >= 100 || h.attempts >= 4;
+    document.querySelectorAll('#haggling-options .haggling-btn').forEach(b => {
+        b.disabled = locked;
+    });
+    if (locked) {
+        $('chat-anger-info').textContent = 'Диалог окончен (Блок)';
+    }
+}
+
 function openChat(lot) {
     const isSweet = lot.isSweetDeal === true;
-    const minPrice = isSweet ? Math.floor(lot.price * 0.70) : Math.floor(lot.price * 0.78);
-    haggleState = { lot, currentPrice: lot.price, minPrice, attempts: 0, isSweet };
-    $('chat-title').textContent = isSweet ? `🔥 Срочно: ${lot.title}` : `Торг: ${lot.title}`;
+    const minPrice = isSweet ? Math.floor(lot.price * 0.68) : Math.floor(lot.price * 0.72);
+    const arch = SELLER_ARCHETYPES[lot.sellerType] || SELLER_ARCHETYPES.calm;
+
+    haggleState = {
+        lot,
+        currentPrice: lot.price,
+        minPrice,
+        attempts: 0,
+        anger: 0,
+        isSweet,
+        sellerType: lot.sellerType || 'calm'
+    };
+
+    $('chat-title').textContent = `${arch.icon} ${arch.name}: ${lot.title}`;
+    $('chat-seller-type').textContent = arch.desc;
     $('chat-history').innerHTML = '';
-    const greeting = isSweet
-        ? (lot.sellerNote ? `${lot.sellerNote} Отдам прямо сейчас за ${fmtExact(lot.price)}!` : `Привет, отдаю срочно за ${fmtExact(lot.price)}!`)
-        : `Привет! Отдам за ${fmtExact(lot.price)}. Торг только разумный.`;
-    addMsg('msg-them', greeting);
+
+    const greetings = {
+        student: isSweet ? (lot.sellerNote || 'Блин, сессия горит! Забирай срочно за наличку!') : 'Привет, продаю срочно. Реальному покупателю уступлю.',
+        grandpa: isSweet ? (lot.sellerNote || 'С внуком гараж разбирали, забирай.') : 'Здорово. Вещь хорошая, задарма не отдам, но на бензин скину.',
+        reseller: 'Здорово. Цена в объявлении крайняя, но если есть аргументы — выслушаю.',
+        calm: isSweet ? (lot.sellerNote || 'Здравствуйте! Продаю, лежит без дела.') : 'Здравствуйте! Товар в наличии, пишите ваши предложения.'
+    };
+
+    addMsg('msg-them', greetings[lot.sellerType] || greetings.calm);
+    updateChatUI();
     $('chat-modal').classList.add('active');
 }
 
@@ -1789,26 +2032,90 @@ function closeChat() {
 function haggleAction(action) {
     const h = haggleState;
     if (!h) return;
-    if (action === 'discount') {
-        const proposed = Math.floor(h.currentPrice * 0.90);
-        if (proposed < h.minPrice || h.attempts >= 4) {
-            addMsg('msg-them', h.isSweet ? `Куда ещё дешевле?! Это и так даром отдаю (${fmtExact(h.currentPrice)})!` : `Это крайняя цена (${fmtExact(h.currentPrice)})!`);
-            return;
-        }
-        h.attempts++;
-        addMsg('msg-me', `Скинешь до ${fmtExact(proposed)}?`);
-        const chance = h.isSweet ? 0.72 : (0.35 + (state.trustScore - 1) * 0.08);
-        if (Math.random() < chance) {
-            h.currentPrice = proposed;
-            addMsg('msg-them', h.isSweet ? `Ладно, брат, забирай за ${fmtExact(proposed)}, только приезжай скорее!` : `По рукам! Забирай за ${fmtExact(proposed)}.`);
-        } else {
-            addMsg('msg-them', h.isSweet ? 'Не, ну за совсем бесплатно не отдам.' : 'Не, это слишком дешево.');
-        }
-    } else if (action === 'buy') {
+
+    if (action === 'buy') {
         const { lot, currentPrice } = h;
         closeChat();
         manualBuy(lot, currentPrice);
+        return;
     }
+
+    if (h.anger >= 100 || h.attempts >= 4) {
+        addMsg('msg-them', '«Всё, разговор окончен! Я тебя блокирую, цена выросла!»');
+        return;
+    }
+
+    h.attempts++;
+    let discountPct = 0.10;
+    let myLine = '';
+    let success = false;
+    let angerDelta = 0;
+
+    if (action === 'cash') {
+        discountPct = 0.12;
+        myLine = `Заберу прямо сейчас за наличку, без лишних вопросов!`;
+        if (h.sellerType === 'student') { success = true; angerDelta = 0; }
+        else if (h.sellerType === 'calm') { success = Math.random() < 0.70; angerDelta = 15; }
+        else if (h.sellerType === 'grandpa') { success = Math.random() < 0.45; angerDelta = 25; }
+        else if (h.sellerType === 'reseller') { success = Math.random() < 0.35; angerDelta = 30; }
+    } else if (action === 'gas') {
+        discountPct = 0.08;
+        myLine = `Брат, еду издалека, скинь на бензин и дорогу!`;
+        if (h.sellerType === 'grandpa') { success = true; angerDelta = 0; }
+        else if (h.sellerType === 'calm') { success = Math.random() < 0.75; angerDelta = 10; }
+        else if (h.sellerType === 'student') { success = Math.random() < 0.60; angerDelta = 20; }
+        else if (h.sellerType === 'reseller') { success = Math.random() < 0.25; angerDelta = 35; }
+    } else if (action === 'flaw') {
+        discountPct = 0.25;
+        myLine = `Я вижу косяки и следы износа на фото. Скидывай треть или я ухожу!`;
+        if (h.sellerType === 'reseller') {
+            if (h.lot.isBad) {
+                success = true;
+                angerDelta = 10;
+            } else {
+                success = false;
+                angerDelta = 50;
+            }
+        } else if (h.sellerType === 'student') {
+            success = Math.random() < 0.55;
+            angerDelta = 25;
+        } else if (h.sellerType === 'grandpa') {
+            success = false;
+            angerDelta = 45;
+        } else {
+            success = Math.random() < 0.40;
+            angerDelta = 30;
+        }
+    }
+
+    addMsg('msg-me', myLine);
+
+    const proposed = Math.floor(h.currentPrice * (1 - discountPct));
+    if (proposed < h.minPrice) {
+        success = false;
+        angerDelta += 25;
+    }
+
+    if (success) {
+        h.currentPrice = proposed;
+        state.statsHaggled = (state.statsHaggled || 0) + 1;
+        addXP(10);
+        let reply = `По рукам! Скидываю, забирай за ${fmtExact(proposed)}.`;
+        if (action === 'cash' && h.sellerType === 'student') reply = `Супер, налик прямо сейчас очень нужен! Договорились на ${fmtExact(proposed)}!`;
+        if (action === 'gas' && h.sellerType === 'grandpa') reply = `Ну раз на дорогу... ладно, уважил, отдаю за ${fmtExact(proposed)}.`;
+        if (action === 'flaw' && h.sellerType === 'reseller' && h.lot.isBad) reply = `Чёрт, опытный перекуп... Ладно, забирай за ${fmtExact(proposed)}, только без возвратов!`;
+        addMsg('msg-them', reply);
+    } else {
+        h.anger += angerDelta;
+        let reply = `Нет, это исключено.`;
+        if (h.sellerType === 'grandpa') reply = `Ты меня не учи, парень! Ишь какой умный нашёлся.`;
+        if (h.sellerType === 'reseller') reply = `Я сам перекуп с 10-летним стажем, меня на эти уловки не возьмёшь.`;
+        if (h.sellerType === 'student') reply = `Не, ну за совсем бесплатно не отдам, мне за квартиру платить.`;
+        if (h.anger >= 100) reply = `Всё, ты меня достал! Блокирую тебя, ищи в другом месте!`;
+        addMsg('msg-them', reply);
+    }
+
+    updateChatUI();
 }
 
 /* --- Инвентарь, предпродажка и объявления --- */
@@ -1843,12 +2150,88 @@ function updateInventoryProfitPreview(id) {
     previewEl.innerHTML = `Чистая прибыль: <b style="color:${profitColor};">${profit >= 0 ? '+' : ''}${fmtExact(profit)}</b> (после комиссии ${Math.round(BALANCE.market.feeRatio * 100)}%)`;
 }
 
+function itemRentIncome(item) {
+    let base = 0;
+    if (item.category === 'realty') {
+        base = Math.max(30, Math.floor(item.realValue * 0.00015));
+    } else if (item.category === 'auto') {
+        base = Math.max(12, Math.floor(item.realValue * 0.00009));
+    }
+    const mult = (state.currentNews && state.currentNews.rentMult) || 1;
+    return Math.floor(base * mult);
+}
+
+function totalRentIncomePerSec() {
+    return state.inventory.reduce((sum, item) => item.rented ? sum + itemRentIncome(item) : sum, 0);
+}
+
+function toggleRent(id, rent) {
+    const item = state.inventory.find(i => i.id === id);
+    if (!item) return;
+    if (item.category !== 'realty' && item.category !== 'auto') {
+        return warn('В аренду можно сдавать только недвижимость и автомобили!');
+    }
+    if (item.isBad) {
+        return warn('Нельзя сдать в аренду объект с дефектом или залогом! Отремонтируйте его в Сервисе.');
+    }
+    item.rented = rent;
+    if (rent) {
+        showPush('🔑', `«${item.title}» сдан в аренду (+${fmtExact(itemRentIncome(item))}/сек)!`, 'good');
+    } else {
+        showPush('🔑', `«${item.title}» снят с аренды. Теперь его можно выставить на Авито.`, 'good');
+    }
+    renderInventory();
+    renderGarage();
+    refresh(true);
+}
+
+function rentTick() {
+    const total = totalRentIncomePerSec();
+    if (total > 0) {
+        state.balance += total;
+        state.rentIncomeTotal = (state.rentIncomeTotal || 0) + total;
+        state.statsEarned += total;
+        dirty = true;
+    }
+}
+
+function checkBailiffRaid() {
+    const badIdx = state.inventory.findIndex(i => i.uninspectedBad && !i.refurbished);
+    if (badIdx !== -1 && Math.random() < 0.12) {
+        const item = state.inventory[badIdx];
+        state.inventory.splice(badIdx, 1);
+        const fine = Math.max(500, Math.floor(item.buyPrice * 0.35));
+        state.balance = Math.max(0, state.balance - fine);
+        showPush('🚨', `ОБЛАВА РОСРЕЕСТРА/ГИБДД: Непроверенный лот «${item.title}» оказался в розыске! Лот конфискован, штраф ${fmtExact(fine)}!`, 'bad');
+        renderInventory();
+        refresh(true);
+    }
+}
+
 function renderInventory() {
     syncSellInputs();
     const inv = $('inventory-list');
     inv.innerHTML = '';
+
+    const rentPerSec = totalRentIncomePerSec();
+    if (rentPerSec > 0) {
+        const banner = document.createElement('div');
+        banner.className = 'item-card';
+        banner.style.background = 'rgba(34,197,94,0.12)';
+        banner.style.borderColor = '#22c55e';
+        banner.innerHTML = `
+            <div class="row-between">
+                <div>
+                    <span style="color:var(--green); font-weight:bold; font-size:0.85rem;">🔑 Пассивный доход от аренды</span>
+                    <div class="tiny muted">Сдано объектов: <b>${state.inventory.filter(i => i.rented).length} шт</b></div>
+                </div>
+                <div style="font-size:1rem; font-weight:bold; color:var(--green);">+${fmtExact(rentPerSec)}/сек</div>
+            </div>`;
+        inv.appendChild(banner);
+    }
+
     if (state.inventory.length === 0) {
-        inv.innerHTML = '<div class="tiny muted" style="padding:8px 0;">Инвентарь пуст. Покупайте товары на маркете для перепродажи.</div>';
+        inv.innerHTML += '<div class="tiny muted" style="padding:8px 0;">Инвентарь пуст. Покупайте товары на маркете для перепродажи.</div>';
         return;
     }
     state.inventory.forEach(item => {
@@ -1859,20 +2242,59 @@ function renderInventory() {
         const prCost = prepCost(item);
 
         let statusBadge = `<span class="badge badge-green">${catObj.icon || ''} ${esc(catObj.name)}</span>`;
-        if (item.isBad) {
-            statusBadge = '<span class="badge badge-red">⚠️ Брак / Дефект</span>';
+        if (item.rented) {
+            statusBadge = `<span class="badge badge-green">🔑 В АРЕНДЕ (+${fmtExact(itemRentIncome(item))}/с)</span>`;
+        } else if (item.isBad) {
+            statusBadge = item.uninspectedBad
+                ? '<span class="badge badge-red">⚠️ Брак (Без Автотеки!)</span>'
+                : '<span class="badge badge-red">⚠️ Брак / Дефект</span>';
         } else if (item.refurbished) {
-            statusBadge = '<span class="badge badge-yellow">🧼 Предпродажка (+20%)</span>';
+            statusBadge = item.prepTier === 3
+                ? '<span class="badge badge-yellow">✨ Нанокерамика (+35%)</span>'
+                : '<span class="badge badge-yellow">🧼 Предпродажка (+20%)</span>';
         }
 
         const profit = calcNetProfit(item, item.sellPrice);
         const profitColor = profit >= 0 ? 'var(--green)' : 'var(--red)';
 
-        // Быстрые пресеты цен перекупа: -15% (быстрая продажа), В рынок, +15% (наценка), +35% (овер)
         const pQuick = Math.floor(item.realValue * 0.85);
         const pMarket = item.realValue;
         const pOver = Math.floor(item.realValue * 1.15);
         const pGreedy = Math.floor(item.realValue * 1.35);
+
+        let actionArea = '';
+        if (item.rented) {
+            actionArea = `
+                <div class="row-between" style="margin-top:6px; background:rgba(34,197,94,0.1); padding:6px 8px; border-radius:6px; border:1px solid rgba(34,197,94,0.25);">
+                    <div class="tiny">
+                        <b style="color:var(--green);">Приносит доход:</b> +${fmtExact(itemRentIncome(item))}/сек
+                    </div>
+                    <button class="btn btn-warning btn-xs" data-unrent="${item.id}">❌ Забрать из аренды</button>
+                </div>`;
+        } else {
+            const canRent = (item.category === 'realty' || item.category === 'auto') && !item.isBad;
+            const rentBtn = canRent
+                ? `<button class="btn btn-cyan btn-xs" data-rent="${item.id}" title="Сдать в аренду для стабильного пассивного дохода">🔑 В аренду (+${fmtExact(itemRentIncome(item))}/с)</button>`
+                : '';
+
+            actionArea = `
+                <div class="tiny" id="profit-preview-${item.id}" style="margin-bottom:4px;">
+                    Чистая прибыль: <b style="color:${profitColor};">${profit >= 0 ? '+' : ''}${fmtExact(profit)}</b> (после комиссии ${Math.round(BALANCE.market.feeRatio * 100)}%)
+                </div>
+                <div class="row" style="gap:4px; margin-bottom:6px; flex-wrap:wrap;">
+                    <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pQuick}">-15% (Быстро)</button>
+                    <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pMarket}">В рынок</button>
+                    <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pOver}">+15% (Перекуп)</button>
+                    <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pGreedy}">+35% (Овер)</button>
+                </div>
+                <div class="row" style="margin-top:4px; align-items:center; gap:4px; flex-wrap:wrap;">
+                    <input type="number" inputmode="numeric" min="1" step="1" class="price-input" id="sell-price-${item.id}" value="${item.sellPrice}" aria-label="Цена продажи" data-item-id="${item.id}">
+                    <button class="btn btn-success" style="flex:1;" data-sell="${item.id}">На Авито</button>
+                    ${rentBtn}
+                    ${!item.refurbished ? `<button class="btn btn-purple" data-prep="${item.id}" title="Устранить дефект и повысить ценность">🧼 Предпродажка (${fmt(prCost)})</button>` : ''}
+                    ${item.isBad ? `<button class="btn btn-danger" data-scam="${item.id}" title="Продать как чистый: ${fmtExact(scamPrice)}">🎭 Скам</button>` : ''}
+                </div>`;
+        }
 
         card.innerHTML = `
             <div class="row-between">
@@ -1882,21 +2304,7 @@ function renderInventory() {
             <div class="tiny muted" style="margin:2px 0;">
                 Закупка: <b>${fmtExact(item.buyPrice)}</b> · Рынок: ~<b>${fmtExact(item.realValue)}</b>
             </div>
-            <div class="tiny" id="profit-preview-${item.id}" style="margin-bottom:4px;">
-                Чистая прибыль: <b style="color:${profitColor};">${profit >= 0 ? '+' : ''}${fmtExact(profit)}</b> (после комиссии ${Math.round(BALANCE.market.feeRatio * 100)}%)
-            </div>
-            <div class="row" style="gap:4px; margin-bottom:6px; flex-wrap:wrap;">
-                <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pQuick}">-15% (Быстро)</button>
-                <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pMarket}">В рынок</button>
-                <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pOver}">+15% (Перекуп)</button>
-                <button class="btn btn-dark btn-xs" data-set-price="${item.id}" data-val="${pGreedy}">+35% (Овер)</button>
-            </div>
-            <div class="row" style="margin-top:4px; align-items:center; gap:4px;">
-                <input type="number" inputmode="numeric" min="1" step="1" class="price-input" id="sell-price-${item.id}" value="${item.sellPrice}" aria-label="Цена продажи" data-item-id="${item.id}">
-                <button class="btn btn-success" style="flex:1;" data-sell="${item.id}">Выставить на Авито</button>
-                ${!item.refurbished ? `<button class="btn btn-purple" data-prep="${item.id}" title="Устранить дефект и повысить ценность">🧼 Предпродажка (${fmt(prCost)})</button>` : ''}
-                ${item.isBad ? `<button class="btn btn-danger" data-scam="${item.id}" title="Продать как чистый: ${fmtExact(scamPrice)}">🎭 Скам</button>` : ''}
-            </div>`;
+            ${actionArea}`;
         inv.appendChild(card);
     });
 }
@@ -2942,7 +3350,7 @@ function playRoulette(color) {
 
     setTimeout(() => {
         if (epoch !== gameEpoch) return;
-        wheel.textContent = resColor === 'green' ? `🟢 КУШ (${res})` : (resColor === 'red' ? `🔴 КРАСНОЕ (${res})` : `⚫ ЧЕРНОЕ (${res})`);
+        wheel.textContent = resColor === 'green' ? `🟢 ЗЕРО (${res})` : (resColor === 'red' ? `🔴 КРАСНОЕ (${res})` : `⚫ ЧЕРНОЕ (${res})`);
         if (color === resColor) {
             const win = Math.floor(bet * (resColor === 'green' ? ROULETTE.greenPayout : ROULETTE.colorPayout));
             state.balance += win;
@@ -3107,6 +3515,521 @@ function runBot() {
     }
     if (!acted) botLog(`🤖 Подходящих лотов нет (комиссия ${fmtExact(fee)})`);
     refresh(acted);
+}
+
+/* =====================================================================
+   14b. ГАРАЖ & АВТОСЕРВИС
+   ===================================================================== */
+const GARAGE_TIERS = [
+    { level: 0, name: 'Двор у дома', icon: '🏡', cost: 0, reqLevel: 1, desc: 'Базовая мойка и предпродажка (+20% к стоимости).' },
+    { level: 1, name: 'Гараж в ГСК с ямой', icon: '🚪', cost: 75000, reqLevel: 2, desc: 'Скидка 25% на работы. Открыта смотка пробега (+25% к цене).' },
+    { level: 2, name: 'Тёплый бокс с подъёмником', icon: '🏗️', cost: 350000, reqLevel: 3, desc: 'Капитальный ремонт любых безнадёжных двигателей и дефектов.' },
+    { level: 3, name: 'Премиум Детейлинг-студия', icon: '✨', cost: 1500000, reqLevel: 4, desc: 'Нанокерамика: +35% к рыночной оценке любых авто и техники!' }
+];
+
+const MECHANIC_SALARY = 45000;
+
+function renderGarage() {
+    const statusCard = $('garage-status-card');
+    const mechCard = $('mechanic-card');
+    const invList = $('garage-inventory-list');
+    if (!statusCard || !mechCard || !invList) return;
+
+    const curTier = GARAGE_TIERS[state.garageLevel] || GARAGE_TIERS[0];
+    const nextTier = GARAGE_TIERS[state.garageLevel + 1];
+
+    let upgradeBtnHtml = '';
+    if (nextTier) {
+        const canBuy = state.level >= nextTier.reqLevel && state.balance >= nextTier.cost;
+        upgradeBtnHtml = `
+            <div style="margin-top:8px;" class="row-between">
+                <span class="tiny muted">Требуется Ур. ${nextTier.reqLevel}</span>
+                <button class="btn btn-purple btn-xs" id="garage-upgrade-btn" ${!canBuy ? 'disabled' : ''}>
+                    Улучшить до «${nextTier.name}» (${fmt(nextTier.cost)})
+                </button>
+            </div>`;
+    } else {
+        upgradeBtnHtml = '<div class="tiny" style="color:var(--green); margin-top:6px; font-weight:bold;">🏆 Максимальный уровень детейлинг-студии!</div>';
+    }
+
+    statusCard.innerHTML = `
+        <div class="row-between">
+            <div class="title-sm">${curTier.icon} База: <b>${curTier.name}</b></div>
+            <span class="badge badge-yellow">Тир ${state.garageLevel} / 3</span>
+        </div>
+        <div class="tiny muted" style="margin:4px 0;">${curTier.desc}</div>
+        ${upgradeBtnHtml}`;
+
+    let mechHtml = '';
+    if (!state.mechanicHired) {
+        const canHire = state.balance >= MECHANIC_SALARY;
+        mechHtml = `
+            <div class="row-between">
+                <div>
+                    <span class="title-sm">👨‍🔧 Слесарь Михалыч</span>
+                    <div class="tiny muted">Автоматически чинит 1 дефектный лот на складе каждые 12 сек!</div>
+                </div>
+                <button class="btn btn-success btn-xs" id="mechanic-hire-btn" ${!canHire ? 'disabled' : ''}>
+                    Нанять (${fmt(MECHANIC_SALARY)})
+                </button>
+            </div>`;
+    } else {
+        const timeLeft = 12 - (state.mechanicTimer % 12);
+        mechHtml = `
+            <div class="row-between">
+                <div>
+                    <span class="title-sm" style="color:var(--green);">👨‍🔧 Слесарь Михалыч на смене</span>
+                    <div class="tiny muted">Следующий авто-ремонт через: <b>${timeLeft} сек</b></div>
+                </div>
+                <span class="badge badge-green">В штате</span>
+            </div>`;
+    }
+    mechCard.innerHTML = mechHtml;
+
+    invList.innerHTML = '';
+    const repairableItems = state.inventory.filter(i => !i.rented);
+    if (repairableItems.length === 0) {
+        invList.innerHTML = '<div class="tiny muted" style="padding:8px 0;">На складе нет свободных товаров для обслуживания. Купите товары на маркете.</div>';
+        return;
+    }
+
+    repairableItems.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        const costMultiplier = state.garageLevel >= 1 ? 0.75 : 1.0;
+        const prepPrice = Math.floor(prepCost(item) * costMultiplier);
+        const overhaulCost = Math.floor(item.realValue * 0.08 * costMultiplier);
+
+        let defectBadge = '';
+        if (item.isBad) {
+            defectBadge = '<span class="badge badge-red">⚠️ Брак / Нужен ремонт</span>';
+        } else if (item.refurbished) {
+            defectBadge = item.prepTier === 3
+                ? '<span class="badge badge-yellow">✨ Нанокерамика (+35%)</span>'
+                : '<span class="badge badge-yellow">🧼 Обслужен (+20%)</span>';
+        } else {
+            defectBadge = '<span class="badge badge-green">Чистый</span>';
+        }
+
+        const canOverhaul = state.garageLevel >= 2 && item.isBad;
+        const canRewind = state.garageLevel >= 1 && (item.category === 'auto' || item.category === 'gadgets');
+        const isMaxPrep = item.refurbished && item.prepTier === 3;
+
+        card.innerHTML = `
+            <div class="row-between">
+                <div class="title-sm">${esc(item.title)}</div>
+                ${defectBadge}
+            </div>
+            <div class="tiny muted" style="margin:2px 0;">
+                Рыночная оценка: <b>${fmtExact(item.realValue)}</b> · Закупка: ${fmtExact(item.buyPrice)}
+            </div>
+            <div class="row" style="gap:4px; margin-top:6px; flex-wrap:wrap;">
+                ${!isMaxPrep ? `<button class="btn btn-purple btn-xs" data-garage-prep="${item.id}">🧼 ${state.garageLevel === 3 ? 'Керамика (+35%)' : 'Детейлинг (+20%)'} (${fmt(prepPrice)})</button>` : ''}
+                ${item.isBad ? `<button class="btn btn-warning btn-xs" data-garage-overhaul="${item.id}" ${!canOverhaul ? 'disabled title="Требуется Тёплый бокс (Ур. 2)"' : ''}>🔧 Капиталка (${fmt(overhaulCost)})</button>` : ''}
+                ${canRewind ? `<button class="btn btn-cyan btn-xs" data-garage-rewind="${item.id}">⏱️ Скрутить пробег / Репак (+25%)</button>` : ''}
+            </div>`;
+        invList.appendChild(card);
+    });
+}
+
+function upgradeGarage() {
+    const nextTier = GARAGE_TIERS[state.garageLevel + 1];
+    if (!nextTier) return;
+    if (state.level < nextTier.reqLevel) return warn(`Нужен уровень игрока ${nextTier.reqLevel}!`);
+    if (state.balance < nextTier.cost) return warn(`Недостаточно средств (${fmtExact(nextTier.cost)})!`);
+
+    state.balance -= nextTier.cost;
+    state.statsFees += nextTier.cost;
+    state.garageLevel++;
+    addXP(100);
+    showPush('🛠️', `База улучшена до «${nextTier.name}»!`, 'good');
+    renderGarage();
+    refresh(true);
+}
+
+function hireMechanic() {
+    if (state.mechanicHired) return;
+    if (state.balance < MECHANIC_SALARY) return warn(`Наём механика стоит ${fmtExact(MECHANIC_SALARY)}!`);
+
+    state.balance -= MECHANIC_SALARY;
+    state.statsFees += MECHANIC_SALARY;
+    state.mechanicHired = true;
+    state.mechanicTimer = 0;
+    addXP(50);
+    showPush('👨‍🔧', 'Слесарь Михалыч нанят! Он автоматически чинит товары на складе.', 'good');
+    renderGarage();
+    refresh(true);
+}
+
+function mechanicTick() {
+    if (!state.mechanicHired) return;
+    state.mechanicTimer++;
+    if (state.mechanicTimer % 12 === 0) {
+        const badItem = state.inventory.find(i => i.isBad && !i.rented);
+        if (badItem) {
+            badItem.isBad = false;
+            badItem.refurbished = true;
+            badItem.realValue = Math.floor(badItem.realValue * 1.2);
+            badItem.sellPrice = Math.floor(badItem.realValue * 1.05);
+            state.statsRefurbished = (state.statsRefurbished || 0) + 1;
+            showPush('👨‍🔧', `Михалыч починил дефект в «${badItem.title}»!`, 'good');
+            renderInventory();
+            renderGarage();
+            dirty = true;
+            return;
+        }
+        const unrefurb = state.inventory.find(i => !i.refurbished && !i.rented);
+        if (unrefurb) {
+            unrefurb.refurbished = true;
+            unrefurb.realValue = Math.floor(unrefurb.realValue * 1.2);
+            unrefurb.sellPrice = Math.floor(unrefurb.realValue * 1.05);
+            state.statsRefurbished = (state.statsRefurbished || 0) + 1;
+            showPush('👨‍🔧', `Михалыч сделал предпродажку «${unrefurb.title}» (+20% к цене)!`, 'good');
+            renderInventory();
+            renderGarage();
+            dirty = true;
+        }
+    }
+}
+
+function prepItemGarage(id) {
+    const item = state.inventory.find(i => i.id === id);
+    if (!item) return;
+    const costMult = state.garageLevel >= 1 ? 0.75 : 1.0;
+    const cost = Math.floor(prepCost(item) * costMult);
+    if (state.balance < cost) return warn(`Недостаточно средств (${fmtExact(cost)})!`);
+
+    state.balance -= cost;
+    state.statsFees += cost;
+    state.statsRefurbished = (state.statsRefurbished || 0) + 1;
+    item.isBad = false;
+    item.refurbished = true;
+    const boost = state.garageLevel === 3 ? 1.35 : 1.20;
+    item.prepTier = state.garageLevel === 3 ? 3 : 1;
+    item.realValue = Math.floor(item.realValue * boost);
+    item.sellPrice = Math.floor(item.realValue * 1.05);
+
+    addXP(30);
+    showPush('🧼', `Детейлинг «${item.title}»: оценка выросла до ${fmtExact(item.realValue)}!`, 'good');
+    renderInventory();
+    renderGarage();
+    refresh(true);
+}
+
+function overhaulItem(id) {
+    const item = state.inventory.find(i => i.id === id);
+    if (!item || !item.isBad) return;
+    if (state.garageLevel < 2) return warn('Капитальный ремонт доступен с Тёплого бокса (Ур. 2)!');
+    const costMult = state.garageLevel >= 1 ? 0.75 : 1.0;
+    const cost = Math.floor(item.realValue * 0.08 * costMult);
+    if (state.balance < cost) return warn(`Капитальный ремонт стоит ${fmtExact(cost)}!`);
+
+    state.balance -= cost;
+    state.statsFees += cost;
+    item.isBad = false;
+    item.uninspectedBad = false;
+    item.refurbished = true;
+    item.realValue = Math.floor(item.realValue * 1.50);
+    item.sellPrice = Math.floor(item.realValue * 1.05);
+
+    addXP(50);
+    showPush('🔧', `Капиталка завершена! Двигатель и узлы «${item.title}» как новые! Оценка: ${fmtExact(item.realValue)}`, 'good');
+    renderInventory();
+    renderGarage();
+    refresh(true);
+}
+
+function rewindMileage(id) {
+    const item = state.inventory.find(i => i.id === id);
+    if (!item) return;
+    if (state.garageLevel < 1) return warn('Смотка пробега доступна с уровня Гараж в ГСК (Ур. 1)!');
+    if (item.mileageRewound) return warn('Пробег на этом лоте уже скорректирован!');
+
+    item.mileageRewound = true;
+    item.realValue = Math.floor(item.realValue * 1.25);
+    item.sellPrice = Math.floor(item.realValue * 1.05);
+    addXP(25);
+
+    if (Math.random() < 0.10) {
+        changeTrust(-0.15);
+        showPush('⚠️', `При смотке пробега «${item.title}» остались следы во флеш-памяти (−0.15 ⭐)!`, 'bad');
+    } else {
+        showPush('⏱️', `Пробег скорректирован! Оценка «${item.title}» выросла на +25% до ${fmtExact(item.realValue)}!`, 'good');
+    }
+    renderInventory();
+    renderGarage();
+    refresh(true);
+}
+
+/* =====================================================================
+   14c. АУКЦИОНЫ / ТОРГИ ПО БАНКРОТСТВУ
+   ===================================================================== */
+const AUCTION_TEMPLATES = [
+    { title: '🏎️ Porsche 911 Carrera GTS (Конфискат)', category: 'auto', real: 14500000, startRatio: 0.28 },
+    { title: '🏢 Пентхаус 180 м² в Сити (Арест банка)', category: 'realty', real: 58000000, startRatio: 0.26 },
+    { title: '⚡ Склад ферм ASIC Antminer (12 шт)', category: 'gadgets', real: 2800000, startRatio: 0.25 },
+    { title: '📱 Задержанная партия iPhone 15 Pro Max', category: 'gadgets', real: 1900000, startRatio: 0.30 },
+    { title: '🚗 Mercedes-Benz G63 AMG (Залог МФО)', category: 'auto', real: 23000000, startRatio: 0.27 },
+    { title: '👑 Telegram-канал Криптовалюта (120k пдп)', category: 'accounts', real: 950000, startRatio: 0.32 },
+    { title: '🏎️ BMW M5 CS Competition (Тотал восстановлен)', category: 'auto', real: 16000000, startRatio: 0.29 }
+];
+
+const AUCTION_BOT_NAMES = [
+    'Перекуп Марат',
+    'Инвестор Арсен',
+    'Ломбард 24/7',
+    'Юрист Воронов',
+    'Фонд Ликвидаций'
+];
+
+let auctionState = {
+    lot: null,
+    currentBid: 0,
+    leader: 'Росимущество (Старт)',
+    isPlayerLeading: false,
+    timeLeft: 22,
+    bidCount: 0,
+    waitingNext: false
+};
+
+function initAuctionLot() {
+    const t = pick(AUCTION_TEMPLATES);
+    const startPrice = Math.max(1000, Math.floor(t.real * t.startRatio));
+    auctionState = {
+        lot: {
+            id: uid(),
+            title: t.title,
+            category: t.category,
+            realValue: t.real
+        },
+        currentBid: startPrice,
+        leader: 'Росимущество (Старт)',
+        isPlayerLeading: false,
+        timeLeft: 22,
+        bidCount: 0,
+        waitingNext: false
+    };
+    renderAuction();
+}
+
+function renderAuction() {
+    const card = $('auction-card');
+    const wonList = $('auction-won-list');
+    if (!card || !wonList) return;
+
+    if (!auctionState.lot) {
+        initAuctionLot();
+        return;
+    }
+
+    const { lot, currentBid, leader, isPlayerLeading, timeLeft, waitingNext } = auctionState;
+    const nextBid5 = Math.floor(currentBid * 1.05);
+    const nextBid15 = Math.floor(currentBid * 1.15);
+    const canBid5 = state.balance >= nextBid5 && !isPlayerLeading && !waitingNext;
+    const canBid15 = state.balance >= nextBid15 && !isPlayerLeading && !waitingNext;
+
+    card.innerHTML = `
+        <div class="row-between">
+            <div class="title-sm">${esc(lot.title)}</div>
+            <span class="badge badge-sweet">Торги ФССП</span>
+        </div>
+        <div class="tiny muted" style="margin:2px 0;">
+            Рыночная оценка: ~<b>${fmtExact(lot.realValue)}</b> · Ликвидация залогов
+        </div>
+        <div class="auction-timer ${timeLeft <= 5 ? 'urgent' : ''}">
+            ${waitingNext ? 'Ожидание следующего лота...' : `⏰ До конца молотка: ${timeLeft} сек`}
+        </div>
+        <div class="stat-row" style="margin:6px 0;">
+            <span class="muted">Текущая ставка:</span>
+            <b style="font-size:1.1rem; color:var(--green);">${fmtExact(currentBid)}</b>
+        </div>
+        <div class="stat-row">
+            <span class="muted">Лидер торгов:</span>
+            <b style="color:${isPlayerLeading ? 'var(--green)' : 'var(--accent)'};">${esc(leader)}</b>
+        </div>
+        <div class="row" style="gap:6px; margin-top:10px;">
+            <button class="btn btn-primary" style="flex:1;" data-bid-val="${nextBid5}" ${!canBid5 ? 'disabled' : ''}>
+                Ставка +5% (${fmt(nextBid5)})
+            </button>
+            <button class="btn btn-purple" style="flex:1;" data-bid-val="${nextBid15}" ${!canBid15 ? 'disabled' : ''}>
+                Перебить +15% (${fmt(nextBid15)})
+            </button>
+        </div>`;
+
+    wonList.innerHTML = '';
+    if (!state.auctionsWonList || state.auctionsWonList.length === 0) {
+        wonList.innerHTML = '<div class="tiny muted" style="padding:6px 0;">Вы пока не выиграли ни одного лота на торгах.</div>';
+    } else {
+        state.auctionsWonList.slice(-5).reverse().forEach(w => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'item-card';
+            itemDiv.style.borderColor = 'rgba(34,197,94,0.3)';
+            itemDiv.innerHTML = `
+                <div class="row-between">
+                    <b>${esc(w.title)}</b>
+                    <span class="badge badge-green">Выигран за ${fmt(w.price)}</span>
+                </div>
+                <div class="tiny muted">Оценка рынка: ${fmtExact(w.realValue)} · Профит: +${fmtExact(w.realValue - w.price)}</div>`;
+            wonList.appendChild(itemDiv);
+        });
+    }
+}
+
+function placePlayerBid(amount) {
+    if (state.balance < amount) return warn(`Недостаточно средств (${fmtExact(amount)})!`);
+    auctionState.currentBid = amount;
+    auctionState.leader = 'Вы (Игрок)';
+    auctionState.isPlayerLeading = true;
+    auctionState.bidCount++;
+    beep(880, 70, 'triangle');
+    if (auctionState.timeLeft < 5) auctionState.timeLeft = 6;
+    renderAuction();
+}
+
+function auctionTick() {
+    if (!auctionState.lot) return;
+    if (auctionState.waitingNext) {
+        auctionState.timeLeft--;
+        if (auctionState.timeLeft <= 0) {
+            initAuctionLot();
+        }
+        renderAuction();
+        return;
+    }
+
+    auctionState.timeLeft--;
+
+    if (auctionState.timeLeft > 2 && Math.random() < 0.38) {
+        const ceiling = Math.floor(auctionState.lot.realValue * 0.72);
+        if (auctionState.currentBid < ceiling) {
+            const botStep = randRange(1.05, 1.12);
+            const newBid = Math.floor(auctionState.currentBid * botStep);
+            const botName = pick(AUCTION_BOT_NAMES);
+            auctionState.currentBid = newBid;
+            auctionState.leader = botName;
+            auctionState.isPlayerLeading = false;
+            auctionState.bidCount++;
+            if (auctionState.timeLeft < 5) auctionState.timeLeft = 6;
+        }
+    }
+
+    if (auctionState.timeLeft <= 0) {
+        if (auctionState.isPlayerLeading) {
+            const wonLot = auctionState.lot;
+            const cost = auctionState.currentBid;
+            if (state.balance >= cost) {
+                state.balance -= cost;
+                state.inventory.push({
+                    id: uid(),
+                    title: wonLot.title,
+                    category: wonLot.category,
+                    buyPrice: cost,
+                    realValue: wonLot.realValue,
+                    isBad: false,
+                    refurbished: false,
+                    rented: false,
+                    prepTier: 0,
+                    checked: true,
+                    uninspectedBad: false,
+                    sellPrice: Math.floor(wonLot.realValue * 1.05)
+                });
+                state.statsAuctionsWon = (state.statsAuctionsWon || 0) + 1;
+                state.auctionsWonList.push({
+                    id: uid(),
+                    title: wonLot.title,
+                    price: cost,
+                    realValue: wonLot.realValue
+                });
+                addXP(150);
+                showPush('🔨', `МОЛОТОК УПАЛ! Вы выиграли «${wonLot.title}» за ${fmtExact(cost)}!`, 'good');
+                renderInventory();
+            } else {
+                showPush('❌', 'Не хватило денег на выкуп выигранного лота!', 'bad');
+            }
+        } else {
+            showPush('🔨', `Аукцион завершён! Лот забрал ${auctionState.leader} за ${fmtExact(auctionState.currentBid)}.`);
+        }
+        auctionState.waitingNext = true;
+        auctionState.timeLeft = 4;
+    }
+
+    renderAuction();
+}
+
+/* =====================================================================
+   14d. НОВОСТИ И РЫНОЧНЫЕ КРИЗИСЫ
+   ===================================================================== */
+const NEWS_EVENTS = [
+    {
+        tag: '⚡ КРИПТО-БУМ',
+        text: 'Биткоин бьёт рекорды! Спрос на видеокарты и крипту взлетел на +50%!',
+        duration: 50,
+        rentMult: 1.0,
+        cryptoMult: 1.5,
+        rigsMult: 1.6
+    },
+    {
+        tag: '🚗 ДЕФИЦИТ АВТО',
+        text: 'Заводы приостановили поставки! Спрос на вторичном авторынке вырос на +40%!',
+        duration: 50,
+        rentMult: 1.25,
+        demandCat: 'auto',
+        demandBoost: 1.4
+    },
+    {
+        tag: '🏢 ЛЬГОТНАЯ ИПОТЕКА',
+        text: 'Ажиотаж в недвижимости: доход от аренды вырос в 1.6 раза!',
+        duration: 45,
+        rentMult: 1.6
+    },
+    {
+        tag: '🏖️ КУРОРТНЫЙ СЕЗОН',
+        text: 'Бум посуточной аренды! Все сданные квартиры и авто приносят x2 пассивного дохода!',
+        duration: 45,
+        rentMult: 2.0
+    },
+    {
+        tag: '📱 ПРЕЗЕНТАЦИЯ ФЛАГМАНА',
+        text: 'Вышла новая модель! Старые гаджеты отдают с дисконтом -25%.',
+        duration: 45,
+        rentMult: 1.0,
+        gadgetDiscount: 0.75
+    },
+    {
+        tag: '💎 СТАБИЛЬНОСТЬ',
+        text: 'Рынок спокоен: умеренный баланс спроса и предложений во всех категориях.',
+        duration: 60,
+        rentMult: 1.0
+    }
+];
+
+function renderNews() {
+    const tagEl = $('news-tag');
+    const textEl = $('news-text');
+    if (!tagEl || !textEl) return;
+    if (!state.currentNews) {
+        tagEl.textContent = '⚡ НОВОСТИ';
+        textEl.textContent = 'Загрузка сводки рынка...';
+        return;
+    }
+    tagEl.textContent = state.currentNews.tag;
+    textEl.textContent = `${state.currentNews.text} (${state.newsTimer}с)`;
+}
+
+function newsTick() {
+    if (!state.currentNews || state.newsTimer <= 0) {
+        const ev = pick(NEWS_EVENTS);
+        state.currentNews = ev;
+        state.newsTimer = ev.duration;
+        if (ev.demandCat && state.demand[ev.demandCat]) {
+            state.demand[ev.demandCat] = clamp(state.demand[ev.demandCat] * (ev.demandBoost || 1.2), 0.7, 1.5);
+            renderDemandInfo();
+        }
+        showPush('📰', `${ev.tag}: ${ev.text}`);
+    } else {
+        state.newsTimer--;
+    }
+    renderNews();
 }
 
 /* =====================================================================
@@ -3316,6 +4239,9 @@ function rebuildAll() {
     renderListings();
     renderDisputes();
     generateMarket();
+    renderGarage();
+    renderAuction();
+    renderNews();
     resetCasinoUI();
     syncBotUI();
     renderAchievements();
@@ -3362,6 +4288,10 @@ $('inventory-list').addEventListener('click', e => {
     if (scam) return listItem(Number(scam.dataset.scam), true);
     const prep = e.target.closest('button[data-prep]');
     if (prep) return prepItem(Number(prep.dataset.prep));
+    const rent = e.target.closest('button[data-rent]');
+    if (rent) return toggleRent(Number(rent.dataset.rent), true);
+    const unrent = e.target.closest('button[data-unrent]');
+    if (unrent) return toggleRent(Number(unrent.dataset.unrent), false);
     const setP = e.target.closest('button[data-set-price]');
     if (setP) {
         const itemId = Number(setP.dataset.setPrice);
@@ -3397,8 +4327,37 @@ $('disputes-list').addEventListener('click', e => {
     if (drop) return dropDispute(Number(drop.dataset.disputeDrop));
 });
 $('chat-close-btn').addEventListener('click', closeChat);
-$('haggle-discount-btn').addEventListener('click', () => haggleAction('discount'));
+if ($('haggling-options')) {
+    $('haggling-options').addEventListener('click', e => {
+        const btn = e.target.closest('button[data-action]');
+        if (btn && !btn.disabled) haggleAction(btn.dataset.action);
+    });
+}
 $('haggle-buy-btn').addEventListener('click', () => haggleAction('buy'));
+
+/* Гараж & Автосервис */
+const garageWin = $('app-garage');
+if (garageWin) {
+    garageWin.addEventListener('click', e => {
+        if (e.target.closest('#garage-upgrade-btn')) return upgradeGarage();
+        if (e.target.closest('#mechanic-hire-btn')) return hireMechanic();
+        const prep = e.target.closest('button[data-garage-prep]');
+        if (prep) return prepItemGarage(Number(prep.dataset.garagePrep));
+        const overhaul = e.target.closest('button[data-garage-overhaul]');
+        if (overhaul) return overhaulItem(Number(overhaul.dataset.garageOverhaul));
+        const rewind = e.target.closest('button[data-garage-rewind]');
+        if (rewind) return rewindMileage(Number(rewind.dataset.garageRewind));
+    });
+}
+
+/* Торги & Аукционы */
+const auctionWin = $('app-auction');
+if (auctionWin) {
+    auctionWin.addEventListener('click', e => {
+        const bidBtn = e.target.closest('button[data-bid-val]');
+        if (bidBtn) return placePlayerBid(Number(bidBtn.dataset.bidVal));
+    });
+}
 
 /* Крипта */
 $('exchange-tabs').addEventListener('click', e => {
@@ -3500,6 +4459,11 @@ setInterval(() => {
     resolveListings();
     checkBuyerOffers();
     updateListingTimers();
+    rentTick();
+    mechanicTick();
+    auctionTick();
+    newsTick();
+    if (secCounter % 20 === 0) checkBailiffRaid();
     if (secCounter % 5 === 0) renderMarket();
     if (secCounter % 10 === 0) sampleNetWorth();
     if (secCounter % BALANCE.market.demandDriftSec === 0) driftDemand();
