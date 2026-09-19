@@ -1,220 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЗОНА 0: Терминал Выживания</title>
+    <style>
+        :root {
+            --bg-color: #0a0d0e;
+            --card-bg: #12181b;
+            --accent-green: #2ecc71;
+            --accent-red: #e74c3c;
+            --accent-yellow: #f1c40f;
+            --accent-blue: #3498db;
+            --text-color: #dcdde1;
+            --text-dim: #7f8c8d;
+        }
 
-import asyncio
-import random
-import sqlite3
-from aiogram import Bot, Dispatcher, F, types
-from aiogram.filters import CommandStart
-from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
 
-# Токен твоего бота из @BotFather
-TOKEN = "YOUR_BOT_TOKEN_HERE"
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-bot = Bot(token=TOKEN)
-dp = Dispatcher()
+        .terminal {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border: 2px solid #2c3e50;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
 
-# --- БАЗА ДАННЫХ ---
+        .header {
+            text-align: center;
+            border-bottom: 2px dashed #2c3e50;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
 
-def init_db():
-    conn = sqlite3.connect("game.db")
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            user_id INTEGER PRIMARY KEY,
-            day INTEGER DEFAULT 1,
-            health INTEGER DEFAULT 100,
-            hunger INTEGER DEFAULT 100,
-            thirst INTEGER DEFAULT 100,
-            energy INTEGER DEFAULT 100,
-            water INTEGER DEFAULT 2,
-            food INTEGER DEFAULT 2,
-            scrap INTEGER DEFAULT 0
-        )
-    """)
-    conn.commit()
-    conn.close()
+        .header h1 {
+            font-size: 1.4rem;
+            color: var(--accent-green);
+            letter-spacing: 2px;
+        }
 
-def get_user(user_id):
-    conn = sqlite3.connect("game.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
-    user = cursor.fetchone()
-    conn.close()
-    return user
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
 
-def create_user(user_id):
-    conn = sqlite3.connect("game.db")
-    cursor = conn.cursor()
-    cursor.execute("INSERT OR IGNORE INTO users (user_id) VALUES (?)", (user_id,))
-    conn.commit()
-    conn.close()
+        .stat-item {
+            background: #00000040;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #2c3e50;
+        }
 
-def update_user(user_id, **kwargs):
-    conn = sqlite3.connect("game.db")
-    cursor = conn.cursor()
-    set_clause = ", ".join([f"{key} = {key} + ?" for key in kwargs.keys()])
-    values = list(kwargs.values()) + [user_id]
-    cursor.execute(f"UPDATE users SET {set_clause} WHERE user_id = ?", values)
-    conn.commit()
-    conn.close()
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            display: flex;
+            justify-content: space-between;
+        }
 
-# --- КЛАВИАТУРЫ ---
+        .bar-container {
+            width: 100%;
+            background: #1e272e;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
 
-def main_kb():
-    builder = ReplyKeyboardBuilder()
-    builder.button(text="📊 Статус")
-    builder.button(text="🏃 Вылазка")
-    builder.button(text="🎒 Инвентарь")
-    builder.button(text="💤 Отдых")
-    builder.adjust(2, 2)
-    return builder.as_markup(resize_keyboard=True)
+        .bar {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
 
-# --- ОБРАБОТЧИКИ КОМАНД И МЕНЮ ---
+        .log-box {
+            background: #000;
+            border: 1px solid #2c3e50;
+            border-radius: 6px;
+            padding: 12px;
+            height: 140px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
 
-@dp.message(CommandStart())
-async def start_cmd(message: types.Message):
-    create_user(message.from_user.id)
-    await message.answer(
-        "🌲 **Добро пожаловать в Зону 0!**\n\n"
-        "Ты проснулся в полуразрушенном бункере. Вокруг холод, а запасы на исходе. "
-        "Твоя цель — продержаться как можно дольше.",
-        reply_markup=main_kb(),
-        parse_mode="Markdown"
-    )
+        .log-entry {
+            margin-bottom: 8px;
+            border-bottom: 1px dotted #1e272e;
+            padding-bottom: 4px;
+        }
 
-@dp.message(F.text == "📊 Статус")
-async def show_status(message: types.Message):
-    u = get_user(message.from_user.id)
-    if not u:
-        return
-    
-    status_text = (
-        f"🗓 **День:** {u[1]}\n"
-        f"-------------------\n"
-        f"❤️ **Здоровье:** {u[2]}%\n"
-        f"🍗 **Голод:** {u[3]}%\n"
-        f"💧 **Жажда:** {u[4]}%\n"
-        f"⚡ **Энергия:** {u[5]}%\n"
-    )
-    await message.answer(status_text, parse_mode="Markdown")
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
 
-@dp.message(F.text == "🎒 Инвентарь")
-async def show_inventory(message: types.Message):
-    u = get_user(message.from_user.id)
-    
-    kb = InlineKeyboardBuilder()
-    if u[6] > 0:
-        kb.button(text="💧 Выпить воду", callback_data="use_water")
-    if u[7] > 0:
-        kb.button(text="🍗 Съесть еду", callback_data="use_food")
-    kb.adjust(1)
+        .btn {
+            background: #1e272e;
+            color: var(--text-color);
+            border: 1px solid #354b60;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
 
-    inv_text = (
-        f"🎒 **Твои припасы:**\n\n"
-        f"💧 Вода: {u[6]} шт.\n"
-        f"🍗 Еда: {u[7]} шт.\n"
-        f"⚙️ Хлам (для крафта): {u[8]} шт."
-    )
-    await message.answer(inv_text, reply_markup=kb.as_markup(), parse_mode="Markdown")
+        .btn:hover {
+            background: #2c3e50;
+            border-color: var(--accent-green);
+        }
 
-@dp.message(F.text == "💤 Отдых")
-async def rest_cmd(message: types.Message):
-    u = get_user(message.from_user.id)
-    if u[3] < 15 or u[4] < 15:
-        await message.answer("❌ Ты слишком голоден или испытываешь жажду, чтобы спать!")
-        return
-    
-    # Наступление нового дня
-    update_user(
-        message.from_user.id,
-        day=1,
-        energy=min(100, 40),
-        hunger=-15,
-        thirst=-20,
-        health=10 if u[2] < 100 else 0
-    )
-    await message.answer("🌙 Ты поспал. Наступил новый день.\n⚡ Энергия восстановлена, но ты проголодался.")
+        .btn-danger {
+            border-color: var(--accent-red);
+        }
 
-# --- МЕХАНИКА ВЫЛАЗОК ---
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
 
-@dp.message(F.text == "🏃 Вылазка")
-async def raid_start(message: types.Message):
-    u = get_user(message.from_user.id)
-    if u[5] < 20:
-        await message.answer("❌ Недостаточно энергии для вылазки! Поспи или отдохни.")
-        return
+<div class="terminal">
+    <div class="header">
+        <h1>☣ ЗОНА 0: БУНКЕР</h1>
+        <span style="font-size: 0.8rem; color: var(--text-dim);">ДЕНЬ <span id="day-val">1</span> | 12:00</span>
+    </div>
 
-    update_user(message.from_user.id, energy=-20, hunger=-5, thirst=-10)
+    <!-- Индикаторы состояния -->
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-label">❤️ ZDOROV'YE <span id="hp-val">100%</span></div>
+            <div class="bar-container">
+                <div class="bar" id="hp-bar" style="width: 100%; background: var(--accent-red);"></div>
+            </div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">⚡ ENERGIYA <span id="energy-val">100%</span></div>
+            <div class="bar-container">
+                <div class="bar" id="energy-bar" style="width: 100%; background: var(--accent-yellow);"></div>
+            </div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">🍗 GOLOD <span id="hunger-val">100%</span></div>
+            <div class="bar-container">
+                <div class="bar" id="hunger-bar" style="width: 100%; background: var(--accent-green);"></div>
+            </div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">💧 ZHAZHDA <span id="thirst-val">100%</span></div>
+            <div class="bar-container">
+                <div class="bar" id="thirst-bar" style="width: 100%; background: var(--accent-blue);"></div>
+            </div>
+        </div>
+    </div>
 
-    # Рандомные события на вылазке
-    events = [
-        ("🏪 Вы нашли заброшенный магазин. Из угла слышен шорох.", "store"),
-        ("📦 Посреди дороги лежит разбитый ящик снабжения.", "crate"),
-        ("🐺 На вас из кустов выбежала дикая собака!", "dog")
-    ]
-    event_text, event_type = random.choice(events)
+    <!-- Лог текстовых событий -->
+    <div class="log-box" id="log">
+        <div class="log-entry">🌲 Вы очнулись в закрытом бункере. Связи нет.</div>
+    </div>
 
-    kb = InlineKeyboardBuilder()
-    if event_type == "store":
-        kb.button(text="🔍 Обыскать магазин", callback_data="raid_search")
-        kb.button(text="🏃 Уйти", callback_data="raid_leave")
-    elif event_type == "crate":
-        kb.button(text="🔓 Вскрыть ящик", callback_data="raid_crate")
-        kb.button(text="🚶 Пройти мимо", callback_data="raid_leave")
-    elif event_type == "dog":
-        kb.button(text="⚔️ Сразиться", callback_data="raid_fight")
-        kb.button(text="🏃 Убежать", callback_data="raid_flee")
+    <!-- Кнопки управления -->
+    <div class="actions-grid">
+        <button class="btn" onclick="action('raid')">🏃 ВЫЛАЗКА</button>
+        <button class="btn" onclick="action('rest')">💤 ОТДЫХ</button>
+        <button class="btn" onclick="action('eat')">🍗 ЕДА (<span id="food-count">2</span>)</button>
+        <button class="btn" onclick="action('drink')">💧 ВОДА (<span id="water-count">2</span>)</button>
+    </div>
+</div>
 
-    kb.adjust(1)
-    await message.answer(f"🔍 **Вылазка**\n\n{event_text}", reply_markup=kb.as_markup(), parse_mode="Markdown")
+<script>
+    // Состояние игры
+    let state = {
+        day: 1,
+        hp: 100,
+        energy: 100,
+        hunger: 100,
+        thirst: 100,
+        food: 2,
+        water: 2
+    };
 
-# --- ОБРАБОТКА ДЕЙСТВИЙ (CALLBACKS) ---
+    function updateUI() {
+        document.getElementById('day-val').innerText = state.day;
+        document.getElementById('hp-val').innerText = state.hp + '%';
+        document.getElementById('hp-bar').style.width = state.hp + '%';
+        
+        document.getElementById('energy-val').innerText = state.energy + '%';
+        document.getElementById('energy-bar').style.width = state.energy + '%';
 
-@dp.callback_query(F.data.startswith("use_"))
-async def use_item(callback: types.CallbackQuery):
-    item = callback.data.split("_")[1]
-    u = get_user(callback.from_user.id)
+        document.getElementById('hunger-val').innerText = state.hunger + '%';
+        document.getElementById('hunger-bar').style.width = state.hunger + '%';
 
-    if item == "water" and u[6] > 0:
-        update_user(callback.from_user.id, water=-1, thirst=min(100 - u[4], 30))
-        await callback.message.edit_text("🥤 Вы выпили воду и утолили жажду.")
-    elif item == "food" and u[7] > 0:
-        update_user(callback.from_user.id, food=-1, hunger=min(100 - u[3], 35))
-        await callback.message.edit_text("🍖 Вы поели и восполнили силы.")
-    else:
-        await callback.answer("У вас нет этого предмета!")
+        document.getElementById('thirst-val').innerText = state.thirst + '%';
+        document.getElementById('thirst-bar').style.width = state.thirst + '%';
 
-@dp.callback_query(F.data.startswith("raid_"))
-async def handle_raid_choice(callback: types.CallbackQuery):
-    action = callback.data.split("_")[1]
-    
-    if action == "search":
-        found_food = random.randint(0, 2)
-        found_scrap = random.randint(1, 3)
-        update_user(callback.from_user.id, food=found_food, scrap=found_scrap)
-        await callback.message.edit_text(f"✅ Вы нашли {found_food} еды и {found_scrap} хлама!")
-    
-    elif action == "crate":
-        found_water = random.randint(1, 2)
-        update_user(callback.from_user.id, water=found_water)
-        await callback.message.edit_text(f"📦 В ящике оказалось {found_water} шт. чистой воды!")
-    
-    elif action == "fight":
-        if random.random() > 0.4:
-            update_user(callback.from_user.id, food=1)
-            await callback.message.edit_text("⚔️ Вы победили собаку и получили немного мяса!")
-        else:
-            update_user(callback.from_user.id, health=-20)
-            await callback.message.edit_text("🩸 Собака покусала вас! Вы потеряли 20% здоровья.")
-            
-    elif action in ["leave", "flee"]:
-        await callback.message.edit_text("🚶 Вы решили не рисковать и вернулись назад.")
+        document.getElementById('food-count').innerText = state.food;
+        document.getElementById('water-count').innerText = state.water;
+    }
 
-# --- ЗАПУСК ---
+    function logMessage(msg) {
+        const log = document.getElementById('log');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerText = msg;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+    }
 
-async def main():
-    init_db()
-    print("Бот запущен!")
-    await dp.start_polling(bot)
+    function action(type) {
+        if (state.hp <= 0) {
+            logMessage("☠ Вы мертвы. Перезагрузите страницу для новой игры.");
+            return;
+        }
 
-if __name__ == "__main__":
-    asyncio.run(main())
+        if (type === 'raid') {
+            if (state.energy < 20) {
+                logMessage("❌ Слишком мало энергии для вылазки!");
+                return;
+            }
+            state.energy -= 20;
+            state.hunger = Math.max(0, state.hunger - 10);
+            state.thirst = Math.max(0, state.thirst - 15);
+
+            let chance = Math.random();
+            if (chance > 0.5) {
+                let foodFound = Math.floor(Math.random() * 2) + 1;
+                state.food += foodFound;
+                logMessage(`✅ Рейд успешен! Найдено еды: ${foodFound} шт.`);
+            } else if (chance > 0.2) {
+                let waterFound = Math.floor(Math.random() * 2) + 1;
+                state.water += waterFound;
+                logMessage(`✅ Вы нашли чистую воду: ${waterFound} шт.`);
+            } else {
+                state.hp = Math.max(0, state.hp - 25);
+                logMessage("⚠️ На вас напали мутанты! -25% Zdorov'ya.");
+            }
+        } 
+        else if (type === 'rest') {
+            state.day += 1;
+            state.energy = 100;
+            state.hunger = Math.max(0, state.hunger - 20);
+            state.thirst = Math.max(0, state.thirst - 25);
+            logMessage(`🌙 Наступил день ${state.day}. Энергия восстановлена.`);
+        }
+        else if (type === 'eat') {
+            if (state.food > 0) {
+                state.food--;
+                state.hunger = Math.min(100, state.hunger + 35);
+                logMessage("🍗 Вы поели и восполнили сытость.");
+            } else {
+                logMessage("❌ У вас нет еды!");
+            }
+        }
+        else if (type === 'drink') {
+            if (state.water > 0) {
+                state.water--;
+                state.thirst = Math.min(100, state.thirst + 40);
+                logMessage("💧 Вы утолили жажду.");
+            } else {
+                logMessage("❌ У вас нет воды!");
+            }
+        }
+
+        // Проверка критического состояния
+        if (state.hunger === 0 || state.thirst === 0) {
+            state.hp = Math.max(0, state.hp - 15);
+            logMessage("💔 Вы страдаете от голода или обезвоживания!");
+        }
+
+        updateUI();
+    }
+</script>
+</body>
+</html>
