@@ -1,1381 +1,220 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Бизнес Симулятор: Neon City</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    :root {
-      --bg: #090d16;
-      --card-bg: rgba(30, 41, 59, 0.75);
-      --card-border: rgba(255, 255, 255, 0.12);
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --gold: #fbbf24;
-      --purple: #a855f7;
-      --cyan: #06b6d4;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-    }
 
-    * { box-sizing: border-box; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent; }
-    body {
-      background: var(--bg);
-      background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 75%);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      padding: 16px;
-      margin: 0;
-      padding-bottom: 40px;
-      user-select: none;
-    }
-
-    .card {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      padding: 16px;
-      border-radius: 20px;
-      margin-bottom: 12px;
-      border: 1px solid var(--card-border);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
-    }
-
-    .rainbow-nickname {
-      font-weight: 800;
-      font-size: 18px;
-      background: linear-gradient(90deg, #ff007f, #a855f7, #38bdf8, #10b981, #ff007f);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: rainbow 4s ease infinite;
-    }
-    @keyframes rainbow {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
-    .stat b { color: var(--text); font-size: 15px; }
-
-    .progress-bar-bg { background: rgba(255,255,255,0.1); border-radius: 10px; height: 8px; width: 100%; overflow: hidden; margin-top: 4px; }
-    .progress-bar-fill { background: linear-gradient(90deg, var(--primary), var(--purple)); height: 100%; width: 0%; transition: width 0.3s; }
-
-    .btn {
-      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-      color: white; border: none; padding: 12px 16px; border-radius: 14px;
-      width: 100%; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 8px;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-    }
-    .btn-success { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); }
-    .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25); }
-    .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); }
-    .btn-purple { background: linear-gradient(135deg, #a855f7, #7e22ce); box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25); }
-    .btn-gold { background: linear-gradient(135deg, #fbbf24, #d97706); color: #000; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); }
-    .btn-cyan { background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff; box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
-    .btn:active:not(:disabled) { transform: scale(0.97); }
-
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-    .grid-btn {
-      background: var(--card-bg); border: 1px solid var(--card-border);
-      padding: 16px 12px; border-radius: 16px; text-align: center;
-      font-size: 14px; font-weight: 600; cursor: pointer; backdrop-filter: blur(8px);
-    }
-    .grid-btn:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.05); }
-
-    .modal {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
-      justify-content: center; align-items: center; z-index: 100;
-    }
-    .modal-content {
-      background: #111827; padding: 22px; border-radius: 24px;
-      width: 92%; max-width: 420px; border: 1px solid rgba(255, 255, 255, 0.1);
-      max-height: 85vh; overflow-y: auto; text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-    }
-
-    .item-card {
-      background: rgba(15, 23, 42, 0.7);
-      padding: 14px; border-radius: 16px; margin-bottom: 14px;
-      border: 1px solid var(--card-border); text-align: left; overflow: hidden;
-    }
-    .card-img {
-      width: 100%; height: 170px; object-fit: cover; border-radius: 12px; margin-bottom: 10px; display: block;
-    }
-    .badge { background: rgba(255, 255, 255, 0.1); padding: 4px 8px; border-radius: 8px; font-size: 11px; cursor: pointer; color: var(--gold); }
-    .wanted-stars { color: var(--gold); font-size: 16px; letter-spacing: 2px; }
-
-    /* UI Элементы */
-    .slot-machine {
-      display: flex; justify-content: center; gap: 10px; font-size: 40px;
-      background: rgba(0,0,0,0.5); padding: 15px; border-radius: 16px; border: 2px solid var(--gold); margin: 15px 0;
-    }
-    .input-field {
-      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--card-border);
-      background: rgba(255,255,255,0.05); color: white; font-size: 14px; margin-top: 8px; text-align: center;
-    }
-
-    /* Анимация кейсов */
-    .case-roulette {
-      display: flex; overflow-x: hidden; width: 100%; height: 90px;
-      background: #000; border: 2px solid var(--gold); border-radius: 12px;
-      margin: 15px 0; position: relative; align-items: center;
-    }
-    .case-roulette-inner {
-      display: flex; gap: 10px; position: absolute; left: 0; transition: transform 4s cubic-bezier(0.1, 1, 0.1, 1);
-    }
-    .case-item {
-      min-width: 80px; height: 80px; background: rgba(255,255,255,0.05);
-      border-radius: 8px; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; font-size: 11px; padding: 4px; text-align: center;
-      border: 1px solid var(--card-border);
-    }
-    .roulette-marker {
-      position: absolute; left: 50%; top: 0; bottom: 0; width: 4px;
-      background: var(--danger); z-index: 2; transform: translateX(-50%);
-      box-shadow: 0 0 10px var(--danger);
-    }
-
-    /* График крипты */
-    .crypto-chart {
-      height: 60px; display: flex; align-items: flex-end; gap: 4px;
-      background: rgba(0,0,0,0.3); padding: 8px; border-radius: 10px; margin: 10px 0;
-    }
-    .chart-bar { flex: 1; background: var(--success); border-radius: 2px; }
-  </style>
-</head>
-<body>
-
-  <!-- Профиль Игрока -->
-  <div class="card">
-    <div class="stat">
-      <span>Игрок:</span> 
-      <span><span id="nickname" class="rainbow-nickname">Игрок</span> <span class="badge" onclick="changeNickname()">✏️</span></span>
-    </div>
-    <div class="stat"><span>Уровень:</span> <b id="level-display" style="color:var(--purple);">1 LvL</b></div>
-    <div class="stat" style="flex-direction:column; align-items:flex-start; gap:4px;">
-      <div style="display:flex; justify-content:space-between; width:100%;">
-        <span>Опыт (XP):</span> <b id="xp-text" style="font-size:12px;">0 / 100</b>
-      </div>
-      <div class="progress-bar-bg"><div class="progress-bar-fill" id="xp-bar"></div></div>
-    </div>
-    <div class="stat" style="margin-top:8px;"><span>Баланс:</span> <b id="money" style="color:var(--success); font-size:18px;">$0</b></div>
-    <div class="stat"><span>Энергия:</span> <b id="energy" style="color:#38bdf8">100/100</b></div>
-    <div class="stat"><span>Розыск:</span> <span id="wanted" class="wanted-stars">☆☆☆☆☆</span></div>
-    <div class="stat"><span>Клан:</span> <b id="clan-display" style="color:var(--cyan);">Нет</b></div>
-  </div>
-
-  <!-- Кнопки действий -->
-  <button class="btn btn-warning" onclick="openEnergyGame()">⚡ Мини-игра: Восполнить Энергию</button>
-  <button class="btn btn-danger" onclick="commitCrime()">🚨 Ограбление (Опасно!)</button>
-
-  <!-- Меню раздела -->
-  <div class="grid">
-    <div class="grid-btn" onclick="openWorkList()">💼 Биржа Труда</div>
-    <div class="grid-btn" onclick="openTaxiMenu()">🚕 Работа Такси</div>
-    <div class="grid-btn" onclick="openBusinessList()">🏢 Бизнесы</div>
-    <div class="grid-btn" onclick="openRealtyList()">🏠 Недвижимость</div>
-    <div class="grid-btn" onclick="openAutoMarket()">🚗 Авторынок</div>
-    <div class="grid-btn" onclick="openGarage()">🏎️ Мой Гараж</div>
-    <div class="grid-btn" style="border-color: var(--gold);" onclick="openCasinoMenu()">🎰 Казино Neon</div>
-    <div class="grid-btn" style="border-color: var(--purple);" onclick="openCryptoMenu()">📈 Криптобиржа</div>
-    <div class="grid-btn" style="border-color: var(--cyan);" onclick="openClanMenu()">🛡️ Синдикаты (Кланы)</div>
-    <div class="grid-btn" style="border-color: var(--warning);" onclick="openCasesMenu()">📦 Кейсы с лутом</div>
-    <div class="grid-btn" style="border-color: var(--primary);" onclick="openTradeMenu()">🔄 P2P Трейдинг</div>
-    <div class="grid-btn" onclick="openStatsModal()">📊 Статистика</div>
-    <div class="grid-btn" onclick="openLeaderboard()">🏆 Топ Лидеров</div>
-  </div>
-
-  <button class="btn btn-danger" style="margin-top:16px; opacity:0.6; font-size:12px; padding:8px;" onclick="resetGameData()">🔄 Сбросить весь прогресс</button>
-
-  <!-- МОДАЛЬНЫЕ ОКНА -->
-
-  <!-- Казино -->
-  <div id="casino-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--gold); margin-top:0;">🎰 Казино Neon Vegas</h3>
-      <input type="number" id="casino-bet" class="input-field" placeholder="Введите ставку ($)" value="100">
-      
-      <div class="slot-machine">
-        <span id="slot-1">🎰</span><span id="slot-2">🎰</span><span id="slot-3">🎰</span>
-      </div>
-      <button class="btn btn-gold" onclick="playSlots()">🎰 Вращать Слоты (x3)</button>
-      
-      <div style="display:flex; gap:10px; margin-top:10px;">
-        <button class="btn btn-purple" onclick="playCoinFlip('heads')">🦅 Орёл (x2)</button>
-        <button class="btn btn-purple" onclick="playCoinFlip('tails')">🪙 Решка (x2)</button>
-      </div>
-
-      <div style="display:flex; gap:10px; margin-top:10px;">
-        <button class="btn btn-danger" onclick="playRoulette('red')">🔴 Красное (x2)</button>
-        <button class="btn" style="background:#1e293b;" onclick="playRoulette('black')">⚫ Чёрное (x2)</button>
-      </div>
-
-      <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('casino-modal')">Выйти из казино</button>
-    </div>
-  </div>
-
-  <!-- Криптобиржа -->
-  <div id="crypto-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--purple); margin-top:0;">📈 Криптобиржа NeonX</h3>
-      <p style="font-size:11px; color:var(--text-muted);">Курсы меняются каждые 5 минут. Покупайте дешевле, продавайте дороже!</p>
-      
-      <div class="item-card">
-        <b>₿ Bitcoin (BTC)</b>
-        <div style="font-size:18px; color:var(--gold);" id="btc-price">$65,000</div>
-        <div class="crypto-chart" id="btc-chart"></div>
-        <div style="font-size:12px;">Баланс: <b id="btc-balance" style="color:var(--cyan);">0 BTC</b></div>
-        <div style="display:flex; gap:6px; margin-top:8px;">
-          <button class="btn btn-success" style="padding:8px;" onclick="buyCrypto('btc')">Купить</button>
-          <button class="btn btn-danger" style="padding:8px;" onclick="sellCrypto('btc')">Продать</button>
-        </div>
-      </div>
-
-      <div class="item-card">
-        <b>Ξ Ethereum (ETH)</b>
-        <div style="font-size:18px; color:var(--purple);" id="eth-price">$3,500</div>
-        <div class="crypto-chart" id="eth-chart"></div>
-        <div style="font-size:12px;">Баланс: <b id="eth-balance" style="color:var(--cyan);">0 ETH</b></div>
-        <div style="display:flex; gap:6px; margin-top:8px;">
-          <button class="btn btn-success" style="padding:8px;" onclick="buyCrypto('eth')">Купить</button>
-          <button class="btn btn-danger" style="padding:8px;" onclick="sellCrypto('eth')">Продать</button>
-        </div>
-      </div>
-
-      <button class="btn btn-danger" style="margin-top:10px;" onclick="closeModal('crypto-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Кланы -->
-  <div id="clan-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--cyan); margin-top:0;">🛡️ Синдикаты Neon City</h3>
-      <div id="clan-info"></div>
-      <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('clan-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Кейсы -->
-  <div id="cases-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--warning); margin-top:0;">📦 Кейсы с Лутом</h3>
-      <div class="case-roulette">
-        <div class="roulette-marker"></div>
-        <div class="case-roulette-inner" id="case-roulette-inner"></div>
-      </div>
-      <div id="case-status" style="font-weight:bold; color:var(--gold); margin-bottom:10px; min-height:20px;"></div>
-      <div id="cases-list"></div>
-      <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('cases-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- P2P Трейдинг -->
-  <div id="trade-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--purple); margin-top:0;">🔄 P2P Трейдинг</h3>
-      <p style="font-size:12px; color:var(--text-muted);">Передавайте деньги или машины другим игрокам через ссылку в Telegram!</p>
-      
-      <div style="text-align:left; margin-bottom:10px;">
-        <label style="font-size:12px;">Сумма перевода ($):</label>
-        <input type="number" id="trade-amount" class="input-field" placeholder="1000">
-        <button class="btn btn-success" onclick="createMoneyTrade()">✉️ Создать чек на деньги</button>
-      </div>
-      <hr style="border:0; border-top:1px solid var(--card-border); margin:15px 0;">
-      <div style="text-align:left;">
-        <label style="font-size:12px;">Выберите авто для подарка/продажи:</label>
-        <select id="trade-car-select" class="input-field" style="background:#1e293b;"></select>
-        <button class="btn btn-purple" onclick="createCarTrade()">🚗 Передать машину</button>
-      </div>
-
-      <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('trade-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Статистика -->
-  <div id="stats-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--primary); margin-top:0;">📊 Игровая Статистика</h3>
-      <div id="stats-content" style="text-align:left; font-size:14px; line-height:1.8;"></div>
-      <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('stats-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Лидерборд -->
-  <div id="leaderboard-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--gold); margin-top:0;">🏆 Зал Славы Neon City</h3>
-      <div id="leaderboard-list"></div>
-      <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('leaderboard-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Такси -->
-  <div id="taxi-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--warning); margin-top:0;">🚕 Работа в Такси</h3>
-      <p style="font-size:12px; color:var(--text-muted);">Выполняйте заказы на своём авто. После поездки машину нужно ремонтировать!</p>
-      <div id="taxi-car-select"></div>
-      <button class="btn btn-danger" onclick="closeModal('taxi-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Биржа Труда -->
-  <div id="work-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--primary); margin-top:0;">💼 Доступная Работа</h3>
-      <div id="work-list"></div>
-      <button class="btn btn-danger" onclick="closeModal('work-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Бизнесы -->
-  <div id="business-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--primary); margin-top:0;">🏢 Бизнесы</h3>
-      <p style="font-size:12px; color:var(--text-muted);">Заказывайте поставку продуктов, иначе предприятия перестанут приносить прибыль!</p>
-      <button class="btn btn-success" id="collect-btn" style="margin-bottom:15px;" onclick="collectAllIncome()">💵 Собрать прибыль</button>
-      <div id="business-list"></div>
-      <button class="btn btn-danger" onclick="closeModal('business-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Недвижимость -->
-  <div id="realty-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--gold); margin-top:0;">🏠 Недвижимость</h3>
-      <p style="font-size:12px; color:var(--text-muted);">Дома увеличивают ваш максимальный запас энергии!</p>
-      <div id="realty-list"></div>
-      <button class="btn btn-danger" onclick="closeModal('realty-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Автосалон -->
-  <div id="market-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--primary); margin-top:0;">🚗 Автосалон</h3>
-      <div id="cars-list"></div>
-      <button class="btn btn-danger" onclick="closeModal('market-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Гараж -->
-  <div id="garage-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--purple); margin-top:0;">🏎️ Мой Гараж</h3>
-      <div id="garage-list"></div>
-      <button class="btn btn-danger" onclick="closeModal('garage-modal')">Закрыть</button>
-    </div>
-  </div>
-
-  <!-- Мини-игра на Энергию -->
-  <div id="energy-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="color:var(--warning); margin-top:0;">⚡ Накачка Энергии</h3>
-      <p style="font-size:13px; color:var(--text-muted);">Нажми 5 раз за 6 секунд!</p>
-      <div style="font-size:28px; font-weight:bold; margin:15px 0; color:var(--gold);" id="energy-timer">06.00 сек</div>
-      <div style="font-size:16px; margin-bottom:15px;">Кликов: <b id="energy-clicks" style="color:var(--success)">0</b> / 5</div>
-      <button class="btn btn-success" id="energy-click-btn" style="padding:18px; font-size:16px;" onclick="clickEnergyMiniGame()">ЖМИ СЮДА!</button>
-      <button class="btn btn-danger" style="margin-top:15px;" onclick="closeModal('energy-modal')">Сдаться</button>
-    </div>
-  </div>
-
-  <script>
-    // --- TELEGRAM WEBAPP ---
-    const tg = window.Telegram?.WebApp;
-    if (tg) { tg.ready(); tg.expand(); }
-
-    function triggerHaptic(type = 'light') {
-      if (tg?.HapticFeedback) {
-        if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
-        else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
-        else tg.HapticFeedback.impactOccurred(type);
-      }
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
-    }
-
-    // --- БАЗА АВТОМОБИЛЕЙ (15 Машин) ---
-    const carsList = [
-      { id: 'vaz2107', name: "ВАЗ 2107 (Семерка)", price: 600, img: "https://upload.wikimedia.org/wikipedia/commons/f/f0/LADA_2107_at_Autoexotica_2013_01.jpg" },
-      { id: 'priora', name: "Lada Priora Black Edition", price: 1100, img: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600&q=80" },
-      { id: 'volga', name: "ГАЗ 24-10 Волга", price: 1400, img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&q=80" },
-      { id: 'golf4', name: "Volkswagen Golf IV GTI", price: 2200, img: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600&q=80" },
-      { id: 'bmwe36', name: "BMW E36 Drift Spec", price: 4200, img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80" },
-      { id: 'w124', name: "Mercedes-Benz W124 E500", price: 8500, img: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=600&q=80" },
-      { id: 'supra', name: "Toyota Supra A80 Twin Turbo", price: 16000, img: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=600&q=80" },
-      { id: 'skyline', name: "Nissan Skyline GT-R R34", price: 25000, img: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=600&q=80" },
-      { id: 'porsche', name: "Porsche 911 Turbo S", price: 55000, img: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=600&q=80" },
-      { id: 'lamborghini', name: "Lamborghini Huracán Evo", price: 110000, img: "https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?w=600&q=80" },
-      { id: 'bugatti', name: "Bugatti Chiron Sport", price: 300000, img: "https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?w=600&q=80" },
-      { id: 'cybertruck', name: "Cyber Truck EX-100", price: 750000, img: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&q=80" },
-      { id: 'g63', name: "Mercedes-AMG G63 Geländewagen", price: 180000, img: "https://images.unsplash.com/photo-1520050206274-a1ae44613e6d?w=600&q=80" },
-      { id: 'ferrari', name: "Ferrari F40 Legend Edition", price: 500000, img: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=600&q=80" },
-      { id: 'hypercar', name: "Neon Cyber Prototype-01", price: 1500000, img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80" }
-    ];
-
-    // --- БЕЗОПАСНАЯ ИНИЦИАЛИЗАЦИЯ ДАННЫХ ---
-    function safeParse(val, defVal) {
-      let parsed = parseFloat(val);
-      return isNaN(parsed) ? defVal : parsed;
-    }
-
-    let money = safeParse(localStorage.getItem('money'), 1000);
-    let energy = safeParse(localStorage.getItem('energy'), 100);
-    let level = safeParse(localStorage.getItem('level'), 1);
-    let xp = safeParse(localStorage.getItem('xp'), 0);
-    let nickname = localStorage.getItem('nickname') || (tg?.initDataUnsafe?.user?.first_name || "Игрок");
-    let wantedStars = safeParse(localStorage.getItem('wantedStars'), 0);
-    let lastCollectTime = safeParse(localStorage.getItem('lastCollectTime'), 0);
-
-    // Крипта
-    let btcPrice = safeParse(localStorage.getItem('btcPrice'), 65000);
-    let ethPrice = safeParse(localStorage.getItem('ethPrice'), 3500);
-    let btcBalance = safeParse(localStorage.getItem('btcBalance'), 0);
-    let ethBalance = safeParse(localStorage.getItem('ethBalance'), 0);
-    let btcHistory = JSON.parse(localStorage.getItem('btcHistory')) || [62000, 63000, 61500, 64000, 65000];
-    let ethHistory = JSON.parse(localStorage.getItem('ethHistory')) || [3300, 3400, 3350, 3450, 3500];
-
-    // Клан
-    let myClan = JSON.parse(localStorage.getItem('myClan')) || null;
-    const availableClans = [
-      { id: 'mafia', name: "🕶️ Синдикат Тень", cost: 50000, taxIncome: 150 },
-      { id: 'corp', name: "🏢 Neon Corp", cost: 150000, taxIncome: 500 }
-    ];
-    let clanTerritories = JSON.parse(localStorage.getItem('clanTerritories')) || { center: null, docks: null, tech: null };
-
-    // Статистика
-    let stats = JSON.parse(localStorage.getItem('gameStats')) || {
-      crimesDone: 0,
-      taxiRides: 0,
-      casinoWins: 0,
-      casinoLosses: 0,
-      casesOpened: 0
-    };
-
-    let rawGarage = JSON.parse(localStorage.getItem('myGarage')) || [];
-    let myGarage = sanitizeGarage(rawGarage);
-
-    function sanitizeGarage(garageArray) {
-      if (!Array.isArray(garageArray) || garageArray.length === 0) {
-        return [{ id: 'vaz2107', name: 'ВАЗ 2107 (Семерка)', condition: 100, stage: 0, price: 600, img: 'https://upload.wikimedia.org/wikipedia/commons/f/f0/LADA_2107_at_Autoexotica_2013_01.jpg' }];
-      }
-      return garageArray.map(car => {
-        let base = carsList.find(c => c.id === car.id) || carsList[0];
-        return {
-          id: car.id || base.id,
-          name: car.name || base.name,
-          price: safeParse(car.price, base.price),
-          condition: safeParse(car.condition, 100),
-          stage: safeParse(car.stage, 0),
-          img: car.img || base.img
-        };
-      });
-    }
-
-    const realtyList = [
-      { id: 1, name: "🛏️ Койка в хостеле", cost: 100, energyBonus: 5, img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80" },
-      { id: 2, name: "🚪 Комната в коммунаке", cost: 400, energyBonus: 12, img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&q=80" },
-      { id: 3, name: "🏢 Квартира-Студия", cost: 1500, energyBonus: 30, img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80" },
-      { id: 4, name: "🏙️ Двушка в центре", cost: 6000, energyBonus: 65, img: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80" },
-      { id: 5, name: "🏙️ Пентхаус с панорамой", cost: 25000, energyBonus: 120, img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80" },
-      { id: 6, name: "🏰 Загородная Вилла", cost: 100000, energyBonus: 300, img: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600&q=80" }
-    ];
-    let myRealty = JSON.parse(localStorage.getItem('myRealty')) || [];
-
-    const works = [
-      { id: 1, name: "📄 Раздача листовок", minLvl: 1, energy: 5, xp: 4, pay: 15 },
-      { id: 2, name: "🧹 Уборщик улиц", minLvl: 1, energy: 10, xp: 8, pay: 35 },
-      { id: 3, name: "📦 Грузчик на складе", minLvl: 1, energy: 15, xp: 12, pay: 60 },
-      { id: 4, name: "🍕 Курьер пиццы", minLvl: 2, energy: 20, xp: 18, pay: 110 },
-      { id: 5, name: "🏗️ Строитель", minLvl: 3, energy: 30, xp: 26, pay: 230 },
-      { id: 6, name: "💼 IT-Менеджер", minLvl: 5, energy: 15, xp: 40, pay: 750 }
-    ];
-
-    const availableBusinesses = [
-      { id: 1, name: "🥙 Шаурмичная у Вахида", baseCost: 300, baseIncome: 40, supplyCost: 50 },
-      { id: 2, name: "🏪 Магазин «24/7»", baseCost: 1200, baseIncome: 150, supplyCost: 150 },
-      { id: 3, name: "☕ Кофейня «Street Coffee»", baseCost: 3500, baseIncome: 420, supplyCost: 400 },
-      { id: 4, name: "🚗 Автомойка & Детейлинг", baseCost: 10000, baseIncome: 1200, supplyCost: 1000 },
-      { id: 5, name: "💻 Компьютерный Клуб", baseCost: 30000, baseIncome: 3500, supplyCost: 2500 }
-    ];
-    let myBusinesses = JSON.parse(localStorage.getItem('myBusinesses')) || [];
-
-    // Кейсы
-    const cases = [
-      { id: 'bronze', name: "📦 Бронзовый Кейс", price: 1000, items: [{ type: 'money', val: 500 }, { type: 'money', val: 1200 }, { type: 'money', val: 2500 }, { type: 'car', id: 'vaz2107' }] },
-      { id: 'gold', name: "👑 Золотой Кейс", price: 15000, items: [{ type: 'money', val: 10000 }, { type: 'money', val: 25000 }, { type: 'car', id: 'supra' }, { type: 'car', id: 'bmwe36' }] },
-      { id: 'hyper', name: "💎 Гипер Кейс", price: 100000, items: [{ type: 'money', val: 80000 }, { type: 'money', val: 200000 }, { type: 'car', id: 'bugatti' }, { type: 'car', id: 'ferrari' }, { type: 'car', id: 'hypercar' }] }
-    ];
-
-    function getMaxEnergy() {
-      let maxE = 100;
-      myRealty.forEach(id => {
-        const house = realtyList.find(h => h.id === id);
-        if (house) maxE += house.energyBonus;
-      });
-      return maxE;
-    }
-
-    function saveData() {
-      localStorage.setItem('money', isNaN(money) ? 0 : money);
-      localStorage.setItem('energy', isNaN(energy) ? 100 : energy);
-      localStorage.setItem('level', isNaN(level) ? 1 : level);
-      localStorage.setItem('xp', isNaN(xp) ? 0 : xp);
-      localStorage.setItem('nickname', nickname);
-      localStorage.setItem('wantedStars', isNaN(wantedStars) ? 0 : wantedStars);
-      localStorage.setItem('myGarage', JSON.stringify(myGarage));
-      localStorage.setItem('myBusinesses', JSON.stringify(myBusinesses));
-      localStorage.setItem('myRealty', JSON.stringify(myRealty));
-      localStorage.setItem('lastCollectTime', isNaN(lastCollectTime) ? 0 : lastCollectTime);
-      localStorage.setItem('gameStats', JSON.stringify(stats));
-      localStorage.setItem('btcPrice', btcPrice);
-      localStorage.setItem('ethPrice', ethPrice);
-      localStorage.setItem('btcBalance', btcBalance);
-      localStorage.setItem('ethBalance', ethBalance);
-      localStorage.setItem('btcHistory', JSON.stringify(btcHistory));
-      localStorage.setItem('ethHistory', JSON.stringify(ethHistory));
-      localStorage.setItem('myClan', JSON.stringify(myClan));
-      localStorage.setItem('clanTerritories', JSON.stringify(clanTerritories));
-    }
-
-    function resetGameData() {
-      if (confirm("Точно сбросить весь прогресс?")) {
-        localStorage.clear();
-        location.reload();
-      }
-    }
-
-    function addXP(amount) {
-      xp += safeParse(amount, 0);
-      let reqXp = level * 100;
-      if (xp >= reqXp) {
-        xp -= reqXp;
-        level++;
-        triggerHaptic('success');
-        alert(`🎉 ПОЗДРАВЛЯЕМ! Вы достигли ${level} уровня!`);
-      }
-    }
-
-    function updateUI() {
-      money = isNaN(money) ? 0 : money;
-      energy = isNaN(energy) ? 100 : energy;
-      level = isNaN(level) ? 1 : level;
-      xp = isNaN(xp) ? 0 : xp;
-
-      let maxE = getMaxEnergy();
-      if (energy > maxE) energy = maxE;
-
-      document.getElementById('money').innerText = '$' + Math.floor(money).toLocaleString();
-      document.getElementById('energy').innerText = energy + '/' + maxE;
-      document.getElementById('nickname').innerText = nickname;
-      document.getElementById('level-display').innerText = level + " LvL";
-
-      let reqXp = level * 100;
-      document.getElementById('xp-text').innerText = `${xp} / ${reqXp}`;
-      document.getElementById('xp-bar').style.width = Math.min(100, (xp / reqXp) * 100) + '%';
-      
-      let starsText = "";
-      for (let i = 0; i < 5; i++) { starsText += i < wantedStars ? "★" : "☆"; }
-      document.getElementById('wanted').innerText = starsText;
-
-      document.getElementById('clan-display').innerText = myClan ? myClan.name : "Нет";
-
-      saveData();
-    }
-
-    function changeNickname() {
-      let newName = prompt("Введите никнейм:", nickname);
-      if (newName) { nickname = newName.trim(); updateUI(); }
-    }
-
-    // --- ТАЙМЕР ОБНОВЛЕНИЯ КУРСОВ КРИПТЫ (Каждые 5 минут / 300 сек) ---
-    setInterval(() => {
-      let btcChange = (Math.random() - 0.48) * 0.1;
-      let ethChange = (Math.random() - 0.48) * 0.12;
-
-      btcPrice = Math.max(10000, Math.round(btcPrice * (1 + btcChange)));
-      ethPrice = Math.max(500, Math.round(ethPrice * (1 + ethChange)));
-
-      btcHistory.push(btcPrice); if (btcHistory.length > 7) btcHistory.shift();
-      ethHistory.push(ethPrice); if (ethHistory.length > 7) ethHistory.shift();
-
-      if (document.getElementById('crypto-modal').style.display === 'flex') {
-        renderCryptoUI();
-      }
-      saveData();
-    }, 300000);
-
-    // --- ОГРАБЛЕНИЕ ---
-    function commitCrime() {
-      if (energy < 20) { triggerHaptic('error'); alert("⚡ Мало энергии! Нужно 20."); return; }
-      energy -= 20;
-      let success = Math.random() > 0.4;
-      stats.crimesDone++;
-      
-      if (success) {
-        let reward = Math.floor(Math.random() * 300) + 150;
-        money += reward;
-        addXP(20);
-        triggerHaptic('success');
-        alert(`🚨 Ограбление прошло успешно! Вы унесли +$${reward}`);
-      } else {
-        wantedStars = Math.min(5, wantedStars + 1);
-        triggerHaptic('error');
-        alert(`🚔 Полиция вас перехватила! Уровень розыска поднялся до ${wantedStars}★`);
-      }
-      updateUI();
-    }
-
-    // --- МИНИ-ИГРА НА ЭНЕРГИЮ ---
-    let energyClicks = 0;
-    let energyTimer = null;
-    let timeLeft = 6.0;
-
-    function openEnergyGame() {
-      energyClicks = 0;
-      timeLeft = 6.0;
-      document.getElementById('energy-clicks').innerText = energyClicks;
-      document.getElementById('energy-timer').innerText = "06.00 сек";
-      document.getElementById('energy-click-btn').disabled = false;
-      document.getElementById('energy-modal').style.display = 'flex';
-    }
-
-    function clickEnergyMiniGame() {
-      if (energyClicks === 0) {
-        energyTimer = setInterval(() => {
-          timeLeft -= 0.1;
-          document.getElementById('energy-timer').innerText = (timeLeft > 0 ? timeLeft : 0).toFixed(2) + " сек";
-          if (timeLeft <= 0) {
-            clearInterval(energyTimer);
-            document.getElementById('energy-click-btn').disabled = true;
-            triggerHaptic('error');
-            alert("⏰ Время вышло!");
-          }
-        }, 100);
-      }
-      
-      energyClicks++;
-      triggerHaptic('light');
-      document.getElementById('energy-clicks').innerText = energyClicks;
-
-      if (energyClicks >= 5 && timeLeft > 0) {
-        clearInterval(energyTimer);
-        triggerHaptic('success');
-        energy = getMaxEnergy();
-        alert("⚡ Энергия полностью восстановлена!");
-        closeModal('energy-modal');
-        updateUI();
-      }
-    }
-
-    // --- КАЗИНО НЕОН (РЕАЛИСТИЧНОЕ) ---
-    function openCasinoMenu() {
-      triggerHaptic('light');
-      document.getElementById('casino-modal').style.display = 'flex';
-    }
-
-    function getBet() {
-      let bet = parseInt(document.getElementById('casino-bet').value);
-      if (isNaN(bet) || bet <= 0) { alert("Введите корректную ставку!"); return 0; }
-      if (bet > money) { alert("❌ Не хватает денег!"); return 0; }
-      return bet;
-    }
-
-    function playSlots() {
-      let bet = getBet();
-      if (!bet) return;
-      money -= bet;
-
-      const symbols = ['🍋', '🍒', '🔔', '💎', '7️⃣'];
-      let s1 = symbols[Math.floor(Math.random() * symbols.length)];
-      let s2 = symbols[Math.floor(Math.random() * symbols.length)];
-      let s3 = symbols[Math.floor(Math.random() * symbols.length)];
-
-      document.getElementById('slot-1').innerText = s1;
-      document.getElementById('slot-2').innerText = s2;
-      document.getElementById('slot-3').innerText = s3;
-
-      if (s1 === s2 && s2 === s3) {
-        let win = bet * 5;
-        money += win;
-        stats.casinoWins++;
-        triggerHaptic('success');
-        alert(`🎉 ДЖЕКПОТ! Вы выиграли $${win}!`);
-      } else if (s1 === s2 || s2 === s3 || s1 === s3) {
-        let win = Math.round(bet * 1.5);
-        money += win;
-        stats.casinoWins++;
-        triggerHaptic('success');
-        alert(`✨ Совпадение! Вы выиграли $${win}!`);
-      } else {
-        stats.casinoLosses++;
-        triggerHaptic('error');
-      }
-      updateUI();
-    }
-
-    function playCoinFlip(choice) {
-      let bet = getBet();
-      if (!bet) return;
-      money -= bet;
-
-      let result = Math.random() > 0.5 ? 'heads' : 'tails';
-      let resText = result === 'heads' ? 'Орёл' : 'Решка';
-
-      if (choice === result) {
-        let win = bet * 2;
-        money += win;
-        stats.casinoWins++;
-        triggerHaptic('success');
-        alert(`🪙 Выпал ${resText}! Вы выиграли $${win}!`);
-      } else {
-        stats.casinoLosses++;
-        triggerHaptic('error');
-        alert(`🪙 Выпал ${resText}! Вы проиграли.`);
-      }
-      updateUI();
-    }
-
-    function playRoulette(color) {
-      let bet = getBet();
-      if (!bet) return;
-      money -= bet;
-
-      let winColor = Math.random() > 0.52 ? (color === 'red' ? 'black' : 'red') : color;
-      if (color === winColor) {
-        let win = bet * 2;
-        money += win;
-        stats.casinoWins++;
-        triggerHaptic('success');
-        alert(`🔴⚫ Выпал ${winColor === 'red' ? 'Красный' : 'Чёрный'}! Победа $${win}`);
-      } else {
-        stats.casinoLosses++;
-        triggerHaptic('error');
-        alert(`🔴⚫ Выпал ${winColor === 'red' ? 'Красный' : 'Чёрный'}! Не повезло.`);
-      }
-      updateUI();
-    }
-
-    // --- КРИПТОБИРЖА ---
-    function openCryptoMenu() {
-      triggerHaptic('light');
-      renderCryptoUI();
-      document.getElementById('crypto-modal').style.display = 'flex';
-    }
-
-    function renderCryptoUI() {
-      document.getElementById('btc-price').innerText = `$${btcPrice.toLocaleString()}`;
-      document.getElementById('eth-price').innerText = `$${ethPrice.toLocaleString()}`;
-      document.getElementById('btc-balance').innerText = `${btcBalance.toFixed(4)} BTC`;
-      document.getElementById('eth-balance').innerText = `${ethBalance.toFixed(4)} ETH`;
-
-      renderChart('btc-chart', btcHistory);
-      renderChart('eth-chart', ethHistory);
-    }
-
-    function renderChart(elementId, history) {
-      const chart = document.getElementById(elementId);
-      chart.innerHTML = '';
-      let max = Math.max(...history);
-      let min = Math.min(...history);
-      
-      history.forEach(val => {
-        let heightPct = Math.max(20, Math.round(((val - min) / (max - min || 1)) * 100));
-        let bar = document.createElement('div');
-        bar.className = 'chart-bar';
-        bar.style.height = heightPct + '%';
-        chart.appendChild(bar);
-      });
-    }
-
-    function buyCrypto(type) {
-      let price = type === 'btc' ? btcPrice : ethPrice;
-      let input = prompt(`Цена 1 ${type.toUpperCase()}: $${price}. Введите сумму покупки ($):`, "1000");
-      let amountDollars = parseFloat(input);
-
-      if (isNaN(amountDollars) || amountDollars <= 0 || amountDollars > money) {
-        alert("❌ Недостаточно средств или некорректная сумма!");
-        return;
-      }
-
-      let coins = amountDollars / price;
-      money -= amountDollars;
-      if (type === 'btc') btcBalance += coins;
-      else ethBalance += coins;
-
-      triggerHaptic('success');
-      alert(`✅ Куплено ${coins.toFixed(4)} ${type.toUpperCase()}`);
-      renderCryptoUI();
-      updateUI();
-    }
-
-    function sellCrypto(type) {
-      let price = type === 'btc' ? btcPrice : ethPrice;
-      let bal = type === 'btc' ? btcBalance : ethBalance;
-      if (bal <= 0) { alert("❌ У вас нет этой криптовалюты!"); return; }
-
-      let input = prompt(`Введите количество ${type.toUpperCase()} для продажи (Макс: ${bal.toFixed(4)}):`, bal.toFixed(4));
-      let coins = parseFloat(input);
-
-      if (isNaN(coins) || coins <= 0 || coins > bal) {
-        alert("❌ Некорректное количество!");
-        return;
-      }
-
-      let income = coins * price;
-      money += income;
-      if (type === 'btc') btcBalance -= coins;
-      else ethBalance -= coins;
-
-      triggerHaptic('success');
-      alert(`✅ Продано на $${Math.floor(income).toLocaleString()}`);
-      renderCryptoUI();
-      updateUI();
-    }
-
-    // --- СИНДИКАТЫ (КЛАНЫ) ---
-    function openClanMenu() {
-      triggerHaptic('light');
-      renderClanUI();
-      document.getElementById('clan-modal').style.display = 'flex';
-    }
-
-    function renderClanUI() {
-      const info = document.getElementById('clan-info');
-      if (!myClan) {
-        let html = '<p style="font-size:13px; color:var(--text-muted);">Вы не состоите в клане. Создайте или вступите в один из доступных:</p>';
-        availableClans.forEach(c => {
-          html += `
-            <div class="item-card">
-              <b>${c.name}</b><br>
-              <span style="font-size:12px;">Цена создания: $${c.cost.toLocaleString()}</span><br>
-              <span style="font-size:12px; color:var(--success);">Доход с зон: +$${c.taxIncome}/цикл</span><br>
-              <button class="btn btn-cyan" style="margin-top:8px;" onclick="createClan('${c.id}')">Создать Клан</button>
-            </div>
-          `;
-        });
-        info.innerHTML = html;
-      } else {
-        info.innerHTML = `
-          <div class="item-card">
-            <b>Ваш Клан: ${myClan.name}</b><br>
-            <span style="font-size:13px; color:var(--gold);">Пассивный доход клана: $${myClan.taxIncome}/цикл</span>
-          </div>
-          <h4>🏴 Зоны Влияния Neon City</h4>
-          <div class="item-card">
-            <b>🏙️ Центр Города</b><br>
-            <span>Владелец: ${clanTerritories.center || 'Никто'}</span>
-            <button class="btn btn-warning" style="margin-top:6px;" onclick="captureTerritory('center')">Захватить ($10,000)</button>
-          </div>
-          <div class="item-card">
-            <b>⚓ Портовые Доки</b><br>
-            <span>Владелец: ${clanTerritories.docks || 'Никто'}</span>
-            <button class="btn btn-warning" style="margin-top:6px;" onclick="captureTerritory('docks')">Захватить ($25,000)</button>
-          </div>
-        `;
-      }
-    }
-
-    function createClan(clanId) {
-      let base = availableClans.find(c => c.id === clanId);
-      if (money < base.cost) { alert("❌ Не хватает денег!"); return; }
-      money -= base.cost;
-      myClan = { ...base };
-      triggerHaptic('success');
-      alert(`🎉 Вы успешно основали клан ${base.name}!`);
-      renderClanUI();
-      updateUI();
-    }
-
-    function captureTerritory(zone) {
-      if (!myClan) { alert("Сначала создайте клан!"); return; }
-      let cost = zone === 'center' ? 10000 : 25000;
-      if (money < cost) { alert("❌ Недостаточно денег клана для захвата!"); return; }
-
-      money -= cost;
-      clanTerritories[zone] = myClan.name;
-      triggerHaptic('success');
-      alert(`⚔️ Ваш клан захватил зону!`);
-      renderClanUI();
-      updateUI();
-    }
-
-    // --- КЕЙСЫ С ЛУТОМ (РУЛЕТКА) ---
-    function openCasesMenu() {
-      triggerHaptic('light');
-      renderCasesUI();
-      document.getElementById('cases-modal').style.display = 'flex';
-    }
-
-    function renderCasesUI() {
-      const container = document.getElementById('cases-list');
-      container.innerHTML = '';
-      cases.forEach((c, idx) => {
-        container.innerHTML += `
-          <div class="item-card">
-            <b>${c.name}</b><br>
-            <span style="font-size:13px; color:var(--gold);">Цена: $${c.price.toLocaleString()}</span>
-            <button class="btn btn-gold" style="margin-top:8px;" onclick="openCase(${idx})">Открыть Кейс</button>
-          </div>
-        `;
-      });
-    }
-
-    function openCase(caseIdx) {
-      let c = cases[caseIdx];
-      if (money < c.price) { alert("❌ Не хватает денег!"); return; }
-
-      money -= c.price;
-      stats.casesOpened++;
-      updateUI();
-
-      const inner = document.getElementById('case-roulette-inner');
-      inner.style.transition = 'none';
-      inner.style.transform = 'translateX(0px)';
-      inner.innerHTML = '';
-
-      // Генерируем элементы рулетки
-      let rouletteItems = [];
-      for (let i = 0; i < 30; i++) {
-        let randItem = c.items[Math.floor(Math.random() * c.items.length)];
-        rouletteItems.push(randItem);
-        let name = randItem.type === 'money' ? `$${randItem.val}` : (carsList.find(car=>car.id===randItem.id)?.name || 'Авто');
-        inner.innerHTML += `
-          <div class="case-item">
-            <span style="font-size:20px;">${randItem.type === 'money' ? '💵' : '🏎️'}</span>
-            <span>${name}</span>
-          </div>
-        `;
-      }
-
-      let winningItem = rouletteItems[25];
-
-      setTimeout(() => {
-        inner.style.transition = 'transform 4s cubic-bezier(0.1, 1, 0.1, 1)';
-        inner.style.transform = `translateX(-${25 * 90 - 100}px)`;
-      }, 50);
-
-      document.getElementById('case-status').innerText = '🎰 Открываем...';
-
-      setTimeout(() => {
-        triggerHaptic('success');
-        if (winningItem.type === 'money') {
-          money += winningItem.val;
-          document.getElementById('case-status').innerText = `🎁 Вы выиграли $${winningItem.val.toLocaleString()}!`;
-        } else {
-          let baseCar = carsList.find(car => car.id === winningItem.id);
-          if (baseCar) {
-            myGarage.push({ ...baseCar, condition: 100, stage: 0 });
-            document.getElementById('case-status').innerText = `🎁 Вы выиграли АВТО: ${baseCar.name}!`;
-          }
-        }
-        updateUI();
-      }, 4100);
-    }
-
-    // --- ТРЕЙДИНГ И P2P ---
-    function openTradeMenu() {
-      triggerHaptic('light');
-      let select = document.getElementById('trade-car-select');
-      select.innerHTML = '';
-      if (myGarage.length === 0) {
-        select.innerHTML = '<option value="">У вас нет машин</option>';
-      } else {
-        myGarage.forEach((car, i) => {
-          select.innerHTML += `<option value="${i}">${car.name} (Stage ${car.stage})</option>`;
-        });
-      }
-      document.getElementById('trade-modal').style.display = 'flex';
-    }
-
-    function createMoneyTrade() {
-      let amount = parseInt(document.getElementById('trade-amount').value);
-      if (isNaN(amount) || amount <= 0 || amount > money) {
-        alert("❌ Недостаточно средств или некорректная сумма!");
-        return;
-      }
-      money -= amount;
-      updateUI();
-      triggerHaptic('success');
-      
-      let shareUrl = `https://t.me/share/url?url=Я%20передаю%20тебе%20$${amount}%20в%20игры%20Neon%20City!`;
-      if (tg) tg.openTelegramLink(shareUrl);
-      else window.open(shareUrl, '_blank');
-    }
-
-    function createCarTrade() {
-      let idx = document.getElementById('trade-car-select').value;
-      if (idx === "" || !myGarage[idx]) { alert("Выберите авто!"); return; }
-      
-      let carName = myGarage[idx].name;
-      myGarage.splice(idx, 1);
-      updateUI();
-      triggerHaptic('success');
-
-      let shareUrl = `https://t.me/share/url?url=Я%20подарил%20тебе%20автомобиль%20${encodeURIComponent(carName)}%20в%20игры%20Neon%20City!`;
-      if (tg) tg.openTelegramLink(shareUrl);
-      else window.open(shareUrl, '_blank');
-      closeModal('trade-modal');
-    }
-
-    // --- СТАТИСТИКА И ЛИДЕРБОРД ---
-    function openStatsModal() {
-      triggerHaptic('light');
-      let content = document.getElementById('stats-content');
-      content.innerHTML = `
-        👤 Никнейм: <b>${nickname}</b><br>
-        ⭐ Уровень: <b>${level}</b><br>
-        💰 Состояние: <b>$${Math.floor(money).toLocaleString()}</b><br>
-        🏎️ Авто в гараже: <b>${myGarage.length}</b><br>
-        🏢 Бизнесов: <b>${myBusinesses.length}</b><br>
-        🛡️ Клан: <b>${myClan ? myClan.name : 'Нет'}</b><br>
-        🚨 Ограблений выполнено: <b>${stats.crimesDone}</b><br>
-        🚕 Поездок в такси: <b>${stats.taxiRides}</b><br>
-        🎰 Побед в казино: <b>${stats.casinoWins}</b><br>
-        📦 Открыто кейсов: <b>${stats.casesOpened}</b>
-      `;
-      document.getElementById('stats-modal').style.display = 'flex';
-    }
-
-    function openLeaderboard() {
-      triggerHaptic('light');
-      let list = document.getElementById('leaderboard-list');
-      
-      let fakeLeaders = [
-        { name: "👑 CyberKing", wealth: 2500000 },
-        { name: "⚡ NeonRacer", wealth: 1250000 },
-        { name: nickname + " (Вы)", wealth: Math.floor(money) },
-        { name: "🎰 ShadowBroker", wealth: 450000 },
-        { name: "🚗 DriftMaster", wealth: 180000 }
-      ].sort((a,b) => b.wealth - a.wealth);
-
-      list.innerHTML = '';
-      fakeLeaders.forEach((l, i) => {
-        list.innerHTML += `
-          <div class="item-card" style="display:flex; justify-content:space-between; align-items:center;">
-            <span><b>#${i+1}</b> ${l.name}</span>
-            <b style="color:var(--gold);">$${l.wealth.toLocaleString()}</b>
-          </div>
-        `;
-      });
-      document.getElementById('leaderboard-modal').style.display = 'flex';
-    }
-
-    // --- ТАКСИ И РАБОТЫ ---
-    function openTaxiMenu() {
-      triggerHaptic('light');
-      const container = document.getElementById('taxi-car-select');
-      container.innerHTML = '';
-      if (!myGarage || myGarage.length === 0) {
-        container.innerHTML = '<p style="color:var(--danger); font-size:14px;">У вас нет автомобиля! Купите его в Автосалоне.</p>';
-      } else {
-        myGarage.forEach((car, index) => {
-          let carPrice = safeParse(car.price, 600);
-          let carStage = safeParse(car.stage, 0);
-          let pay = Math.round((carPrice * 0.12) + (carStage * 50));
-
-          container.innerHTML += `
-            <div class="item-card">
-              <img src="${car.img}" class="card-img">
-              <b>${car.name} (Stage ${carStage})</b><br>
-              <span style="font-size:12px;">Прочность: ${car.condition}%</span><br>
-              <b style="color:var(--success); font-size:14px;">Оплата за заказ: ~$${pay}</b><br>
-              <button class="btn btn-warning" style="margin-top:8px;" onclick="driveTaxi(${index})">🚕 Выехать на заказ (-15⚡)</button>
-            </div>
-          `;
-        });
-      }
-      document.getElementById('taxi-modal').style.display = 'flex';
-    }
-
-    function driveTaxi(carIndex) {
-      let car = myGarage[carIndex];
-      if (!car) return;
-      if (energy < 15) { alert("⚡ Мало энергии!"); return; }
-      if (car.condition <= 10) { alert("🛠️ Машина сломана! Отремонтируйте её в Гараже."); return; }
-
-      energy -= 15;
-      car.condition = Math.max(0, car.condition - 15);
-
-      let basePay = Math.round((car.price * 0.12) + (car.stage * 50));
-      let pay = Math.round(basePay * (0.8 + Math.random() * 0.4));
-
-      money += pay;
-      addXP(15);
-      stats.taxiRides++;
-      triggerHaptic('success');
-      alert(`🚕 Вы выполнили заказ и заработали +$${pay}! Состояние авто: ${car.condition}%`);
-      updateUI();
-      openTaxiMenu();
-    }
-
-    function openWorkList() {
-      triggerHaptic('light');
-      const container = document.getElementById('work-list');
-      container.innerHTML = '';
-      works.forEach(w => {
-        let isLocked = level < w.minLvl;
-        container.innerHTML += `
-          <div class="item-card">
-            <b>${w.name}</b><br>
-            <span style="font-size:12px;">Мин. уровень: ${w.minLvl} | Затраты: ${w.energy}⚡</span><br>
-            <b style="color:var(--success);">Оплата: +$${w.pay} | +${w.xp} XP</b><br>
-            <button class="btn ${isLocked ? 'btn-danger' : 'btn-success'}" style="margin-top:8px;" ${isLocked ? 'disabled' : ''} onclick="doWork(${w.id})">
-              ${isLocked ? '🔒 Заблокировано' : 'Работать'}
-            </button>
-          </div>
-        `;
-      });
-      document.getElementById('work-modal').style.display = 'flex';
-    }
-
-    function doWork(workId) {
-      let w = works.find(item => item.id === workId);
-      if (!w) return;
-      if (energy < w.energy) { alert("⚡ Мало энергии!"); return; }
-
-      energy -= w.energy;
-      money += w.pay;
-      addXP(w.xp);
-      triggerHaptic('light');
-      updateUI();
-    }
-
-    // --- БИЗНЕСЫ И НЕИЗВЕСТНОЕ ИМУЩЕСТВО ---
-    function openBusinessList() {
-      triggerHaptic('light');
-      renderBusinesses();
-      document.getElementById('business-modal').style.display = 'flex';
-    }
-
-    function renderBusinesses() {
-      const container = document.getElementById('business-list');
-      container.innerHTML = '';
-      availableBusinesses.forEach(b => {
-        let myB = myBusinesses.find(item => item.id === b.id);
-        if (!myB) {
-          container.innerHTML += `
-            <div class="item-card">
-              <b>${b.name}</b><br>
-              <span style="font-size:12px;">Доход: $${b.baseIncome}/час</span><br>
-              <b style="color:var(--gold);">Цена: $${b.baseCost}</b><br>
-              <button class="btn btn-success" style="margin-top:8px;" onclick="buyBusiness(${b.id})">Купить Бизнес</button>
-            </div>
-          `;
-        } else {
-          container.innerHTML += `
-            <div class="item-card">
-              <b>${b.name} (Уровень ${myB.level})</b><br>
-              <span style="font-size:12px;">Доход: $${b.baseIncome * myB.level}/час</span><br>
-              <span style="font-size:12px;">Склад продуктов: ${myB.supplies}%</span><br>
-              <button class="btn btn-warning" style="margin-top:6px;" onclick="supplyBusiness(${b.id})">📦 Заказать продукты ($${b.supplyCost})</button>
-              <button class="btn btn-purple" style="margin-top:6px;" onclick="upgradeBusiness(${b.id})">⬆️ Улучшить ($${b.baseCost * (myB.level + 1)})</button>
-            </div>
-          `;
-        }
-      });
-    }
-
-    function buyBusiness(id) {
-      let b = availableBusinesses.find(item => item.id === id);
-      if (money < b.baseCost) { alert("❌ Не хватает денег!"); return; }
-      money -= b.baseCost;
-      myBusinesses.push({ id: b.id, level: 1, supplies: 100 });
-      triggerHaptic('success');
-      updateUI();
-      renderBusinesses();
-    }
-
-    function supplyBusiness(id) {
-      let b = availableBusinesses.find(item => item.id === id);
-      let myB = myBusinesses.find(item => item.id === id);
-      if (money < b.supplyCost) { alert("❌ Не хватает денег!"); return; }
-      money -= b.supplyCost;
-      myB.supplies = 100;
-      triggerHaptic('success');
-      updateUI();
-      renderBusinesses();
-    }
-
-    function upgradeBusiness(id) {
-      let b = availableBusinesses.find(item => item.id === id);
-      let myB = myBusinesses.find(item => item.id === id);
-      let cost = b.baseCost * (myB.level + 1);
-      if (money < cost) { alert("❌ Не хватает денег!"); return; }
-      money -= cost;
-      myB.level++;
-      triggerHaptic('success');
-      updateUI();
-      renderBusinesses();
-    }
-
-    function collectAllIncome() {
-      let now = Date.now();
-      let diffHours = (now - lastCollectTime) / (1000 * 3600);
-      if (diffHours < 0.1) { alert("⏳ Доход ещё не накопился! Подождите немного."); return; }
-
-      let totalIncome = 0;
-      myBusinesses.forEach(myB => {
-        let b = availableBusinesses.find(item => item.id === myB.id);
-        if (b && myB.supplies > 0) {
-          totalIncome += b.baseIncome * myB.level;
-          myB.supplies = Math.max(0, myB.supplies - 10);
-        }
-      });
-
-      if (totalIncome === 0) { alert("У вас нет бизнеса или на складах нет продуктов!"); return; }
-
-      money += totalIncome;
-      lastCollectTime = now;
-      triggerHaptic('success');
-      alert(`💵 Вы собрали прибыль: +$${totalIncome}`);
-      updateUI();
-      renderBusinesses();
-    }
-
-    // --- НЕ ДВИЖИМОСТЬ ---
-    function openRealtyList() {
-      triggerHaptic('light');
-      const container = document.getElementById('realty-list');
-      container.innerHTML = '';
-      realtyList.forEach(r => {
-        let owned = myRealty.includes(r.id);
-        container.innerHTML += `
-          <div class="item-card">
-            <img src="${r.img}" class="card-img">
-            <b>${r.name}</b><br>
-            <span style="font-size:12px; color:var(--cyan);">Бонус Энергии: +${r.energyBonus}⚡</span><br>
-            <b style="color:var(--gold);">$${r.cost.toLocaleString()}</b><br>
-            <button class="btn ${owned ? 'btn-danger' : 'btn-success'}" style="margin-top:8px;" ${owned ? 'disabled' : ''} onclick="buyRealty(${r.id})">
-              ${owned ? 'Куплено' : 'Купить'}
-            </button>
-          </div>
-        `;
-      });
-      document.getElementById('realty-modal').style.display = 'flex';
-    }
-
-    function buyRealty(id) {
-      let r = realtyList.find(item => item.id === id);
-      if (money < r.cost) { alert("❌ Не хватает денег!"); return; }
-      money -= r.cost;
-      myRealty.push(r.id);
-      triggerHaptic('success');
-      updateUI();
-      openRealtyList();
-    }
-
-    // --- АВТОРЫНОК И ГАРАЖ ---
-    function openAutoMarket() {
-      triggerHaptic('light');
-      const container = document.getElementById('cars-list');
-      container.innerHTML = '';
-      carsList.forEach(c => {
-        container.innerHTML += `
-          <div class="item-card">
-            <img src="${c.img}" class="card-img">
-            <b>${c.name}</b><br>
-            <b style="color:var(--gold);">$${c.price.toLocaleString()}</b><br>
-            <button class="btn btn-success" style="margin-top:8px;" onclick="buyCar('${c.id}')">Купить в Гараж</button>
-          </div>
-        `;
-      });
-      document.getElementById('market-modal').style.display = 'flex';
-    }
-
-    function buyCar(id) {
-      let c = carsList.find(item => item.id === id);
-      if (money < c.price) { alert("❌ Не хватает денег!"); return; }
-      money -= c.price;
-      myGarage.push({ ...c, condition: 100, stage: 0 });
-      triggerHaptic('success');
-      alert(`🎉 Поздравляем с покупкой ${c.name}!`);
-      updateUI();
-    }
-
-    function openGarage() {
-      triggerHaptic('light');
-      renderGarage();
-      document.getElementById('garage-modal').style.display = 'flex';
-    }
-
-    function renderGarage() {
-      const container = document.getElementById('garage-list');
-      container.innerHTML = '';
-      if (myGarage.length === 0) {
-        container.innerHTML = '<p style="font-size:14px; color:var(--text-muted);">Ваш гараж пуст.</p>';
-        return;
-      }
-
-      myGarage.forEach((car, index) => {
-        let tuneCost = Math.round(car.price * 0.4);
-        let repairCost = Math.round((100 - car.condition) * 3);
-
-        container.innerHTML += `
-          <div class="item-card">
-            <img src="${car.img}" class="card-img">
-            <b>${car.name} (Stage ${car.stage})</b><br>
-            <span style="font-size:12px;">Прочность: ${car.condition}%</span><br>
-            <div style="display:flex; gap:6px; margin-top:8px;">
-              <button class="btn btn-warning" style="padding:8px;" onclick="repairCar(${index})">🛠️ Ремонт ($${repairCost})</button>
-              <button class="btn btn-purple" style="padding:8px;" onclick="tuneCar(${index})">🏎️ Тюнинг ($${tuneCost})</button>
-            </div>
-            <button class="btn btn-danger" style="padding:8px; margin-top:6px;" onclick="sellCar(${index})">💵 Продать ($${Math.round(car.price * 0.6)})</button>
-          </div>
-        `;
-      });
-    }
-
-    function repairCar(index) {
-      let car = myGarage[index];
-      let cost = Math.round((100 - car.condition) * 3);
-      if (cost === 0) { alert("Автомобиль идеально чист и исправен!"); return; }
-      if (money < cost) { alert("❌ Не хватает денег!"); return; }
-
-      money -= cost;
-      car.condition = 100;
-      triggerHaptic('success');
-      updateUI();
-      renderGarage();
-    }
-
-    function tuneCar(index) {
-      let car = myGarage[index];
-      let cost = Math.round(car.price * 0.4);
-      if (car.stage >= 3) { alert("Максимальный уровень тюнинга!"); return; }
-      if (money < cost) { alert("❌ Не хватает денег!"); return; }
-
-      money -= cost;
-      car.stage++;
-      triggerHaptic('success');
-      alert(`🚀 Автомобиль улучшен до Stage ${car.stage}!`);
-      updateUI();
-      renderGarage();
-    }
-
-    function sellCar(index) {
-      let car = myGarage[index];
-      let sellPrice = Math.round(car.price * 0.6);
-      money += sellPrice;
-      myGarage.splice(index, 1);
-      triggerHaptic('success');
-      updateUI();
-      renderGarage();
-    }
-
-    // Старт
-    updateUI();
-  </script>
-</body>
-</html>
-
+import asyncio
+import random
+import sqlite3
+from aiogram import Bot, Dispatcher, F, types
+from aiogram.filters import CommandStart
+from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
+
+# Токен твоего бота из @BotFather
+TOKEN = "YOUR_BOT_TOKEN_HERE"
+
+bot = Bot(token=TOKEN)
+dp = Dispatcher()
+
+# --- БАЗА ДАННЫХ ---
+
+def init_db():
+    conn = sqlite3.connect("game.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            user_id INTEGER PRIMARY KEY,
+            day INTEGER DEFAULT 1,
+            health INTEGER DEFAULT 100,
+            hunger INTEGER DEFAULT 100,
+            thirst INTEGER DEFAULT 100,
+            energy INTEGER DEFAULT 100,
+            water INTEGER DEFAULT 2,
+            food INTEGER DEFAULT 2,
+            scrap INTEGER DEFAULT 0
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def get_user(user_id):
+    conn = sqlite3.connect("game.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+def create_user(user_id):
+    conn = sqlite3.connect("game.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT OR IGNORE INTO users (user_id) VALUES (?)", (user_id,))
+    conn.commit()
+    conn.close()
+
+def update_user(user_id, **kwargs):
+    conn = sqlite3.connect("game.db")
+    cursor = conn.cursor()
+    set_clause = ", ".join([f"{key} = {key} + ?" for key in kwargs.keys()])
+    values = list(kwargs.values()) + [user_id]
+    cursor.execute(f"UPDATE users SET {set_clause} WHERE user_id = ?", values)
+    conn.commit()
+    conn.close()
+
+# --- КЛАВИАТУРЫ ---
+
+def main_kb():
+    builder = ReplyKeyboardBuilder()
+    builder.button(text="📊 Статус")
+    builder.button(text="🏃 Вылазка")
+    builder.button(text="🎒 Инвентарь")
+    builder.button(text="💤 Отдых")
+    builder.adjust(2, 2)
+    return builder.as_markup(resize_keyboard=True)
+
+# --- ОБРАБОТЧИКИ КОМАНД И МЕНЮ ---
+
+@dp.message(CommandStart())
+async def start_cmd(message: types.Message):
+    create_user(message.from_user.id)
+    await message.answer(
+        "🌲 **Добро пожаловать в Зону 0!**\n\n"
+        "Ты проснулся в полуразрушенном бункере. Вокруг холод, а запасы на исходе. "
+        "Твоя цель — продержаться как можно дольше.",
+        reply_markup=main_kb(),
+        parse_mode="Markdown"
+    )
+
+@dp.message(F.text == "📊 Статус")
+async def show_status(message: types.Message):
+    u = get_user(message.from_user.id)
+    if not u:
+        return
+    
+    status_text = (
+        f"🗓 **День:** {u[1]}\n"
+        f"-------------------\n"
+        f"❤️ **Здоровье:** {u[2]}%\n"
+        f"🍗 **Голод:** {u[3]}%\n"
+        f"💧 **Жажда:** {u[4]}%\n"
+        f"⚡ **Энергия:** {u[5]}%\n"
+    )
+    await message.answer(status_text, parse_mode="Markdown")
+
+@dp.message(F.text == "🎒 Инвентарь")
+async def show_inventory(message: types.Message):
+    u = get_user(message.from_user.id)
+    
+    kb = InlineKeyboardBuilder()
+    if u[6] > 0:
+        kb.button(text="💧 Выпить воду", callback_data="use_water")
+    if u[7] > 0:
+        kb.button(text="🍗 Съесть еду", callback_data="use_food")
+    kb.adjust(1)
+
+    inv_text = (
+        f"🎒 **Твои припасы:**\n\n"
+        f"💧 Вода: {u[6]} шт.\n"
+        f"🍗 Еда: {u[7]} шт.\n"
+        f"⚙️ Хлам (для крафта): {u[8]} шт."
+    )
+    await message.answer(inv_text, reply_markup=kb.as_markup(), parse_mode="Markdown")
+
+@dp.message(F.text == "💤 Отдых")
+async def rest_cmd(message: types.Message):
+    u = get_user(message.from_user.id)
+    if u[3] < 15 or u[4] < 15:
+        await message.answer("❌ Ты слишком голоден или испытываешь жажду, чтобы спать!")
+        return
+    
+    # Наступление нового дня
+    update_user(
+        message.from_user.id,
+        day=1,
+        energy=min(100, 40),
+        hunger=-15,
+        thirst=-20,
+        health=10 if u[2] < 100 else 0
+    )
+    await message.answer("🌙 Ты поспал. Наступил новый день.\n⚡ Энергия восстановлена, но ты проголодался.")
+
+# --- МЕХАНИКА ВЫЛАЗОК ---
+
+@dp.message(F.text == "🏃 Вылазка")
+async def raid_start(message: types.Message):
+    u = get_user(message.from_user.id)
+    if u[5] < 20:
+        await message.answer("❌ Недостаточно энергии для вылазки! Поспи или отдохни.")
+        return
+
+    update_user(message.from_user.id, energy=-20, hunger=-5, thirst=-10)
+
+    # Рандомные события на вылазке
+    events = [
+        ("🏪 Вы нашли заброшенный магазин. Из угла слышен шорох.", "store"),
+        ("📦 Посреди дороги лежит разбитый ящик снабжения.", "crate"),
+        ("🐺 На вас из кустов выбежала дикая собака!", "dog")
+    ]
+    event_text, event_type = random.choice(events)
+
+    kb = InlineKeyboardBuilder()
+    if event_type == "store":
+        kb.button(text="🔍 Обыскать магазин", callback_data="raid_search")
+        kb.button(text="🏃 Уйти", callback_data="raid_leave")
+    elif event_type == "crate":
+        kb.button(text="🔓 Вскрыть ящик", callback_data="raid_crate")
+        kb.button(text="🚶 Пройти мимо", callback_data="raid_leave")
+    elif event_type == "dog":
+        kb.button(text="⚔️ Сразиться", callback_data="raid_fight")
+        kb.button(text="🏃 Убежать", callback_data="raid_flee")
+
+    kb.adjust(1)
+    await message.answer(f"🔍 **Вылазка**\n\n{event_text}", reply_markup=kb.as_markup(), parse_mode="Markdown")
+
+# --- ОБРАБОТКА ДЕЙСТВИЙ (CALLBACKS) ---
+
+@dp.callback_query(F.data.startswith("use_"))
+async def use_item(callback: types.CallbackQuery):
+    item = callback.data.split("_")[1]
+    u = get_user(callback.from_user.id)
+
+    if item == "water" and u[6] > 0:
+        update_user(callback.from_user.id, water=-1, thirst=min(100 - u[4], 30))
+        await callback.message.edit_text("🥤 Вы выпили воду и утолили жажду.")
+    elif item == "food" and u[7] > 0:
+        update_user(callback.from_user.id, food=-1, hunger=min(100 - u[3], 35))
+        await callback.message.edit_text("🍖 Вы поели и восполнили силы.")
+    else:
+        await callback.answer("У вас нет этого предмета!")
+
+@dp.callback_query(F.data.startswith("raid_"))
+async def handle_raid_choice(callback: types.CallbackQuery):
+    action = callback.data.split("_")[1]
+    
+    if action == "search":
+        found_food = random.randint(0, 2)
+        found_scrap = random.randint(1, 3)
+        update_user(callback.from_user.id, food=found_food, scrap=found_scrap)
+        await callback.message.edit_text(f"✅ Вы нашли {found_food} еды и {found_scrap} хлама!")
+    
+    elif action == "crate":
+        found_water = random.randint(1, 2)
+        update_user(callback.from_user.id, water=found_water)
+        await callback.message.edit_text(f"📦 В ящике оказалось {found_water} шт. чистой воды!")
+    
+    elif action == "fight":
+        if random.random() > 0.4:
+            update_user(callback.from_user.id, food=1)
+            await callback.message.edit_text("⚔️ Вы победили собаку и получили немного мяса!")
+        else:
+            update_user(callback.from_user.id, health=-20)
+            await callback.message.edit_text("🩸 Собака покусала вас! Вы потеряли 20% здоровья.")
+            
+    elif action in ["leave", "flee"]:
+        await callback.message.edit_text("🚶 Вы решили не рисковать и вернулись назад.")
+
+# --- ЗАПУСК ---
+
+async def main():
+    init_db()
+    print("Бот запущен!")
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
