@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phone OS: P2P Resell Ultimate</title>
+    <title>Phone OS: P2P Resell Ultimate Pro</title>
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -19,7 +20,6 @@
             --phone-bg: radial-gradient(circle at top, #1e1b4b, #0f172a);
         }
 
-        /* Темы */
         body.theme-neon {
             --bg-color: #050515; --card-bg: #0d0d2b; --accent: #ff007f; --green: #00ffcc; --border: #2a0055;
             --phone-bg: radial-gradient(circle at top, #2b0040, #050515);
@@ -37,7 +37,6 @@
 
         body { background-color: #020617; color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
 
-        /* Смартфон */
         .phone {
             width: 380px; height: 760px; background: #000;
             border: 10px solid #1e293b; border-radius: 48px;
@@ -48,7 +47,6 @@
         .notch { width: 130px; height: 22px; background: #1e293b; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-radius: 0 0 14px 14px; z-index: 100; }
         .status-bar { height: 30px; background: rgba(0,0,0,0.5); padding: 6px 20px 0; display: flex; justify-content: space-between; font-size: 0.7rem; color: #fff; z-index: 90; }
 
-        /* Push Уведомления */
         .push-notif {
             position: absolute; top: -60px; left: 10px; right: 10px; background: rgba(30, 41, 59, 0.95);
             backdrop-filter: blur(8px); border: 1px solid var(--accent); border-radius: 12px; padding: 8px 12px;
@@ -56,7 +54,6 @@
         }
         .push-notif.active { top: 35px; }
 
-        /* Рабочий стол */
         .desktop {
             flex: 1; background: var(--phone-bg);
             padding: 45px 12px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-content: start;
@@ -71,7 +68,6 @@
         .app-icon:active .icon-box { transform: scale(0.92); filter: brightness(0.9); }
         .app-label { font-size: 0.68rem; color: #fff; text-align: center; font-weight: 500; }
 
-        /* Приложения */
         .app-window {
             position: absolute; top: 30px; left: 0; width: 100%; height: calc(100% - 65px);
             background: var(--bg-color); display: none; flex-direction: column; z-index: 80;
@@ -80,7 +76,6 @@
         .app-header { background: var(--card-bg); padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
         .app-content { flex: 1; padding: 10px; overflow-y: auto; }
 
-        /* Карточки и Элементы */
         .item-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 8px; }
         
         .btn {
@@ -97,7 +92,6 @@
         .phone-nav { height: 35px; background: #000; display: flex; justify-content: center; align-items: center; z-index: 100; }
         .home-bar-btn { width: 110px; height: 5px; background: #ffffff; border-radius: 3px; opacity: 0.7; cursor: pointer; }
 
-        /* Чат Торга */
         .chat-modal {
             position: absolute; bottom: -100%; left: 0; width: 100%; height: 55%;
             background: var(--card-bg); border-top: 2px solid var(--accent); border-radius: 20px 20px 0 0;
@@ -121,7 +115,6 @@
         <span>5G 🔋 100%</span>
     </div>
 
-    <!-- Push Уведомление -->
     <div class="push-notif" id="push-notif">
         <span id="push-icon">🔔</span>
         <div style="font-size:0.7rem;" id="push-text">Уведомление</div>
@@ -135,7 +128,7 @@
         </div>
         <div class="app-icon" onclick="openApp('app-crypto')">
             <div class="icon-box" style="background: linear-gradient(135deg, #22c55e, #15803d);">💎</div>
-            <span class="app-label">P2P Crypto</span>
+            <span class="app-label">Crypto Hub</span>
         </div>
         <div class="app-icon" onclick="openApp('app-bank')">
             <div class="icon-box" style="background: linear-gradient(135deg, #eab308, #ca8a04);">🏦</div>
@@ -155,7 +148,7 @@
         </div>
     </div>
 
-    <!-- 1. P2P RESELL -->
+    <!-- P2P RESELL -->
     <div class="app-window" id="app-resell">
         <div class="app-header">
             <span style="font-weight:bold; font-size:0.8rem;">P2P Market</span>
@@ -168,39 +161,28 @@
                 <button class="btn btn-primary" onclick="generateMarket()">Обновить</button>
             </div>
             <div id="market-list"></div>
-            
             <hr style="border-color:var(--border); margin:10px 0;">
             <div style="font-weight:bold; font-size:0.8rem; margin-bottom:6px;">🎒 Инвентарь</div>
             <div id="inventory-list"></div>
         </div>
     </div>
 
-    <!-- 2. P2P CRYPTO -->
+    <!-- P2P CRYPTO -->
     <div class="app-window" id="app-crypto">
         <div class="app-header">
-            <span style="font-weight:bold; font-size:0.85rem;">Crypto Exchange</span>
-            <span style="color:var(--yellow); font-size:0.85rem;" id="usdt-balance">0 USDT</span>
+            <span style="font-weight:bold; font-size:0.85rem;">Crypto Hub</span>
         </div>
-        <div class="app-content">
-            <div class="item-card">
-                <div style="font-size:0.75rem; color:var(--text-muted);">Курс USDT/RUB:</div>
-                <div style="font-size:1.3rem; font-weight:bold; color:var(--green);" id="usdt-rate">92.50 ₽</div>
-            </div>
-            <div style="display:flex; gap:6px;">
-                <button class="btn btn-success" style="flex:1;" onclick="tradeCrypto('buy')">Купить 10 USDT</button>
-                <button class="btn btn-danger" style="flex:1;" onclick="tradeCrypto('sell')">Продать 10 USDT</button>
-            </div>
-        </div>
+        <div class="app-content" id="crypto-list"></div>
     </div>
 
-    <!-- 3. БАНК (Кредиты и Депозиты) -->
+    <!-- БАНК -->
     <div class="app-window" id="app-bank">
         <div class="app-header">
             <span style="font-weight:bold; font-size:0.85rem;">P2P Банк</span>
         </div>
         <div class="app-content">
             <div class="item-card">
-                <div style="font-weight:bold; font-size:0.8rem; margin-bottom:4px;">💰 Депозит (5% в шаг)</div>
+                <div style="font-weight:bold; font-size:0.8rem; margin-bottom:4px;">💰 Депозит (1% в сек)</div>
                 <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:6px;">Вклад: <b id="bank-deposit-val" style="color:var(--green);">0 ₽</b></div>
                 <div style="display:flex; gap:6px;">
                     <button class="btn btn-success" style="flex:1;" onclick="bankDeposit(500)">+500 ₽</button>
@@ -208,7 +190,7 @@
                 </div>
             </div>
             <div class="item-card">
-                <div style="font-weight:bold; font-size:0.8rem; margin-bottom:4px;">💳 Быстрый Кредит (10% долг)</div>
+                <div style="font-weight:bold; font-size:0.8rem; margin-bottom:4px;">💳 Кредит (10% долг)</div>
                 <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:6px;">Долг: <b id="bank-loan-val" style="color:var(--red);">0 ₽</b></div>
                 <div style="display:flex; gap:6px;">
                     <button class="btn btn-danger" style="flex:1;" onclick="takeLoan(1000)">Взять 1 000 ₽</button>
@@ -218,13 +200,13 @@
         </div>
     </div>
 
-    <!-- 4. АВТО-БОТ -->
+    <!-- АВТО-БОТ -->
     <div class="app-window" id="app-bot">
         <div class="app-header"><span style="font-weight:bold; font-size:0.85rem;">Auto-Buy Bot</span></div>
         <div class="app-content">
             <div class="item-card">
                 <div style="font-size:0.8rem; font-weight:bold;">Скрипт авто-выкупа</div>
-                <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Выкупает скидочные лоты (от 30% ниже рынка).</div>
+                <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Выкупает скидочные лоты.</div>
                 <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-size:0.75rem;">Статус: <b id="bot-status" style="color:var(--red);">Выкл</b></span>
                     <button class="btn btn-purple" id="bot-btn" onclick="toggleBot()">Включить</button>
@@ -234,7 +216,7 @@
         </div>
     </div>
 
-    <!-- 5. СТАТИСТИКА -->
+    <!-- СТАТИСТИКА -->
     <div class="app-window" id="app-stats">
         <div class="app-header"><span style="font-weight:bold; font-size:0.85rem;">Статистика</span></div>
         <div class="app-content">
@@ -242,12 +224,12 @@
                 <div class="stat-row"><span style="color:var(--text-muted);">Рейтинг доверия:</span><b id="stat-trust">5.0 ⭐</b></div>
                 <div class="stat-row"><span style="color:var(--text-muted);">Успешных сделок:</span><b id="stat-sales">0</b></div>
                 <div class="stat-row"><span style="color:var(--text-muted);">Заработано всего:</span><b id="stat-earned" style="color:var(--green);">0 ₽</b></div>
-                <div class="stat-row"><span style="color:var(--text-muted);">Оборот USDT:</span><b id="stat-crypto-volume" style="color:var(--yellow);">0 USDT</b></div>
+                <div class="stat-row"><span style="color:var(--text-muted);">Оборот Крипты:</span><b id="stat-crypto-volume" style="color:var(--yellow);">0 ₽</b></div>
             </div>
         </div>
     </div>
 
-    <!-- 6. НАСТРОЙКИ И ТЕМЫ -->
+    <!-- НАСТРОЙКИ -->
     <div class="app-window" id="app-settings">
         <div class="app-header"><span style="font-weight:bold; font-size:0.85rem;">Настройки</span></div>
         <div class="app-content">
@@ -283,13 +265,20 @@
 </div>
 
 <script>
-    const INITIAL_STATE = {
-        balance: 1000, usdt: 0, usdtRate: 92.50, inventory: [], activeHaggle: null,
+    const DEFAULT_STATE = {
+        balance: 1000,
+        crypto: {
+            usdt: { name: 'USDT', balance: 0, rate: 90, baseRate: 90 },
+            btc: { name: 'Bitcoin (BTC)', balance: 0, rate: 300, baseRate: 300 },
+            eth: { name: 'Ethereum (ETH)', balance: 0, rate: 180, baseRate: 180 }
+        },
+        inventory: [], activeHaggle: null,
         botActive: false, trustScore: 5.0, statsSales: 0, statsEarned: 0, statsCryptoVolume: 0,
-        deposit: 0, loan: 0
+        deposit: 0, loan: 0, theme: 'default'
     };
 
-    let state = JSON.parse(JSON.stringify(INITIAL_STATE));
+    // Загрузка сохранённого прогресса из localStorage
+    let state = JSON.parse(localStorage.getItem('p2p_game_save')) || JSON.parse(JSON.stringify(DEFAULT_STATE));
     let botInterval = null;
 
     const itemTemplates = [
@@ -298,10 +287,13 @@
         { title: 'Telegram Premium 3 мес', category: 'ТГ', min: 550, max: 700, real: 900, risk: 0.0, vip: false },
         { title: 'Steam | CS2 Prime', category: 'Steam', min: 1400, max: 1900, real: 2600, risk: 0.15, vip: false },
         { title: 'PSN Turkey | FC 25', category: 'PSN', min: 2000, max: 2500, real: 3400, risk: 0.10, vip: false },
-        // VIP Лоты (Доступны при Trust Score >= 4.5)
         { title: '👑 VIP: Steam | 200+ Игр', category: 'VIP', min: 3000, max: 3800, real: 6500, risk: 0.05, vip: true },
         { title: '👑 VIP: Brawl Stars | 60k кубков', category: 'VIP', min: 4000, max: 5000, real: 8500, risk: 0.10, vip: true }
     ];
+
+    function saveGame() {
+        localStorage.setItem('p2p_game_save', JSON.stringify(state));
+    }
 
     function showPush(icon, text) {
         const notif = document.getElementById('push-notif');
@@ -323,19 +315,81 @@
     }
 
     function updateUI() {
-        document.getElementById('balance-resell').innerText = state.balance.toLocaleString() + ' ₽';
-        document.getElementById('usdt-balance').innerText = state.usdt.toFixed(1) + ' USDT';
+        document.getElementById('balance-resell').innerText = Math.floor(state.balance).toLocaleString() + ' ₽';
         document.getElementById('trust-score-display').innerText = `⭐ ${state.trustScore.toFixed(1)}`;
         
         document.getElementById('stat-trust').innerText = state.trustScore.toFixed(1) + ' ⭐';
         document.getElementById('stat-sales').innerText = state.statsSales;
-        document.getElementById('stat-earned').innerText = state.statsEarned.toLocaleString() + ' ₽';
-        document.getElementById('stat-crypto-volume').innerText = state.statsCryptoVolume.toFixed(1) + ' USDT';
+        document.getElementById('stat-earned').innerText = Math.floor(state.statsEarned).toLocaleString() + ' ₽';
+        document.getElementById('stat-crypto-volume').innerText = Math.floor(state.statsCryptoVolume).toLocaleString() + ' ₽';
         
-        document.getElementById('bank-deposit-val').innerText = state.deposit.toLocaleString() + ' ₽';
-        document.getElementById('bank-loan-val').innerText = state.loan.toLocaleString() + ' ₽';
+        document.getElementById('bank-deposit-val').innerText = Math.floor(state.deposit).toLocaleString() + ' ₽';
+        document.getElementById('bank-loan-val').innerText = Math.floor(state.loan).toLocaleString() + ' ₽';
 
+        renderCrypto();
         renderInventory();
+        setTheme(state.theme);
+        saveGame();
+    }
+
+    /* --- ДИНАМИКА КРИПТЫ И ДЕПОЗИТА --- */
+    // Каждую секунду: начисление депозита
+    setInterval(() => {
+        if (state.deposit > 0) {
+            state.deposit += state.deposit * 0.01; // +1% в сек
+            updateUI();
+        }
+    }, 1000);
+
+    // Каждые 5 секунд: рост курса на 2 ₽ (макс 1000 ₽)
+    setInterval(() => {
+        for (let key in state.crypto) {
+            let coin = state.crypto[key];
+            coin.rate += 2;
+            if (coin.rate > 1000) {
+                coin.rate = coin.baseRate; // Сброс при достижении 1000 ₽
+                showPush('📉', `Курс ${coin.name} превысил 1000 ₽ и был сброшен!`);
+            }
+        }
+        updateUI();
+    }, 5000);
+
+    function renderCrypto() {
+        const list = document.getElementById('crypto-list');
+        list.innerHTML = '';
+        for (let key in state.crypto) {
+            const coin = state.crypto[key];
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-weight:bold; font-size:0.8rem;">${coin.name}</span>
+                    <span style="color:var(--yellow); font-size:0.75rem; font-weight:bold;">Баланс: ${coin.balance.toFixed(2)}</span>
+                </div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Курс: <b style="color:var(--green);">${coin.rate} ₽</b> / unit</div>
+                <div style="display:flex; gap:6px;">
+                    <button class="btn btn-success" style="flex:1;" onclick="tradeCrypto('${key}', 'buy')">Купить 1 unit</button>
+                    <button class="btn btn-danger" style="flex:1;" onclick="tradeCrypto('${key}', 'sell')">Продать 1 unit</button>
+                </div>
+            `;
+            list.appendChild(card);
+        }
+    }
+
+    function tradeCrypto(key, type) {
+        const coin = state.crypto[key];
+        if (type === 'buy') {
+            if (state.balance < coin.rate) return alert('❌ Недостаточно рублей!');
+            state.balance -= coin.rate;
+            coin.balance += 1;
+            state.statsCryptoVolume += coin.rate;
+        } else {
+            if (coin.balance < 1) return alert('❌ Недостаточно монеты!');
+            coin.balance -= 1;
+            state.balance += coin.rate;
+            state.statsCryptoVolume += coin.rate;
+        }
+        updateUI();
     }
 
     function generateMarket() {
@@ -354,8 +408,8 @@
                 <div style="font-size:0.8rem; margin:2px 0;"><b>${item.price} ₽</b> <span style="font-size:0.65rem; color:var(--text-muted);">(Рынок: ~${item.realValue} ₽)</span></div>
                 <div style="font-size:0.65rem; color:${item.risk > 0.1 ? 'var(--red)' : 'var(--green)'}; margin-bottom:4px;">Риск восстановления: ${(item.risk * 100)}%</div>
                 <div style="display:flex; gap:4px;">
-                    <button class="btn btn-primary" style="flex:1;" onclick="buyItem(${item.price}, '${item.title}', ${item.realValue}, ${item.risk}, false)">Купить</button>
-                    <button class="btn btn-purple" onclick="checkItem(${item.id}, ${item.risk})">🔍 Чекер (50₽)</button>
+                    <button class="btn btn-primary" style="flex:1;" onclick="buyItem(${item.price}, '${item.title}', ${item.realValue}, ${item.risk})">Купить</button>
+                    <button class="btn btn-purple" onclick="checkItem(${item.risk})">🔍 Чекер (50₽)</button>
                     <button class="btn btn-warning" onclick="openChat('${item.title}', ${item.price}, ${item.realValue}, ${item.risk})">💬</button>
                 </div>
             `;
@@ -363,15 +417,12 @@
         }
     }
 
-    function checkItem(id, risk) {
-        if (state.balance < 50) return alert('❌ Недостаточно 50 ₽ на запуск чекера!');
+    function checkItem(risk) {
+        if (state.balance < 50) return alert('❌ Недостаточно 50 ₽!');
         state.balance -= 50;
         updateUI();
-        if (risk > 0.15 && Math.random() < risk) {
-            alert('⚠️ ЧЕКЕР: Внимание! Лот помечен как рискованный/краденый!');
-        } else {
-            alert('✅ ЧЕКЕР: Лот чистый, восстановить не должны.');
-        }
+        if (risk > 0.15 && Math.random() < risk) alert('⚠️ ЧЕКЕР: Лот подозрительный!');
+        else alert('✅ ЧЕКЕР: Лот чистый!');
     }
 
     function openChat(title, price, realValue, risk) {
@@ -390,7 +441,7 @@
         if (action === 'discount') {
             const proposedPrice = Math.floor(h.price * 0.85);
             if (proposedPrice < h.minPrice) {
-                history.innerHTML += `<div class="msg msg-them">Это крайняя цена (${h.price} ₽), ниже не скину!</div>`;
+                history.innerHTML += `<div class="msg msg-them">Это крайняя цена (${h.price} ₽)!</div>`;
             } else {
                 history.innerHTML += `<div class="msg msg-me">Скинешь до ${proposedPrice} ₽?</div>`;
                 if (Math.random() > 0.35) {
@@ -410,9 +461,8 @@
         if (state.balance < price) return alert('❌ Недостаточно денег!');
         state.balance -= price;
 
-        // Проверка на Скам при покупке
         if (Math.random() < risk) {
-            showPush('❌', `Лот "${title}" восстановлен владельцем!`);
+            showPush('❌', `Лот "${title}" восстановлен!`);
             state.trustScore = Math.max(1.0, state.trustScore - 0.2);
         } else {
             state.inventory.push({ title, buyPrice: price, realValue, sellPrice: Math.floor(realValue * 1.05) });
@@ -455,13 +505,13 @@
             state.balance += setPrice;
             state.statsSales += 1;
             state.statsEarned += (setPrice - item.buyPrice);
-            state.trustScore = Math.min(5.0, state.trustScore + 0.1); // Рост рейтинга
-            showPush('💰', `Продано за ${setPrice} ₽! (+0.1★)`);
+            state.trustScore = Math.min(5.0, state.trustScore + 0.1);
+            showPush('💰', `Продано за ${setPrice} ₽!`);
             state.inventory.splice(index, 1);
             updateUI();
         } else {
             state.trustScore = Math.max(1.0, state.trustScore - 0.05);
-            alert('❌ Покупатели игнорируют оверпрайс. Ваш рейтинг немного упал.');
+            alert('❌ Оверпрайс! Покупатели отказываются.');
             updateUI();
         }
     }
@@ -475,29 +525,17 @@
         state.balance += state.deposit; state.deposit = 0; updateUI();
     }
     function takeLoan(amt) {
-        if (state.loan > 0) return alert('❌ Сначала погасите текущий кредит!');
+        if (state.loan > 0) return alert('❌ Погасите текущий кредит!');
         state.loan = Math.floor(amt * 1.10); state.balance += amt; updateUI();
         showPush('💳', `Взято ${amt} ₽ в кредит.`);
     }
     function payLoan() {
-        if (state.balance < state.loan) return alert('❌ Недостаточно рублей для полного погашения!');
+        if (state.balance < state.loan) return alert('❌ Недостаточно денег!');
         state.balance -= state.loan; state.loan = 0; updateUI();
-        showPush('✅', 'Кредит полностью погашен!');
+        showPush('✅', 'Кредит погашен!');
     }
 
-    /* --- КРИПТА И БОТ --- */
-    function tradeCrypto(type) {
-        const cost = state.usdtRate * 10;
-        if (type === 'buy') {
-            if (state.balance < cost) return alert('❌ Нет денег!');
-            state.balance -= cost; state.usdt += 10; state.statsCryptoVolume += 10;
-        } else {
-            if (state.usdt < 10) return alert('❌ Нет USDT!');
-            state.usdt -= 10; state.balance += cost; state.statsCryptoVolume += 10;
-        }
-        updateUI();
-    }
-
+    /* --- БОТ И ТЕМЫ --- */
     function toggleBot() {
         state.botActive = !state.botActive;
         if (state.botActive) {
@@ -522,13 +560,15 @@
     }
 
     function setTheme(theme) {
+        state.theme = theme;
         document.body.className = theme === 'default' ? '' : `theme-${theme}`;
     }
 
     function resetProgress() {
         if (confirm('Сбросить весь прогресс?')) {
+            localStorage.removeItem('p2p_game_save');
             if (botInterval) clearInterval(botInterval);
-            state = JSON.parse(JSON.stringify(INITIAL_STATE));
+            state = JSON.parse(JSON.stringify(DEFAULT_STATE));
             generateMarket(); updateUI();
         }
     }
