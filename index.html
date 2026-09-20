@@ -1,1083 +1,902 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Симулятор Перекупа & Автодилера — Standalone Edition</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    h1, h2, h3, .font-display { font-family: 'Unbounded', sans-serif; }
-    .font-mono { font-family: 'JetBrains Mono', monospace; }
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>life.exe — Успіх з нуля</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #05070a; --panel: #0d1117; --panel2: #10151c; --border: #1f2933;
+    --text: #e6edf3; --muted: #6b7785; --accent: #3ecf8e; --accent-dim: #245a44;
+    --gold: #ffd166; --red: #ff5c5c; --blue: #5aa9ff; --purple: #b48cff;
+    --font: 'JetBrains Mono', 'Courier New', ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #eef1ea; --panel: #ffffff; --panel2: #f4f6f1; --border: #c9d0c2;
+      --text: #16201a; --muted: #5b6b5e; --accent: #0e7a47; --accent-dim: #bfe3cf;
+      --gold: #97710b; --red: #b23a3a; --blue: #1f5fb2; --purple: #6a4fc2;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #05070a; --panel: #0d1117; --panel2: #10151c; --border: #1f2933;
+    --text: #e6edf3; --muted: #6b7785; --accent: #3ecf8e; --accent-dim: #245a44;
+    --gold: #ffd166; --red: #ff5c5c; --blue: #5aa9ff; --purple: #b48cff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:var(--bg); color:var(--text); font-family:var(--font); -webkit-font-smoothing:antialiased; }
+  body {
+    min-height:100vh; display:flex; justify-content:center;
+    padding: calc(18px + env(safe-area-inset-top,0px)) 12px calc(40px + env(safe-area-inset-bottom,0px));
+  }
+  .app { width:100%; max-width:460px; }
+
+  .titlebar { display:flex; align-items:center; justify-content:space-between; background:var(--panel2); border:1px solid var(--border); border-bottom:none; border-radius:8px 8px 0 0; padding:8px 12px; font-size:12px; color:var(--muted); }
+  .titlebar .path .cursor { display:inline-block; width:7px; height:12px; background:var(--accent); margin-left:2px; animation:blink 1s steps(1) infinite; vertical-align:-2px; }
+  @keyframes blink { 50%{opacity:0;} }
+  .titlebar .right { display:flex; align-items:center; gap:8px; }
+  .musicBtn { background:none; border:1px solid var(--border); color:var(--muted); border-radius:4px; padding:3px 7px; font-family:var(--font); font-size:12px; cursor:pointer; }
+  .musicBtn.on { color:var(--gold); border-color:var(--gold); }
+  .onlineDot { font-size:10px; }
+  .onlineDot.on { color:var(--accent); }
+  .onlineDot.off { color:var(--muted); }
+  .dots span { display:inline-block; width:8px; height:8px; border-radius:50%; margin-left:6px; opacity:.5; }
+  .dots span:nth-child(1){background:var(--red);} .dots span:nth-child(2){background:var(--gold);} .dots span:nth-child(3){background:var(--accent);}
+
+  .panel { background:var(--panel); border:1px solid var(--border); padding:14px 14px 10px; }
+  .statrow { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed var(--border); font-size:13px; }
+  .statrow:last-child{ border-bottom:none; }
+  .statrow .label{ color:var(--muted); }
+  .statrow .val{ font-weight:700; }
+  .val.money{ color:var(--accent); } .val.income{ color:var(--gold); }
+  .energybar{ width:100%; height:10px; background:var(--panel2); border:1px solid var(--border); border-radius:5px; overflow:hidden; margin-top:4px;}
+  .energybar > div{ height:100%; background:linear-gradient(90deg,var(--blue),var(--accent)); transition:width .4s ease; }
+  .perk { font-size:10px; color:var(--gold); margin-top:2px; }
+
+  .actions{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+  .btn{ font-family:var(--font); font-size:14px; font-weight:700; text-align:left; border:1px solid var(--border); border-radius:6px; padding:12px 14px; cursor:pointer; background:var(--panel); color:var(--text); display:flex; justify-content:space-between; align-items:center; transition:transform .08s ease; }
+  .btn:active{ transform:scale(0.98); }
+  .btn.primary{ background:var(--accent-dim); border-color:var(--accent); }
+  .btn.gold{ border-color:var(--gold); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .btn .hint{ font-size:11px; color:var(--muted); font-weight:500; }
+  .btn.gold .hint{ color:var(--gold); }
+
+  .tabs{ display:flex; flex-wrap:wrap; margin-top:14px; border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+  .tab{ flex:1 1 33.33%; text-align:center; padding:9px 4px; font-size:10.5px; font-weight:700; letter-spacing:.02em; color:var(--muted); cursor:pointer; background:var(--panel2); border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
+  .tab.active{ color:var(--accent); background:var(--panel); }
+  .tabpanel{ background:var(--panel); border:1px solid var(--border); border-top:none; padding:10px 12px 14px; min-height:170px; }
+
+  .row{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed var(--border); gap:8px; }
+  .row:last-child{ border-bottom:none; }
+  .row .who{ font-size:12.5px; }
+  .row .who .sub{ display:block; font-size:10.5px; color:var(--muted); font-weight:500; }
+  .row button{ font-family:var(--font); font-size:11px; font-weight:700; border-radius:4px; border:1px solid var(--accent); background:transparent; color:var(--accent); padding:6px 9px; cursor:pointer; white-space:nowrap; }
+  .row button.sell{ border-color:var(--red); color:var(--red); }
+  .row button:disabled{ opacity:.35; cursor:not-allowed; }
+
+  .casino-reels{ display:flex; justify-content:center; gap:10px; font-size:34px; margin:6px 0 12px; }
+  .reel{ width:52px; height:52px; display:flex; align-items:center; justify-content:center; background:var(--panel2); border:1px solid var(--border); border-radius:6px; }
+  .betrow{ display:flex; gap:8px; align-items:center; justify-content:center; margin-bottom:10px; }
+  .betrow input{ width:90px; text-align:center; font-family:var(--font); font-weight:700; background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:6px; border-radius:4px; }
+  .betrow button{ font-family:var(--font); font-weight:700; font-size:12px; border-radius:4px; border:1px solid var(--gold); color:var(--gold); background:transparent; padding:8px 10px; cursor:pointer; }
+  .casino-result{ text-align:center; font-size:12.5px; min-height:18px; margin-bottom:6px; }
+
+  .market-price{ text-align:center; margin:4px 0 10px; }
+  .market-price .p{ font-size:26px; font-weight:800; }
+  .market-price .p.up{ color:var(--accent); } .market-price .p.down{ color:var(--red); }
+  .market-price .chg{ font-size:12px; color:var(--muted); }
+  .spark{ display:flex; align-items:flex-end; gap:2px; height:36px; justify-content:center; margin:8px 0; }
+  .spark div{ width:5px; background:var(--accent); border-radius:1px; opacity:.85; }
+  .marketrow{ display:flex; gap:8px; justify-content:center; margin-top:8px;}
+  .marketrow button{ font-family:var(--font); font-weight:700; font-size:12px; border-radius:4px; padding:8px 12px; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text); }
+  .marketrow button.buy{ border-color:var(--accent); color:var(--accent); }
+  .marketrow button.sell{ border-color:var(--red); color:var(--red); }
+  .holding{ text-align:center; font-size:12px; color:var(--muted); margin-top:6px; }
+
+  .sectionTitle{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin:14px 0 4px; border-top:1px dashed var(--border); padding-top:10px; }
+  .p2pform{ display:flex; gap:6px; margin:8px 0; }
+  .p2pform input{ flex:1; min-width:0; font-family:var(--font); font-weight:700; background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:7px; border-radius:4px; font-size:12px; }
+  .p2pform button{ font-family:var(--font); font-weight:700; font-size:11px; border-radius:4px; border:1px solid var(--purple); color:var(--purple); background:transparent; padding:7px 10px; cursor:pointer; white-space:nowrap; }
+  .offlineNote{ font-size:12px; color:var(--muted); text-align:center; padding:18px 8px; line-height:1.5; }
+
+  .chatlog{ height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:4px 2px; margin-bottom:8px; }
+  .chatmsg{ font-size:12.5px; line-height:1.4; }
+  .chatmsg .nm{ font-weight:700; color:var(--accent); margin-right:4px; }
+  .chatmsg .tm{ font-size:10px; color:var(--muted); margin-left:4px; }
+  .chatform{ display:flex; gap:6px; }
+  .chatform input{ flex:1; min-width:0; font-family:var(--font); background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:4px; font-size:12.5px; }
+  .chatform button{ font-family:var(--font); font-weight:700; font-size:12px; border-radius:4px; border:1px solid var(--blue); color:var(--blue); background:transparent; padding:8px 12px; cursor:pointer; }
+
+  .ratingrow{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); font-size:12.5px; }
+  .ratingrow .rk{ color:var(--muted); width:22px; }
+  .ratingrow .nm{ flex:1; }
+  .ratingrow .bal{ color:var(--accent); font-weight:700; }
+  .refreshBtn{ display:block; margin:0 auto 8px; font-family:var(--font); font-weight:700; font-size:11px; border:1px solid var(--border); background:transparent; color:var(--muted); border-radius:4px; padding:6px 12px; cursor:pointer; }
+
+  .logbox{ margin-top:12px; background:var(--panel2); border:1px solid var(--border); border-radius:6px; padding:8px 10px; font-size:11px; color:var(--muted); height:84px; overflow-y:auto; display:flex; flex-direction:column-reverse; gap:4px; }
+  .logbox .entry span.t{ color:var(--accent); margin-right:5px; }
+  .footer-note{ text-align:center; font-size:10px; color:var(--muted); margin-top:12px; opacity:.7; }
+
+  .toast{ position:fixed; bottom:calc(18px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%) translateY(10px); background:var(--panel2); border:1px solid var(--accent); color:var(--text); padding:8px 14px; border-radius:6px; font-size:12px; font-weight:600; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; max-width:90vw; text-align:center; z-index:50; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-2 sm:p-4 select-none antialiased">
-  <div id="root" class="w-full max-w-xl"></div>
+<body>
+<div class="app">
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
+  <div class="titlebar">
+    <span class="path">~/life<span class="cursor"></span></span>
+    <span class="right">
+      <span class="onlineDot off" id="onlineDot">● офлайн</span>
+      <button class="musicBtn" id="musicBtn">🔇 музика</button>
+      <span class="dots"><span></span><span></span><span></span></span>
+    </span>
+  </div>
 
-    // --- SOUND SYNTHESIS ENGINE (Web Audio API) ---
-    class SoundEngine {
-      constructor() {
-        this.ctx = null;
-        this.muted = false;
+  <div class="panel">
+    <div class="statrow">
+      <span class="label">гравець</span>
+      <span class="val" id="nameDisplay" style="cursor:pointer;" title="натисни щоб змінити ім'я">Гравець ✎</span>
+    </div>
+    <div class="statrow">
+      <span class="label">баланс</span>
+      <span class="val money" id="balanceVal">$0</span>
+    </div>
+    <div class="statrow" style="flex-direction:column; align-items:stretch;">
+      <div style="display:flex; justify-content:space-between;">
+        <span class="label">енергія</span>
+        <span class="val" id="energyVal">0/100</span>
+      </div>
+      <div class="energybar"><div id="energyFill" style="width:0%"></div></div>
+      <div class="perk" id="perkNote" style="display:none;">🚗 є машина — робота коштує -4⚡ замість -5⚡</div>
+    </div>
+    <div class="statrow">
+      <span class="label">бізнес-дохід</span>
+      <span class="val income" id="incomeVal">+$0/сек</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn primary" id="workBtn">
+      <span>💼 Працювати</span>
+      <span class="hint" id="workHint">+$25 · -5⚡</span>
+    </button>
+    <button class="btn gold" id="rechargeBtn">
+      <span>📺 Відновити енергію</span>
+      <span class="hint" id="rechargeHint">готово</span>
+    </button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="business">БІЗНЕС</div>
+    <div class="tab" data-tab="casino">КАЗИНО</div>
+    <div class="tab" data-tab="garage">ГАРАЖ</div>
+    <div class="tab" data-tab="market">РИНОК</div>
+    <div class="tab" data-tab="chat">ЧАТ</div>
+    <div class="tab" data-tab="rating">РЕЙТИНГ</div>
+  </div>
+
+  <div class="tabpanel" id="tab-business"></div>
+  <div class="tabpanel" id="tab-casino" style="display:none;"></div>
+  <div class="tabpanel" id="tab-garage" style="display:none;"></div>
+  <div class="tabpanel" id="tab-market" style="display:none;"></div>
+  <div class="tabpanel" id="tab-chat" style="display:none;"></div>
+  <div class="tabpanel" id="tab-rating" style="display:none;"></div>
+
+  <div class="logbox" id="logbox"></div>
+  <div class="footer-note">life.exe · онлайн-функції (чат/рейтинг/P2P) працюють, коли гра відкрита через посилання Claude в межах однієї організації · прогрес зберігається локально</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SAVE_KEY = "life_exe_save_v2";
+  var ANON_KEY = "life_exe_anon_id";
+
+  var BUSINESSES = [
+    { id:"stall",  name:"Ларьок",         emoji:"🛒", baseCost:50,     baseIncome:0.5 },
+    { id:"kiosk",  name:"Кіоск",          emoji:"🏪", baseCost:150,    baseIncome:1.5 },
+    { id:"cafe",   name:"Кав'ярня",       emoji:"☕", baseCost:600,    baseIncome:6 },
+    { id:"wash",   name:"Автомийка",      emoji:"🚿", baseCost:3000,   baseIncome:25 },
+    { id:"shop",   name:"Магазин",        emoji:"🏬", baseCost:14000,  baseIncome:110 },
+    { id:"mall",   name:"Торговий центр", emoji:"🏢", baseCost:55000,  baseIncome:420 },
+    { id:"resto",  name:"Ресторан",       emoji:"🍽️", baseCost:150000, baseIncome:1100 },
+    { id:"plant",  name:"Завод",          emoji:"🏭", baseCost:500000, baseIncome:3500 }
+  ];
+
+  // Cars no longer generate income — owning at least one lowers the energy
+  // cost of "Працювати" from 5 to 4 (you commute to work instead of walking).
+  var CARS = [
+    { id:"niva",  name:"Lada Niva",        emoji:"🚗", price:800 },
+    { id:"ford",  name:"Старий Ford",       emoji:"🚙", price:1500 },
+    { id:"bmw",   name:"BMW e34",           emoji:"🚘", price:8000 },
+    { id:"audi",  name:"Audi A6",           emoji:"🚗", price:15000 },
+    { id:"benz",  name:"Mercedes G-Class",  emoji:"🚙", price:45000 },
+    { id:"porsche", name:"Porsche 911",     emoji:"🏎️", price:120000 },
+    { id:"lambo", name:"Lamborghini",       emoji:"🏎️", price:250000 },
+    { id:"bugatti", name:"Bugatti Chiron",  emoji:"🚀", price:900000 }
+  ];
+
+  var SLOT_SYMBOLS = ["🍒","🍋","⭐","💎","7️⃣"];
+  var SLOT_PAYOUT = { "7️⃣":10, "💎":6, "⭐":4, "🍋":2.5, "🍒":2 };
+  var RECHARGE_COOLDOWN = 45;
+
+  function defaultState(){
+    var b = {}; BUSINESSES.forEach(function(x){ b[x.id]=0; });
+    var c = {}; CARS.forEach(function(x){ c[x.id]=false; });
+    return {
+      name:"Гравець", balance:500, energy:100, maxEnergy:100,
+      businesses:b, cars:c,
+      market:{ price:100, history:[100], qty:0, avgCost:0 },
+      rechargeUntil:0, log:[], tickCounter:0
+    };
+  }
+
+  var state = load();
+
+  function load(){
+    try {
+      var raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return defaultState();
+      var parsed = JSON.parse(raw);
+      var fresh = defaultState();
+      for (var k in fresh) { if (parsed[k]===undefined) parsed[k]=fresh[k]; }
+      BUSINESSES.forEach(function(x){ if (parsed.businesses[x.id]===undefined) parsed.businesses[x.id]=0; });
+      CARS.forEach(function(x){ if (parsed.cars[x.id]===undefined) parsed.cars[x.id]=false; });
+      if (!parsed.market || typeof parsed.market.price !== "number") parsed.market = fresh.market;
+      return parsed;
+    } catch (e) { return defaultState(); }
+  }
+  function save(){
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch(e){}
+  }
+  function getAnonId(){
+    try {
+      var id = localStorage.getItem(ANON_KEY);
+      if (!id) {
+        id = "anon_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        localStorage.setItem(ANON_KEY, id);
       }
-      init() {
-        if (!this.ctx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          this.ctx = new AudioContext();
-        }
-        if (this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
-      }
-      toggleMute() {
-        this.muted = !this.muted;
-        return this.muted;
-      }
-      playClick() {
-        if (this.muted) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.04);
-        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.04);
-      }
-      playCash() {
-        if (this.muted) return;
-        this.init();
-        [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          const time = this.ctx.currentTime + idx * 0.05;
-          osc.frequency.setValueAtTime(freq, time);
-          gain.gain.setValueAtTime(0.15, time);
-          gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(time);
-          osc.stop(time + 0.12);
-        });
-      }
-      playHorn() {
-        if (this.muted) return;
-        this.init();
-        [440, 554.37].forEach(freq => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 0.25);
-        });
-      }
-      playGavel() {
-        if (this.muted) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.12);
-        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.12);
-      }
-    }
-    const sound = new SoundEngine();
+      return id;
+    } catch(e) { return "anon_" + Math.random().toString(36).slice(2); }
+  }
 
-    // --- CAR TEMPLATES & CATALOG ---
-    const CAR_TEMPLATES = [
-      {
-        model: 'Lada Priora 1.6 MT (Хэтчбек)',
-        year: 2011,
-        tier: 'budget',
-        basePrice: 280000,
-        image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=700&auto=format&fit=crop&q=80',
-        engine: '1.6 л / 98 л.с. / Бензин',
-        transmission: 'Механика',
-        drive: 'Передний'
-      },
-      {
-        model: 'ВАЗ 2107 «Семёрка»',
-        year: 2008,
-        tier: 'budget',
-        basePrice: 110000,
-        image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=700&auto=format&fit=crop&q=80',
-        engine: '1.6 л / 74 л.с. / Инжектор',
-        transmission: 'Механика',
-        drive: 'Задний'
-      },
-      {
-        model: 'Hyundai Solaris 1.6 AT',
-        year: 2016,
-        tier: 'mid',
-        basePrice: 880000,
-        image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=700&auto=format&fit=crop&q=80',
-        engine: '1.6 л / 123 л.с. / Бензин',
-        transmission: 'Автомат',
-        drive: 'Передний'
-      },
-      {
-        model: 'Toyota Camry 3.5 V6 (XV50)',
-        year: 2014,
-        tier: 'mid',
-        basePrice: 1650000,
-        image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=700&auto=format&fit=crop&q=80',
-        engine: '3.5 л / 249 л.с. / Бензин',
-        transmission: 'Автомат',
-        drive: 'Передний'
-      },
-      {
-        model: 'BMW 530i E60 M-Sport',
-        year: 2007,
-        tier: 'premium',
-        basePrice: 950000,
-        image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=700&auto=format&fit=crop&q=80',
-        engine: '3.0 л / 272 л.с. / N52B30',
-        transmission: 'Автомат',
-        drive: 'Задний'
-      },
-      {
-        model: 'Mercedes-Benz E350 W211',
-        year: 2006,
-        tier: 'premium',
-        basePrice: 890000,
-        image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=700&auto=format&fit=crop&q=80',
-        engine: '3.5 л / 272 л.с. / M272',
-        transmission: 'Автомат',
-        drive: 'Полный 4MATIC'
-      },
-      {
-        model: 'Porsche Cayenne Turbo 4.8',
-        year: 2008,
-        tier: 'legendary',
-        basePrice: 1250000,
-        image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=700&auto=format&fit=crop&q=80',
-        engine: '4.8 л / 500 л.с. / V8 Twin-Turbo',
-        transmission: 'Автомат',
-        drive: 'Полный'
-      }
-    ];
+  function formatMoney(n){
+    var neg = n < 0; n = Math.floor(Math.abs(n));
+    var s = "$" + n.toLocaleString("en-US");
+    return neg ? "-" + s : s;
+  }
+  function hasAnyCar(){ return CARS.some(function(c){ return state.cars[c.id]; }); }
+  function workEnergyCost(){ return hasAnyCar() ? 4 : 5; }
 
-    const DEFECTS_DATABASE = [
-      { id: 'paint_hood', name: 'Капот в шпатлёвке (вторичный окрас)', type: 'paint', discDiscount: 25000, repairCost: 14000, discovered: false },
-      { id: 'paint_door', name: 'Дверь водителя крашена (слой 380 мкм)', type: 'paint', discDiscount: 18000, repairCost: 10000, discovered: false },
-      { id: 'engine_oil', name: 'Масложор и течь прокладки ГБЦ', type: 'engine', discDiscount: 40000, repairCost: 22000, discovered: false },
-      { id: 'gearbox_synchro', name: 'Хруст 2-й передачи при переключении', type: 'gearbox', discDiscount: 30000, repairCost: 16000, discovered: false },
-      { id: 'suspension_lever', name: 'Стук шаровой и люфт сайлентблоков', type: 'suspension', discDiscount: 15000, repairCost: 8000, discovered: false },
-      { id: 'obd_catalyst', name: 'Ошибка P0420: Низкая эффективность катализатора', type: 'electronics', discDiscount: 35000, repairCost: 18000, discovered: false }
-    ];
+  function totalIncomePerSec(){
+    var total = 0;
+    BUSINESSES.forEach(function(b){ total += (state.businesses[b.id]||0) * b.baseIncome; });
+    return total;
+  }
+  function businessCost(b){
+    var owned = state.businesses[b.id] || 0;
+    return Math.floor(b.baseCost * Math.pow(1.15, owned));
+  }
 
-    const TUNING_OPTIONS = [
-      { id: 'torus_wheels', name: 'Диски «Торусы R16»', category: 'wheels', cost: 32000, valueBoost: 55000, installed: false, desc: 'Легендарные катки для суеты. Студенты и пацаны с района в восторге!' },
-      { id: 'tint_bunker', name: 'Тонировка «Вкруг 5% Бункер»', category: 'tint', cost: 9000, valueBoost: 18000, installed: false, desc: 'Глухой бункер. Скрывает салон от лишних глаз.' },
-      { id: 'lowering_springs', name: 'Занижение -70 мм (Короткоходки)', category: 'suspension', cost: 18000, valueBoost: 28000, installed: false, desc: 'Вид имеет! Чёткая посадка по заветам стиля.' },
-      { id: 'stinger_exhaust', name: 'Прямоток Stinger Sport 4-2-1', category: 'exhaust', cost: 24000, valueBoost: 38000, installed: false, desc: 'Басистый спортивный звук с приятными отстрелами.' },
-      { id: 'stage1_chip', name: 'Чип-Тюнинг Stage 1 + Попкорн', category: 'stage', cost: 15000, valueBoost: 26000, installed: false, desc: 'Отзывчивая педаль газа и лёгкий прирост мощности.' },
-      { id: 'pride_sub', name: 'Автозвук Pride 15" + Усилитель', category: 'audio', cost: 45000, valueBoost: 70000, installed: false, desc: 'Шевелит лобовое стекло и привлекает молодёжь.' },
-      { id: 'detailing_polish', name: 'Глубокая полировка + Керамика', category: 'body', cost: 16000, valueBoost: 30000, installed: false, desc: 'Зеркальный блеск кузова, ускоряет продажу в 2 раза.' }
-    ];
+  function addLog(text){
+    state.log.unshift({ t: nowLabel(), text: text });
+    if (state.log.length > 40) state.log.length = 40;
+    renderLog();
+  }
+  function nowLabel(){
+    var d = new Date();
+    function p(n){ return (n<10?"0":"")+n; }
+    return p(d.getHours())+":"+p(d.getMinutes());
+  }
 
-    function generateCar(cityId = 'msk') {
-      const template = CAR_TEMPLATES[Math.floor(Math.random() * CAR_TEMPLATES.length)];
-      const numDefects = Math.floor(Math.random() * 3) + 1;
-      const defects = [];
-      const shuffledDefects = [...DEFECTS_DATABASE].sort(() => 0.5 - Math.random());
-      for (let i = 0; i < numDefects; i++) {
-        defects.push({ ...shuffledDefects[i] });
-      }
+  var toastTimer = null;
+  function toast(msg){
+    var el = document.getElementById("toast");
+    el.textContent = msg; el.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 1800);
+  }
 
-      const sellerPersonalities = ['greedy', 'urgent', 'naive', 'crafty'];
-      const personality = sellerPersonalities[Math.floor(Math.random() * sellerPersonalities.length)];
-      const names = ['Руслан', 'Михаил Сергеевич', 'Денис', 'Василий', 'Артур', 'Владлен'];
+  // ===================== ONLINE (db / user capabilities) =====================
+  var online = { db:null, user:null, myId:null, ready:false };
+  var chatMessages = [];
+  var currentTab = "business";
 
-      const mileageReal = Math.floor(Math.random() * 120000) + 70000;
-      const isRolled = Math.random() > 0.5;
-      const mileageShown = isRolled ? Math.max(45000, mileageReal - (Math.floor(Math.random() * 60000) + 30000)) : mileageReal;
+  function setOnlineIndicator(on){
+    var el = document.getElementById("onlineDot");
+    el.textContent = on ? "● онлайн" : "● офлайн";
+    el.className = "onlineDot " + (on ? "on" : "off");
+  }
 
-      const randomDiscountFactor = personality === 'urgent' ? 0.88 : (personality === 'greedy' ? 1.08 : 1.0);
-      const askingPrice = Math.round((template.basePrice * randomDiscountFactor) / 5000) * 5000;
-
-      return {
-        id: 'car_' + Math.random().toString(36).substr(2, 9),
-        model: template.model,
-        year: template.year,
-        tier: template.tier,
-        engine: template.engine,
-        transmission: template.transmission,
-        drive: template.drive,
-        image: template.image,
-        baseMarketPrice: template.basePrice,
-        askingPrice: askingPrice,
-        purchasePrice: null,
-        myListingPrice: null,
-        investedCost: 0,
-        cityId: cityId,
-        seller: {
-          name: names[Math.floor(Math.random() * names.length)],
-          personality: personality,
-          patience: 100,
-          minPriceLimit: Math.round(askingPrice * (personality === 'urgent' ? 0.78 : (personality === 'greedy' ? 0.94 : 0.85)) / 5000) * 5000
-        },
-        mileage: {
-          shown: mileageShown,
-          real: mileageReal,
-          isRolled: isRolled
-        },
-        bodyParts: {
-          hood: { paintThickness: defects.some(d => d.id === 'paint_hood') ? 480 : 120, hasBondo: defects.some(d => d.id === 'paint_hood'), inspected: false },
-          roof: { paintThickness: 110, hasBondo: false, inspected: false },
-          doorFL: { paintThickness: defects.some(d => d.id === 'paint_door') ? 380 : 115, hasBondo: false, inspected: false },
-          doorFR: { paintThickness: 125, hasBondo: false, inspected: false },
-          fenderFL: { paintThickness: 130, hasBondo: false, inspected: false },
-          fenderFR: { paintThickness: 120, hasBondo: false, inspected: false }
-        },
-        defects: defects,
-        tuning: TUNING_OPTIONS.map(t => ({ ...t })),
-        overallCondition: Math.max(30, 95 - defects.length * 15),
-        testDrived: false,
-        obdScanned: false,
-        autotekaChecked: false,
-        isForSale: false,
-        isOwned: false
-      };
-    }
-
-    // --- MAIN APP COMPONENT ---
-    function App() {
-      const [cash, setCash] = useState(() => {
-        const saved = localStorage.getItem('sim_cash');
-        return saved ? Number(saved) : 350000;
+  function initOnline(){
+    if (!window.claude || typeof window.claude.use !== "function") { setOnlineIndicator(false); return; }
+    Promise.all([window.claude.use("db"), window.claude.use("user")]).then(function(res){
+      online.db = res[0]; online.user = res[1];
+      if (!online.db) { setOnlineIndicator(false); return; }
+      var idPromise = online.user ? online.user.id() : Promise.resolve(null);
+      idPromise.then(function(uid){
+        online.myId = uid || getAnonId();
+        online.ready = true;
+        setOnlineIndicator(true);
+        subscribeChat();
+        subscribeMySettlement();
+        syncPlayerDoc();
+        if (currentTab === "rating") loadRating();
+        if (currentTab === "market") renderMarket();
       });
-      const [bankDeposit, setBankDeposit] = useState(0);
-      const [day, setDay] = useState(1);
-      const [activeApp, setActiveApp] = useState('market'); // market | garage | chat | auction | bank
-      const [marketCars, setMarketCars] = useState(() => [generateCar(), generateCar(), generateCar(), generateCar()]);
-      const [garageCars, setGarageCars] = useState([]);
-      const [buyerLeads, setBuyerLeads] = useState([]);
-      const [activeAuction, setActiveAuction] = useState(null);
-      const [isMuted, setIsMuted] = useState(false);
+    }).catch(function(){ setOnlineIndicator(false); });
+  }
 
-      // Active Modals
-      const [inspectingCar, setInspectingCar] = useState(null);
-      const [testDrivingCar, setTestDrivingCar] = useState(null);
-      const [bargainingCar, setBargainingCar] = useState(null);
-      const [tuningCar, setTuningCar] = useState(null);
-      const [sellingCar, setSellingCar] = useState(null);
+  function syncPlayerDoc(){
+    if (!online.ready) return;
+    online.db.doc("players/" + online.myId).get().then(function(snap){
+      var data = (snap && snap.exists) ? snap.data() : null;
+      online.db.doc("players/" + online.myId).set({
+        name: state.name,
+        balance: Math.floor(state.balance),
+        pendingCredit: data ? (data.pendingCredit || 0) : 0,
+        updated: Date.now()
+      }).catch(function(){});
+    }).catch(function(){});
+  }
+  var syncTimer = null;
+  function scheduleSync(){
+    if (!online.ready) return;
+    if (syncTimer) clearTimeout(syncTimer);
+    syncTimer = setTimeout(syncPlayerDoc, 4000);
+  }
 
-      useEffect(() => {
-        localStorage.setItem('sim_cash', cash.toString());
-      }, [cash]);
+  function subscribeMySettlement(){
+    if (!online.ready) return;
+    online.db.doc("players/" + online.myId).onSnapshot(function(snap){
+      if (!snap || !snap.exists) return;
+      var data = snap.data();
+      var credit = data.pendingCredit || 0;
+      if (credit > 0) {
+        state.balance += credit;
+        addLog("отримано " + formatMoney(credit) + " з P2P продажу");
+        toast("Зараховано " + formatMoney(credit) + " з продажу!");
+        render(); save();
+        online.db.doc("players/" + online.myId).update({ pendingCredit: 0 }).catch(function(){});
+      }
+    }, function(){ /* subscription error: settlement will retry on next sync */ });
+  }
 
-      // ADVANCE NEXT DAY
-      const handleNextDay = () => {
-        sound.playClick();
-        sound.playCash();
-        const nextDay = day + 1;
-        setDay(nextDay);
+  function subscribeChat(){
+    if (!online.ready) return;
+    online.db.doc("chat/room").onSnapshot(function(snap){
+      var data = (snap && snap.exists) ? snap.data() : null;
+      chatMessages = (data && data.messages) ? data.messages : [];
+      if (currentTab === "chat") renderChat();
+    }, function(){ /* chat unavailable right now */ });
+  }
 
-        const interest = Math.round(bankDeposit * 0.01);
-        setBankDeposit(prev => prev + interest);
+  function sendChat(text){
+    text = String(text || "").trim().slice(0, 200);
+    if (!text || !online.ready) return;
+    var msg = { name: state.name.slice(0,20), text: text, ts: Date.now() };
+    var updated = chatMessages.concat([msg]);
+    if (updated.length > 60) updated = updated.slice(updated.length - 60);
+    online.db.doc("chat/room").set({ messages: updated }).catch(function(){ toast("Повідомлення не надіслано"); });
+  }
 
-        const rent = 2500;
-        setCash(prev => prev - rent);
+  function loadRating(){
+    var wrap = document.getElementById("tab-rating");
+    if (!online.ready) { renderRating([]); return; }
+    wrap.innerHTML = '<div class="offlineNote">завантаження…</div>';
+    online.db.collection("players").orderBy("balance","desc").limit(20).get().then(function(qs){
+      var list = [];
+      qs.forEach(function(doc){ list.push(doc.data()); });
+      renderRating(list);
+    }).catch(function(){ renderRating(null); });
+  }
 
-        const forSale = garageCars.filter(c => c.isForSale);
-        if (forSale.length > 0 && Math.random() > 0.25) {
-          const target = forSale[Math.floor(Math.random() * forSale.length)];
-          const tuningBoost = target.tuning.filter(t => t.installed).reduce((s, t) => s + t.valueBoost, 0);
-          const isPriora = target.model.includes('Priora');
-          const hasTorus = target.tuning.find(t => t.id === 'torus_wheels')?.installed;
-          
-          let buyerName = 'Артём (Студент)';
-          let buyerMsg = `Салам! Заберу ${target.model}. Сколько окончательно скинешь?`;
-          let offerRatio = 0.9;
+  function postOffer(qty, price){
+    if (!online.ready) { toast("P2P недоступний офлайн"); return; }
+    qty = Math.floor(Number(qty)); price = Number(price);
+    if (!qty || qty <= 0 || !price || price <= 0) { toast("Вкажи коректну кількість і ціну"); return; }
+    if (state.market.qty < qty) { toast("У тебе немає стільки WRD"); return; }
+    state.market.qty -= qty; // escrow locally
+    save(); render();
+    online.db.collection("offers").add({
+      sellerId: online.myId, sellerName: state.name.slice(0,20),
+      qty: qty, price: price, ts: Date.now()
+    }).then(function(){ addLog("виставлено " + qty + " WRD по " + formatMoney(price)); renderMarket(); })
+      .catch(function(){ state.market.qty += qty; save(); render(); toast("Не вдалося виставити офер"); });
+  }
 
-          if (isPriora && hasTorus) {
-            buyerName = 'Мага «Борода»';
-            buyerMsg = `Вах, на Торусах и в бункере — чисто яд! Забираю прямо сегодня без лишних слов!`;
-            offerRatio = 1.05;
-          }
+  function cancelOffer(offerId, qty){
+    if (!online.ready) return;
+    online.db.doc("offers/" + offerId).delete().then(function(){
+      state.market.qty += qty; save(); render();
+      addLog("офер скасовано, WRD повернуто");
+      loadOffers();
+    }).catch(function(){ toast("Не вдалося скасувати"); });
+  }
 
-          const estValue = (target.myListingPrice || target.baseMarketPrice) + tuningBoost;
-          const offer = Math.round((estValue * offerRatio) / 5000) * 5000;
-
-          const lead = {
-            id: 'lead_' + Date.now(),
-            carId: target.id,
-            carModel: target.model,
-            buyerName: buyerName,
-            message: buyerMsg,
-            offerPrice: offer,
-            askingPrice: target.myListingPrice || estValue
-          };
-
-          setBuyerLeads(prev => [lead, ...prev]);
+  function buyOffer(offerId, sellerId, qty, price){
+    if (!online.ready) return;
+    var cost = qty * price;
+    if (state.balance < cost) { toast("Недостатньо коштів"); return; }
+    online.db.doc("offers/" + offerId).delete().then(function(){
+      state.balance -= cost;
+      var totalCost = state.market.avgCost * state.market.qty + cost;
+      state.market.qty += qty;
+      state.market.avgCost = state.market.qty > 0 ? totalCost / state.market.qty : 0;
+      addLog("куплено " + qty + " WRD у гравця за " + formatMoney(cost));
+      save(); render();
+      online.db.doc("players/" + sellerId).get().then(function(snap){
+        var cur = (snap && snap.exists) ? (snap.data().pendingCredit || 0) : 0;
+        if (snap && snap.exists) {
+          online.db.doc("players/" + sellerId).update({ pendingCredit: cur + cost }).catch(function(){});
+        } else {
+          online.db.doc("players/" + sellerId).set({ name:"", balance:0, pendingCredit: cost, updated: Date.now() }).catch(function(){});
         }
+      }).catch(function(){});
+      loadOffers();
+    }).catch(function(){ toast("Цей офер вже хтось купив"); loadOffers(); });
+  }
 
-        setMarketCars(prev => [generateCar(), ...prev.slice(0, 4)]);
-      };
+  var lastOffers = null;
+  function loadOffers(){
+    if (!online.ready) { lastOffers = null; renderMarket(); return; }
+    online.db.collection("offers").orderBy("ts","desc").limit(25).get().then(function(qs){
+      var list = [];
+      qs.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
+      lastOffers = list;
+      renderMarket();
+    }).catch(function(){ lastOffers = []; renderMarket(); });
+  }
 
-      const handleBuyCar = (car, finalPrice) => {
-        if (garageCars.length >= 4) {
-          alert('Гараж заполнен (макс 4 авто)! Продайте машину, чтобы освободить место.');
-          return;
-        }
-        sound.playCash();
-        setCash(prev => prev - finalPrice);
-        const bought = {
-          ...car,
-          isOwned: true,
-          purchasePrice: finalPrice,
-          investedCost: 0,
-          isForSale: false
-        };
-        setGarageCars(prev => [...prev, bought]);
-        setMarketCars(prev => prev.filter(c => c.id !== car.id));
-        setBargainingCar(null);
-        setActiveApp('garage');
-      };
+  // ===================== rendering =====================
 
-      const handleSellLead = (lead) => {
-        const car = garageCars.find(c => c.id === lead.carId);
-        if (!car) return;
-        sound.playCash();
-        setCash(prev => prev + lead.offerPrice);
-        setGarageCars(prev => prev.filter(c => c.id !== car.id));
-        setBuyerLeads(prev => prev.filter(l => l.id !== lead.id));
-        alert(`🎉 Успешно! ${car.model} продана за ${lead.offerPrice.toLocaleString()} ₽!`);
-      };
+  function render(){
+    document.getElementById("nameDisplay").textContent = state.name + " ✎";
+    document.getElementById("balanceVal").textContent = formatMoney(state.balance);
+    document.getElementById("energyVal").textContent = Math.floor(state.energy) + "/" + state.maxEnergy;
+    document.getElementById("energyFill").style.width = (state.energy / state.maxEnergy * 100) + "%";
+    document.getElementById("incomeVal").textContent = "+" + formatMoney(totalIncomePerSec()) + "/сек";
 
-      const handleRepair = (car, defect) => {
-        if (cash < defect.repairCost) {
-          alert('Недостаточно средств на ремонт!');
-          return;
-        }
-        sound.playClick();
-        setCash(prev => prev - defect.repairCost);
-        setGarageCars(prev => prev.map(c => {
-          if (c.id === car.id) {
-            return {
-              ...c,
-              investedCost: c.investedCost + defect.repairCost,
-              defects: c.defects.filter(d => d.id !== defect.id),
-              overallCondition: Math.min(100, c.overallCondition + 15)
-            };
-          }
-          return c;
-        }));
-      };
+    var cost = workEnergyCost();
+    document.getElementById("workHint").textContent = "+$25 · -" + cost + "⚡";
+    document.getElementById("perkNote").style.display = hasAnyCar() ? "block" : "none";
 
-      return (
-        <div className="w-full bg-slate-900 border-2 border-slate-700/80 rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden relative h-[95vh] max-h-[920px]">
-          
-          {/* Status Bar */}
-          <div className="bg-slate-950 px-5 pt-3 pb-2 flex items-center justify-between border-b border-slate-800 text-[11px] text-slate-400 shrink-0">
-            <div className="flex items-center space-x-2 font-bold font-mono text-white">
-              <span>12:40</span>
-              <span className="text-amber-400">День {day}</span>
-            </div>
+    var workBtn = document.getElementById("workBtn");
+    workBtn.disabled = state.energy < cost;
 
-            <div className="w-20 h-3 bg-slate-900 rounded-full border border-slate-800 flex items-center justify-center">
-              <div className="w-6 h-1 bg-slate-700 rounded-full" />
-            </div>
-
-            <button 
-              onClick={() => setIsMuted(sound.toggleMute())} 
-              className="text-slate-400 hover:text-amber-400 font-mono text-[10px]"
-            >
-              {isMuted ? '🔇 Звук ВЫКЛ' : '🔊 Звук ВКЛ'}
-            </button>
-          </div>
-
-          {/* Balance Header */}
-          <div className="bg-slate-950/90 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between shrink-0">
-            <div>
-              <span className="text-[9px] text-slate-500 uppercase font-bold block">Баланс:</span>
-              <span className="text-sm font-black font-mono text-amber-400">
-                {cash.toLocaleString()} ₽
-              </span>
-            </div>
-
-            <button
-              onClick={handleNextDay}
-              className="py-1 px-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all shadow-md shadow-amber-500/20"
-            >
-              След. день ▶
-            </button>
-          </div>
-
-          {/* Screen Content */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-4">
-            
-            {/* APP 1: MARKET */}
-            {activeApp === 'market' && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-black font-display uppercase tracking-wider text-slate-200">
-                    🚗 Авторынок (Доступно: {marketCars.length})
-                  </h2>
-                  <button 
-                    onClick={() => {
-                      sound.playClick();
-                      setMarketCars([generateCar(), generateCar(), generateCar(), generateCar()]);
-                    }}
-                    className="text-[11px] text-amber-400 hover:underline font-bold"
-                  >
-                    🔄 Обновить
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 gap-3">
-                  {marketCars.map(car => (
-                    <div key={car.id} className="bg-slate-950/80 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition-all p-3 space-y-2">
-                      <div className="flex items-start space-x-3">
-                        <img src={car.image} alt={car.model} className="w-24 h-18 object-cover rounded-xl border border-slate-800 shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-xs font-bold text-white truncate">{car.model}</h3>
-                          <div className="text-[10px] text-slate-400">{car.year} г. • {car.engine}</div>
-                          <div className="text-[10px] text-slate-400">Пробег: <span className="text-slate-200 font-mono">{car.mileage.shown.toLocaleString()} км</span></div>
-                          <div className="text-xs font-black font-mono text-emerald-400 mt-1">
-                            {car.askingPrice.toLocaleString()} ₽
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-1.5 pt-1 border-t border-slate-900">
-                        <button
-                          onClick={() => { sound.playClick(); setInspectingCar(car); }}
-                          className="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-200 rounded-lg text-center"
-                        >
-                          🔍 Осмотр / ЛКП
-                        </button>
-                        <button
-                          onClick={() => { sound.playClick(); setTestDrivingCar(car); }}
-                          className="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-200 rounded-lg text-center"
-                        >
-                          ⏱️ Тест-Драйв
-                        </button>
-                        <button
-                          onClick={() => { sound.playClick(); setBargainingCar(car); }}
-                          className="flex-1 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-[10px] font-black rounded-lg text-center shadow-md shadow-amber-500/20"
-                        >
-                          💬 Торг / Купить
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* APP 2: GARAGE */}
-            {activeApp === 'garage' && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-black font-display uppercase tracking-wider text-slate-200">
-                    🏠 Мой Гараж ({garageCars.length} / 4 авто)
-                  </h2>
-                </div>
-
-                {garageCars.length === 0 ? (
-                  <div className="text-center py-12 bg-slate-950/40 rounded-2xl border border-dashed border-slate-800 p-6 space-y-3">
-                    <div className="text-3xl">🚗💨</div>
-                    <div className="text-xs text-slate-400">Гараж пуст. Купите первый автомобиль на Авторынке!</div>
-                    <button 
-                      onClick={() => setActiveApp('market')}
-                      className="px-4 py-2 bg-amber-500 text-slate-950 font-bold text-xs rounded-xl"
-                    >
-                      Перейти на рынок
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {garageCars.map(car => (
-                      <div key={car.id} className="bg-slate-950/80 border border-slate-800 rounded-2xl p-3 space-y-3">
-                        <div className="flex items-start space-x-3">
-                          <img src={car.image} alt={car.model} className="w-24 h-18 object-cover rounded-xl border border-slate-800 shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <h3 className="text-xs font-bold text-white truncate">{car.model}</h3>
-                              {car.isForSale && (
-                                <span className="bg-emerald-500/20 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-bold">На продаже</span>
-                              )}
-                            </div>
-                            <div className="text-[10px] text-slate-400">Куплен: <span className="text-slate-200 font-mono font-bold">{car.purchasePrice?.toLocaleString()} ₽</span></div>
-                            <div className="text-[10px] text-slate-400">Вложено: <span className="text-amber-400 font-mono font-bold">+{car.investedCost.toLocaleString()} ₽</span></div>
-                            <div className="text-[10px] text-slate-400">Состояние: <span className="text-emerald-400 font-bold">{car.overallCondition}%</span></div>
-                          </div>
-                        </div>
-
-                        {car.defects.length > 0 && (
-                          <div className="bg-slate-900/90 p-2 rounded-xl border border-rose-900/40 space-y-1.5">
-                            <div className="text-[10px] font-bold text-rose-400">
-                              ⚠️ Найденные дефекты ({car.defects.length}):
-                            </div>
-                            {car.defects.map(d => (
-                              <div key={d.id} className="flex items-center justify-between text-[9px] bg-slate-950 p-1.5 rounded-lg">
-                                <span className="text-slate-300">{d.name}</span>
-                                <button
-                                  onClick={() => handleRepair(car, d)}
-                                  className="px-2 py-1 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded"
-                                >
-                                  Починить ({d.repairCost.toLocaleString()} ₽)
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        <div className="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-900">
-                          <button
-                            onClick={() => { sound.playClick(); setTuningCar(car); }}
-                            className="py-1.5 bg-indigo-600/80 hover:bg-indigo-600 text-[10px] font-bold text-white rounded-lg text-center"
-                          >
-                            🛠️ Тюнинг
-                          </button>
-                          <button
-                            onClick={() => { sound.playClick(); setSellingCar(car); }}
-                            className="py-1.5 bg-emerald-600/80 hover:bg-emerald-600 text-[10px] font-bold text-white rounded-lg text-center"
-                          >
-                            📢 Выставить
-                          </button>
-                          <button
-                            onClick={() => {
-                              const quickPrice = Math.round((car.baseMarketPrice * 0.7) / 5000) * 5000;
-                              if (confirm(`Сдать ${car.model} перекупу за ${quickPrice.toLocaleString()} ₽?`)) {
-                                sound.playCash();
-                                setCash(prev => prev + quickPrice);
-                                setGarageCars(prev => prev.filter(c => c.id !== car.id));
-                              }
-                            }}
-                            className="py-1.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 rounded-lg text-center"
-                          >
-                            ⚡ Сдать (-30%)
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* APP 3: CHAT */}
-            {activeApp === 'chat' && (
-              <div className="space-y-3">
-                <h2 className="text-sm font-black font-display uppercase tracking-wider text-slate-200">
-                  💬 Входящие сообщения ({buyerLeads.length})
-                </h2>
-
-                {buyerLeads.length === 0 ? (
-                  <div className="text-center py-12 bg-slate-950/40 rounded-2xl border border-dashed border-slate-800 p-6 space-y-2">
-                    <div className="text-3xl">📨</div>
-                    <div className="text-xs text-slate-400">Пока нет сообщений от покупателей. Выставьте машины на продажу из Гаража и перейдите на следующий день!</div>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {buyerLeads.map(lead => (
-                      <div key={lead.id} className="bg-slate-950/90 border border-slate-800 rounded-2xl p-3 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="font-bold text-xs text-amber-400">{lead.buyerName}</div>
-                          <div className="text-[10px] text-slate-500">Авто: {lead.carModel}</div>
-                        </div>
-                        <div className="text-xs text-slate-200 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
-                          «{lead.message}»
-                        </div>
-                        <div className="flex items-center justify-between text-xs pt-1">
-                          <span className="text-slate-400 text-[10px]">Предложение: <b className="text-emerald-400 font-mono text-xs">{lead.offerPrice.toLocaleString()} ₽</b></span>
-                          <div className="flex space-x-1.5">
-                            <button
-                              onClick={() => {
-                                sound.playClick();
-                                setBuyerLeads(prev => prev.filter(l => l.id !== lead.id));
-                              }}
-                              className="px-2.5 py-1 bg-slate-800 text-slate-400 hover:text-white rounded-lg text-[10px]"
-                            >
-                              Отклонить
-                            </button>
-                            <button
-                              onClick={() => handleSellLead(lead)}
-                              className="px-3 py-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-lg text-[10px]"
-                            >
-                              Продать
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* APP 4: AUCTION */}
-            {activeApp === 'auction' && (
-              <div className="space-y-3">
-                <h2 className="text-sm font-black font-display uppercase tracking-wider text-slate-200">
-                  🔨 Закрытый Конфискат-Аукцион
-                </h2>
-
-                {!activeAuction ? (
-                  <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-center space-y-3">
-                    <div className="text-3xl">🏛️</div>
-                    <div className="text-xs text-slate-300 font-bold">Таможенный и банковский конфискат</div>
-                    <p className="text-[11px] text-slate-400">
-                      Возможность урвать премиальное авто на 40% ниже рынка в борьбе против ботов.
-                    </p>
-                    <button
-                      onClick={() => {
-                        sound.playGavel();
-                        const aucCar = generateCar();
-                        aucCar.tier = 'premium';
-                        const startBid = Math.round(aucCar.baseMarketPrice * 0.55 / 10000) * 10000;
-                        setActiveAuction({
-                          car: aucCar,
-                          currentBid: startBid,
-                          highestBidder: 'Бот «Перекуп_777»',
-                          isPlayerWinning: false
-                        });
-                      }}
-                      className="w-full py-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black rounded-xl text-xs uppercase"
-                    >
-                      Начать аукцион
-                    </button>
-                  </div>
-                ) : (
-                  <div className="bg-slate-950 border border-amber-500/40 rounded-2xl p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-amber-400">Лот: {activeAuction.car.model}</span>
-                    </div>
-
-                    <img src={activeAuction.car.image} alt="Auction Car" className="w-full h-32 object-cover rounded-xl border border-slate-800" />
-
-                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1 text-xs">
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Рыночная цена:</span>
-                        <span className="text-slate-200 font-mono">{activeAuction.car.baseMarketPrice.toLocaleString()} ₽</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Текущая ставка:</span>
-                        <span className="text-emerald-400 font-mono font-black text-sm">{activeAuction.currentBid.toLocaleString()} ₽</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Лидер:</span>
-                        <span className="text-amber-400 font-bold">{activeAuction.highestBidder}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => {
-                          const nextBid = activeAuction.currentBid + 25000;
-                          if (cash < nextBid) { alert('Недостаточно наличных!'); return; }
-                          sound.playClick();
-                          setActiveAuction(prev => ({
-                            ...prev,
-                            currentBid: nextBid,
-                            highestBidder: 'Вы (Игрок)',
-                            isPlayerWinning: true
-                          }));
-                        }}
-                        className="flex-1 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs"
-                      >
-                        Повысить (+25 000 ₽)
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          if (activeAuction.isPlayerWinning) {
-                            sound.playGavel();
-                            sound.playCash();
-                            setCash(prev => prev - activeAuction.currentBid);
-                            setGarageCars(prev => [...prev, { ...activeAuction.car, isOwned: true, purchasePrice: activeAuction.currentBid, investedCost: 0 }]);
-                            alert(`🎉 Поздравляем! Вы выиграли аукцион и забрали ${activeAuction.car.model}!`);
-                            setActiveAuction(null);
-                            setActiveApp('garage');
-                          } else {
-                            alert('Лот ушёл другому перекупу!');
-                            setActiveAuction(null);
-                          }
-                        }}
-                        className="py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs"
-                      >
-                        Удар молотка 🔨
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* APP 5: BANK */}
-            {activeApp === 'bank' && (
-              <div className="space-y-3">
-                <h2 className="text-sm font-black font-display uppercase tracking-wider text-slate-200">
-                  🏦 АвтоБанк & Кредитование
-                </h2>
-
-                <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-3">
-                  <div className="text-xs font-bold text-amber-400">Вклад «Доходный перекуп» (1% в день)</div>
-                  <div className="text-xs text-slate-300">На депозите: <span className="text-emerald-400 font-mono font-bold">{bankDeposit.toLocaleString()} ₽</span></div>
-                  
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => {
-                        if (cash < 50000) { alert('Минимум 50 000 ₽'); return; }
-                        sound.playCash();
-                        setCash(prev => prev - 50000);
-                        setBankDeposit(prev => prev + 50000);
-                      }}
-                      className="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white rounded-xl"
-                    >
-                      + 50 000 ₽
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (bankDeposit < 50000) { alert('На депозите меньше 50 000 ₽'); return; }
-                        sound.playCash();
-                        setBankDeposit(prev => prev - 50000);
-                        setCash(prev => prev + 50000);
-                      }}
-                      className="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white rounded-xl"
-                    >
-                      - 50 000 ₽
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-2">
-                  <div className="text-xs font-bold text-rose-400">Экспресс-микрозайм «До перепродажи»</div>
-                  <button
-                    onClick={() => {
-                      sound.playCash();
-                      setCash(prev => prev + 200000);
-                      alert('Вам зачислено 200 000 ₽ кредита!');
-                    }}
-                    className="w-full py-2 bg-rose-600/80 hover:bg-rose-600 text-white font-bold rounded-xl text-xs"
-                  >
-                    Взять 200 000 ₽
-                  </button>
-                </div>
-              </div>
-            )}
-
-          </div>
-
-          {/* Bottom Dock */}
-          <div className="bg-slate-950 border-t border-slate-800 p-2 shrink-0">
-            <div className="grid grid-cols-5 gap-1 text-[10px]">
-              <button
-                onClick={() => { sound.playClick(); setActiveApp('market'); }}
-                className={`py-1.5 flex flex-col items-center rounded-xl transition-all ${
-                  activeApp === 'market' ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <span>🚗</span>
-                <span className="mt-0.5">Рынок</span>
-              </button>
-
-              <button
-                onClick={() => { sound.playClick(); setActiveApp('garage'); }}
-                className={`py-1.5 flex flex-col items-center rounded-xl transition-all relative ${
-                  activeApp === 'garage' ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <span>🏠</span>
-                <span className="mt-0.5">Гараж</span>
-              </button>
-
-              <button
-                onClick={() => { sound.playClick(); setActiveApp('chat'); }}
-                className={`py-1.5 flex flex-col items-center rounded-xl transition-all relative ${
-                  activeApp === 'chat' ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <span>💬</span>
-                <span className="mt-0.5">Чат</span>
-                {buyerLeads.length > 0 && (
-                  <span className="absolute top-1 right-3 w-2 h-2 bg-rose-500 rounded-full animate-ping" />
-                )}
-              </button>
-
-              <button
-                onClick={() => { sound.playClick(); setActiveApp('auction'); }}
-                className={`py-1.5 flex flex-col items-center rounded-xl transition-all ${
-                  activeApp === 'auction' ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <span>🔨</span>
-                <span className="mt-0.5">Аукцион</span>
-              </button>
-
-              <button
-                onClick={() => { sound.playClick(); setActiveApp('bank'); }}
-                className={`py-1.5 flex flex-col items-center rounded-xl transition-all ${
-                  activeApp === 'bank' ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <span>🏦</span>
-                <span className="mt-0.5">Банк</span>
-              </button>
-            </div>
-          </div>
-
-          {/* INSPECTION MODAL */}
-          {inspectingCar && (
-            <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-sm z-50 p-4 flex flex-col overflow-y-auto">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <h3 className="text-xs font-black font-display text-white">🔍 Осмотр ЛКП: {inspectingCar.model}</h3>
-                <button onClick={() => setInspectingCar(null)} className="text-slate-400 hover:text-white text-sm font-bold">✕</button>
-              </div>
-
-              <div className="space-y-3 mt-3">
-                <div className="text-[11px] text-slate-300">
-                  Нажимайте на детали кузова для замера толщиномером:
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  {Object.entries(inspectingCar.bodyParts).map(([partKey, partVal]) => (
-                    <button
-                      key={partKey}
-                      onClick={() => {
-                        sound.playClick();
-                        setInspectingCar(prev => ({
-                          ...prev,
-                          bodyParts: {
-                            ...prev.bodyParts,
-                            [partKey]: { ...partVal, inspected: true }
-                          }
-                        }));
-                      }}
-                      className={`p-2.5 rounded-xl border text-left transition-all ${
-                        partVal.inspected 
-                          ? (partVal.paintThickness > 300 ? 'bg-rose-950/60 border-rose-600 text-rose-200' : 'bg-emerald-950/60 border-emerald-600 text-emerald-200')
-                          : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="font-bold capitalize">{partKey === 'hood' ? 'Капот' : (partKey === 'roof' ? 'Крыша' : (partKey === 'doorFL' ? 'Дверь водителя' : 'Крыло'))}</div>
-                      <div className="text-[10px] font-mono mt-1">
-                        {partVal.inspected ? `${partVal.paintThickness} мкм ${partVal.paintThickness > 300 ? '⚠️ ШПАТЛЁВКА' : '✅ Завод'}` : '🔍 Замерить ЛКП'}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setInspectingCar(null)}
-                  className="w-full py-2.5 bg-amber-500 text-slate-950 font-bold rounded-xl text-xs mt-4"
-                >
-                  Закрыть осмотр
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* TEST DRIVE MODAL */}
-          {testDrivingCar && (
-            <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-sm z-50 p-4 flex flex-col justify-between">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <h3 className="text-xs font-black font-display text-white">⏱️ Тест-Драйв</h3>
-                <button onClick={() => setTestDrivingCar(null)} className="text-slate-400 hover:text-white text-sm font-bold">✕</button>
-              </div>
-
-              <div className="text-center space-y-4 my-auto">
-                <div className="text-5xl animate-bounce">🏎️💨</div>
-                <div className="text-sm font-bold text-white">{testDrivingCar.model}</div>
-                <div className="bg-slate-900 border border-slate-800 p-3 rounded-2xl text-xs text-slate-300 space-y-1">
-                  {testDrivingCar.defects.length > 0 ? (
-                    <div className="text-rose-400 font-bold">⚠️ Обнаружен посторонний стук в подвеске и вибрация!</div>
-                  ) : (
-                    <div className="text-emerald-400 font-bold">✅ Мотор шепчет, коробка переключает плавно!</div>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => sound.playHorn()}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs rounded-xl"
-                >
-                  📢 Посигналить
-                </button>
-              </div>
-
-              <button
-                onClick={() => setTestDrivingCar(null)}
-                className="w-full py-2.5 bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs"
-              >
-                Завершить
-              </button>
-            </div>
-          )}
-
-          {/* BARGAIN MODAL */}
-          {bargainingCar && (
-            <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-sm z-50 p-4 flex flex-col justify-between overflow-y-auto">
-              <div>
-                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                  <h3 className="text-xs font-black font-display text-white">💬 Торг с продавцом ({bargainingCar.seller.name})</h3>
-                  <button onClick={() => setBargainingCar(null)} className="text-slate-400 hover:text-white text-sm font-bold">✕</button>
-                </div>
-
-                <div className="space-y-3 mt-3 text-xs">
-                  <div className="bg-slate-900 border border-slate-800 p-3 rounded-2xl">
-                    <div className="text-slate-400 text-[10px]">Цена продавца: <b className="text-amber-400 font-mono text-xs">{bargainingCar.askingPrice.toLocaleString()} ₽</b></div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <button
-                      onClick={() => {
-                        sound.playClick();
-                        const discount = Math.round(bargainingCar.askingPrice * 0.06 / 5000) * 5000;
-                        setBargainingCar(prev => ({
-                          ...prev,
-                          askingPrice: Math.max(prev.seller.minPriceLimit, prev.askingPrice - discount)
-                        }));
-                      }}
-                      className="w-full p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left text-slate-200 text-xs"
-                    >
-                      «У вас тут крашеные детали. Скидывайте 6%!»
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        sound.playClick();
-                        const discount = Math.round(bargainingCar.askingPrice * 0.1 / 5000) * 5000;
-                        setBargainingCar(prev => ({
-                          ...prev,
-                          askingPrice: Math.max(prev.seller.minPriceLimit, prev.askingPrice - discount)
-                        }));
-                      }}
-                      className="w-full p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left text-slate-200 text-xs"
-                    >
-                      «Забираю прямо сейчас за наличку!»
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={() => handleBuyCar(bargainingCar, bargainingCar.askingPrice)}
-                className="w-full py-2.5 bg-emerald-500 text-slate-950 font-black rounded-xl text-xs uppercase"
-              >
-                Купить за {bargainingCar.askingPrice.toLocaleString()} ₽
-              </button>
-            </div>
-          )}
-
-          {/* TUNING MODAL */}
-          {tuningCar && (
-            <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-sm z-50 p-4 flex flex-col overflow-y-auto">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <h3 className="text-xs font-black font-display text-white">🛠️ Тюнинг: {tuningCar.model}</h3>
-                <button onClick={() => setTuningCar(null)} className="text-slate-400 hover:text-white text-sm font-bold">✕</button>
-              </div>
-
-              <div className="space-y-2.5 mt-3 flex-1 overflow-y-auto">
-                {tuningCar.tuning.map(t => (
-                  <div key={t.id} className="bg-slate-900 border border-slate-800 p-2.5 rounded-xl flex items-center justify-between text-xs">
-                    <div>
-                      <div className="font-bold text-white">{t.name}</div>
-                      <div className="text-[10px] text-slate-400">{t.desc}</div>
-                    </div>
-                    {t.installed ? (
-                      <span className="text-[10px] text-emerald-400 font-bold">Установлено</span>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          if (cash < t.cost) { alert('Недостаточно наличных!'); return; }
-                          sound.playCash();
-                          setCash(prev => prev - t.cost);
-                          const updatedCar = {
-                            ...tuningCar,
-                            investedCost: tuningCar.investedCost + t.cost,
-                            tuning: tuningCar.tuning.map(item => item.id === t.id ? { ...item, installed: true } : item)
-                          };
-                          setTuningCar(updatedCar);
-                          setGarageCars(prev => prev.map(c => c.id === updatedCar.id ? updatedCar : c));
-                        }}
-                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] rounded-lg"
-                      >
-                        {t.cost.toLocaleString()} ₽
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <button
-                onClick={() => setTuningCar(null)}
-                className="w-full py-2.5 bg-amber-500 text-slate-950 font-bold rounded-xl text-xs mt-3"
-              >
-                Готово
-              </button>
-            </div>
-          )}
-
-          {/* SELL LISTING MODAL */}
-          {sellingCar && (
-            <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-sm z-50 p-4 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                  <h3 className="text-xs font-black font-display text-white">📢 Выставить: {sellingCar.model}</h3>
-                  <button onClick={() => setSellingCar(null)} className="text-slate-400 hover:text-white text-sm font-bold">✕</button>
-                </div>
-
-                <div className="space-y-3 mt-4 text-xs">
-                  <div>
-                    <label className="text-slate-400 text-[10px] block mb-1">Укажите цену продажи (₽):</label>
-                    <input
-                      type="number"
-                      defaultValue={Math.round(((sellingCar.purchasePrice || sellingCar.baseMarketPrice) + sellingCar.investedCost) * 1.25 / 5000) * 5000}
-                      id="sellPriceInput"
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold text-sm outline-none"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={() => {
-                  const inputVal = Number(document.getElementById('sellPriceInput').value);
-                  if (!inputVal || inputVal <= 0) return;
-                  sound.playClick();
-                  setGarageCars(prev => prev.map(c => c.id === sellingCar.id ? { ...c, isForSale: true, myListingPrice: inputVal } : c));
-                  setSellingCar(null);
-                  alert(`✅ Объявление опубликовано! Ожидайте сообщений в Чате.`);
-                }}
-                className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs uppercase"
-              >
-                Опубликовать
-              </button>
-            </div>
-          )}
-
-        </div>
-      );
+    var rechargeBtn = document.getElementById("rechargeBtn");
+    var remain = Math.ceil((state.rechargeUntil - Date.now()) / 1000);
+    if (remain > 0 && state.energy < state.maxEnergy) {
+      rechargeBtn.disabled = true; document.getElementById("rechargeHint").textContent = remain + "с";
+    } else if (state.energy >= state.maxEnergy) {
+      rechargeBtn.disabled = true; document.getElementById("rechargeHint").textContent = "енергія повна";
+    } else {
+      rechargeBtn.disabled = false; document.getElementById("rechargeHint").textContent = "готово";
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+    renderBusiness();
+    renderGarage();
+    renderMarket();
+  }
+
+  function renderBusiness(){
+    var wrap = document.getElementById("tab-business");
+    wrap.innerHTML = "";
+    BUSINESSES.forEach(function(b){
+      var owned = state.businesses[b.id] || 0;
+      var cost = businessCost(b);
+      var row = document.createElement("div");
+      row.className = "row";
+      row.innerHTML = '<div class="who">' + b.emoji + ' ' + b.name +
+        '<span class="sub">є: ' + owned + ' · +' + formatMoney(b.baseIncome) + '/сек кожен</span></div>' +
+        '<button data-id="' + b.id + '" ' + (state.balance < cost ? "disabled" : "") + '>' + formatMoney(cost) + '</button>';
+      row.querySelector("button").addEventListener("click", function(){ buyBusiness(b.id); });
+      wrap.appendChild(row);
+    });
+  }
+
+  function renderGarage(){
+    var wrap = document.getElementById("tab-garage");
+    wrap.innerHTML = '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;">машина не дає доходу, зате знижує витрату енергії на роботі з 5⚡ до 4⚡</div>';
+    CARS.forEach(function(c){
+      var owned = state.cars[c.id];
+      var row = document.createElement("div");
+      row.className = "row";
+      row.innerHTML = '<div class="who">' + c.emoji + ' ' + c.name +
+        '<span class="sub">' + (owned ? "у власності" : formatMoney(c.price)) + '</span></div>';
+      var btn = document.createElement("button");
+      if (owned) {
+        btn.textContent = "продати за " + formatMoney(Math.floor(c.price * 0.8));
+        btn.className = "sell";
+        btn.addEventListener("click", function(){ sellCar(c.id); });
+      } else {
+        btn.textContent = "купити";
+        btn.disabled = state.balance < c.price;
+        btn.addEventListener("click", function(){ buyCar(c.id); });
+      }
+      row.appendChild(btn);
+      wrap.appendChild(row);
+    });
+  }
+
+  function renderMarket(){
+    var wrap = document.getElementById("tab-market");
+    var m = state.market;
+    var hist = m.history.slice(-20);
+    var prevPrice = hist.length > 1 ? hist[hist.length-2] : m.price;
+    var dir = m.price >= prevPrice ? "up" : "down";
+    var pct = prevPrice ? ((m.price - prevPrice) / prevPrice * 100).toFixed(2) : "0.00";
+    var max = Math.max.apply(null, hist), min = Math.min.apply(null, hist);
+    var range = Math.max(max - min, 1);
+    var bars = hist.map(function(v){ var h = 6 + ((v-min)/range)*30; return '<div style="height:'+h.toFixed(1)+'px;"></div>'; }).join("");
+    var pl = m.qty > 0 ? (m.price - m.avgCost) * m.qty : 0;
+
+    var html =
+      '<div class="market-price"><div class="p ' + dir + '">$' + m.price.toFixed(2) + '</div>' +
+      '<div class="chg">WRD (бот) · ' + (dir==="up"?"▲":"▼") + ' ' + pct + '%</div></div>' +
+      '<div class="spark">' + bars + '</div>' +
+      '<div class="marketrow">' +
+        '<button class="buy" id="mBuy">купити 1</button>' +
+        '<button class="buy" id="mBuy10">купити 10</button>' +
+        '<button class="sell" id="mSellAll">продати все</button>' +
+      '</div>' +
+      '<div class="holding">у портфелі: ' + m.qty + ' WRD' + (m.qty>0 ? " · " + (pl>=0?"+":"") + formatMoney(pl) : "") + '</div>';
+
+    html += '<div class="sectionTitle">P2P — трейди з іншими гравцями</div>';
+    if (!online.ready) {
+      html += '<div class="offlineNote">P2P-трейди доступні тільки в онлайн-режимі (коли гра відкрита через Claude в межах твоєї організації).</div>';
+    } else {
+      html += '<div class="p2pform"><input id="p2pQty" type="number" min="1" placeholder="к-сть WRD">' +
+              '<input id="p2pPrice" type="number" min="0.01" step="0.01" placeholder="ціна за од.">' +
+              '<button id="p2pPost">виставити</button></div>';
+      if (lastOffers === null) {
+        html += '<div class="offlineNote">завантаження офферів…</div>';
+      } else if (lastOffers.length === 0) {
+        html += '<div class="offlineNote">поки немає активних офферів. Виставь свій!</div>';
+      } else {
+        lastOffers.forEach(function(o){
+          var mine = o.sellerId === online.myId;
+          html += '<div class="row"><div class="who">' + (o.sellerName || "Гравець") +
+            '<span class="sub">' + o.qty + ' WRD · ' + formatMoney(o.price) + '/од · разом ' + formatMoney(o.qty*o.price) + '</span></div>' +
+            '<button data-offer="' + o._id + '" data-mine="' + (mine?1:0) + '" data-qty="' + o.qty + '" data-price="' + o.price + '" data-seller="' + o.sellerId + '" class="' + (mine?"sell":"") + '">' +
+            (mine ? "скасувати" : "купити") + '</button></div>';
+        });
+      }
+      html += '<button class="refreshBtn" id="offersRefresh">↻ оновити офери</button>';
+    }
+    wrap.innerHTML = html;
+
+    document.getElementById("mBuy").disabled = state.balance < m.price;
+    document.getElementById("mBuy10").disabled = state.balance < m.price * 10;
+    document.getElementById("mSellAll").disabled = m.qty <= 0;
+    document.getElementById("mBuy").addEventListener("click", function(){ buyMarket(1); });
+    document.getElementById("mBuy10").addEventListener("click", function(){ buyMarket(10); });
+    document.getElementById("mSellAll").addEventListener("click", function(){ sellMarket(m.qty); });
+
+    if (online.ready) {
+      var postBtn = document.getElementById("p2pPost");
+      if (postBtn) postBtn.addEventListener("click", function(){
+        postOffer(document.getElementById("p2pQty").value, document.getElementById("p2pPrice").value);
+      });
+      var refreshBtn = document.getElementById("offersRefresh");
+      if (refreshBtn) refreshBtn.addEventListener("click", loadOffers);
+      wrap.querySelectorAll("button[data-offer]").forEach(function(btn){
+        btn.addEventListener("click", function(){
+          var mine = btn.getAttribute("data-mine") === "1";
+          var qty = Number(btn.getAttribute("data-qty"));
+          var price = Number(btn.getAttribute("data-price"));
+          if (mine) cancelOffer(btn.getAttribute("data-offer"), qty);
+          else buyOffer(btn.getAttribute("data-offer"), btn.getAttribute("data-seller"), qty, price);
+        });
+      });
+    }
+  }
+
+  function renderChat(){
+    var wrap = document.getElementById("tab-chat");
+    if (!online.ready) {
+      wrap.innerHTML = '<div class="offlineNote">Загальний чат доступний, коли гра відкрита через посилання Claude в межах твоєї організації — тоді всі гравці бачать одні повідомлення.</div>';
+      return;
+    }
+    var log = chatMessages.map(function(m){
+      var d = new Date(m.ts || Date.now());
+      function p(n){ return (n<10?"0":"")+n; }
+      return '<div class="chatmsg"><span class="nm"></span><span class="tx"></span><span class="tm">' + p(d.getHours())+":"+p(d.getMinutes()) + '</span></div>';
+    });
+    wrap.innerHTML = '<div class="chatlog" id="chatlog"></div>' +
+      '<div class="chatform"><input id="chatInput" type="text" maxlength="200" placeholder="написати в чат..."><button id="chatSend">➤</button></div>';
+    var logEl = document.getElementById("chatlog");
+    chatMessages.forEach(function(m){
+      var d = new Date(m.ts || Date.now());
+      function p(n){ return (n<10?"0":"")+n; }
+      var row = document.createElement("div");
+      row.className = "chatmsg";
+      var nm = document.createElement("span"); nm.className = "nm"; nm.textContent = (m.name || "Гравець") + ":";
+      var tx = document.createElement("span"); tx.textContent = m.text || "";
+      var tm = document.createElement("span"); tm.className = "tm"; tm.textContent = p(d.getHours())+":"+p(d.getMinutes());
+      row.appendChild(nm); row.appendChild(tx); row.appendChild(tm);
+      logEl.appendChild(row);
+    });
+    logEl.scrollTop = logEl.scrollHeight;
+    document.getElementById("chatSend").addEventListener("click", sendChatFromInput);
+    document.getElementById("chatInput").addEventListener("keydown", function(e){ if (e.key === "Enter") sendChatFromInput(); });
+  }
+  function sendChatFromInput(){
+    var input = document.getElementById("chatInput");
+    if (!input || !input.value.trim()) return;
+    sendChat(input.value);
+    input.value = "";
+  }
+
+  function renderRating(list){
+    var wrap = document.getElementById("tab-rating");
+    if (!online.ready) {
+      wrap.innerHTML = '<div class="offlineNote">Загальний рейтинг гравців доступний в онлайн-режимі (через посилання Claude в межах твоєї організації).</div>';
+      return;
+    }
+    var html = '<button class="refreshBtn" id="ratingRefresh">↻ оновити рейтинг</button>';
+    if (list === null) {
+      html += '<div class="offlineNote">не вдалося завантажити рейтинг</div>';
+    } else if (list.length === 0) {
+      html += '<div class="offlineNote">рейтинг порожній — будь першим!</div>';
+    } else {
+      list.forEach(function(p, i){
+        html += '<div class="ratingrow"><span class="rk">#' + (i+1) + '</span><span class="nm"></span><span class="bal">' + formatMoney(p.balance||0) + '</span></div>';
+      });
+    }
+    wrap.innerHTML = html;
+    if (list && list.length) {
+      var rows = wrap.querySelectorAll(".ratingrow .nm");
+      list.forEach(function(p, i){ rows[i].textContent = p.name || "Гравець"; });
+    }
+    var rb = document.getElementById("ratingRefresh");
+    if (rb) rb.addEventListener("click", loadRating);
+  }
+
+  function renderLog(){
+    var box = document.getElementById("logbox");
+    box.innerHTML = state.log.map(function(e){ return '<div class="entry"><span class="t">'+e.t+'</span>'+e.text+'</div>'; }).join("");
+  }
+
+  // ===================== actions =====================
+
+  function work(){
+    var cost = workEnergyCost();
+    if (state.energy < cost) { toast("Замало енергії"); return; }
+    state.energy -= cost; state.balance += 25;
+    addLog("+$25 зарплата" + (hasAnyCar() ? " (доїхав на машині)" : ""));
+    render(); save(); scheduleSync();
+  }
+  function recharge(){
+    var remain = Math.ceil((state.rechargeUntil - Date.now())/1000);
+    if (remain > 0 || state.energy >= state.maxEnergy) return;
+    state.energy = state.maxEnergy;
+    state.rechargeUntil = Date.now() + RECHARGE_COOLDOWN*1000;
+    addLog("енергію відновлено"); toast("Енергію відновлено!");
+    render(); save();
+  }
+  function buyBusiness(id){
+    var b = BUSINESSES.filter(function(x){ return x.id===id; })[0];
+    if (!b) return;
+    var cost = businessCost(b);
+    if (state.balance < cost) { toast("Недостатньо коштів"); return; }
+    state.balance -= cost; state.businesses[id] = (state.businesses[id]||0) + 1;
+    addLog("куплено: " + b.name);
+    render(); save(); scheduleSync();
+  }
+  function buyCar(id){
+    var c = CARS.filter(function(x){ return x.id===id; })[0];
+    if (!c || state.cars[id]) return;
+    if (state.balance < c.price) { toast("Недостатньо коштів"); return; }
+    state.balance -= c.price; state.cars[id] = true;
+    addLog("нова тачка: " + c.name);
+    render(); save(); scheduleSync();
+  }
+  function sellCar(id){
+    var c = CARS.filter(function(x){ return x.id===id; })[0];
+    if (!c || !state.cars[id]) return;
+    var refund = Math.floor(c.price*0.8);
+    state.balance += refund; state.cars[id] = false;
+    addLog("продано: " + c.name + " (" + formatMoney(refund) + ")");
+    render(); save(); scheduleSync();
+  }
+  function buyMarket(qty){
+    var m = state.market; var cost = m.price * qty;
+    if (state.balance < cost) { toast("Недостатньо коштів"); return; }
+    state.balance -= cost;
+    var totalCost = m.avgCost*m.qty + cost;
+    m.qty += qty; m.avgCost = totalCost/m.qty;
+    addLog("куплено " + qty + " WRD за " + formatMoney(cost));
+    render(); save(); scheduleSync();
+  }
+  function sellMarket(qty){
+    var m = state.market;
+    if (qty <= 0 || m.qty < qty) return;
+    var proceeds = m.price*qty;
+    state.balance += proceeds; m.qty -= qty;
+    if (m.qty === 0) m.avgCost = 0;
+    addLog("продано " + qty + " WRD за " + formatMoney(proceeds));
+    render(); save(); scheduleSync();
+  }
+
+  // ===================== casino =====================
+
+  function renderCasino(resultHtml){
+    var wrap = document.getElementById("tab-casino");
+    var betVal = wrap.querySelector && wrap.querySelector("#betInput") ? wrap.querySelector("#betInput").value : 100;
+    wrap.innerHTML =
+      '<div class="casino-reels" id="reels"><div class="reel">🍒</div><div class="reel">🍋</div><div class="reel">⭐</div></div>' +
+      '<div class="casino-result" id="casinoResult">' + (resultHtml || "зроби ставку і натисни SPIN") + '</div>' +
+      '<div class="betrow"><input id="betInput" type="number" min="10" step="10" value="' + (betVal||100) + '"><button id="spinBtn">🎰 SPIN</button></div>' +
+      '<div class="holding">3 однакові = виграш · 7️⃣ x10 · 💎 x6 · ⭐ x4 · 🍋 x2.5 · 🍒 x2</div>';
+    document.getElementById("spinBtn").addEventListener("click", spinCasino);
+  }
+  var spinning = false;
+  function spinCasino(){
+    if (spinning) return;
+    var betInput = document.getElementById("betInput");
+    var bet = Math.floor(Number(betInput.value)) || 0;
+    if (bet < 10) { toast("Мінімальна ставка $10"); return; }
+    if (bet > state.balance) { toast("Недостатньо коштів"); return; }
+    spinning = true; state.balance -= bet; render();
+    var reels = document.querySelectorAll("#reels .reel");
+    var spins = 12, i = 0;
+    var interval = setInterval(function(){
+      reels.forEach(function(r){ r.textContent = SLOT_SYMBOLS[Math.floor(Math.random()*SLOT_SYMBOLS.length)]; });
+      i++;
+      if (i >= spins) { clearInterval(interval); finishSpin(reels, bet, betInput.value); }
+    }, 80);
+  }
+  function finishSpin(reels, bet, betInputValue){
+    var final = [0,1,2].map(function(){ return SLOT_SYMBOLS[Math.floor(Math.random()*SLOT_SYMBOLS.length)]; });
+    reels.forEach(function(r, idx){ r.textContent = final[idx]; });
+    var win = 0, msg = "";
+    if (final[0]===final[1] && final[1]===final[2]) {
+      var mult = SLOT_PAYOUT[final[0]] || 2;
+      win = Math.floor(bet*mult); state.balance += win;
+      msg = "🎉 3 в ряд! Виграш " + formatMoney(win) + " (x" + mult + ")";
+      addLog("казино: виграно " + formatMoney(win)); toast("Виграш " + formatMoney(win) + "!");
+    } else if (final[0]===final[1] || final[1]===final[2] || final[0]===final[2]) {
+      win = Math.floor(bet*0.5); state.balance += win;
+      msg = "2 в ряд — половину ставки повернуто: " + formatMoney(win);
+      addLog("казино: повернуто " + formatMoney(win));
+    } else {
+      msg = "Не сьогодні. Втрачено " + formatMoney(bet);
+      addLog("казино: втрачено " + formatMoney(bet));
+    }
+    spinning = false; save(); render(); scheduleSync();
+    renderCasino(msg);
+    document.getElementById("betInput").value = betInputValue;
+  }
+
+  // ===================== tabs / name =====================
+
+  function setActiveTab(name){
+    currentTab = name;
+    document.querySelectorAll(".tab").forEach(function(t){ t.classList.toggle("active", t.dataset.tab===name); });
+    ["business","casino","garage","market","chat","rating"].forEach(function(t){
+      document.getElementById("tab-"+t).style.display = (t===name) ? "block" : "none";
+    });
+    if (name === "casino") renderCasino();
+    if (name === "market") loadOffers();
+    if (name === "chat") renderChat();
+    if (name === "rating") loadRating();
+  }
+  function editName(){
+    var input = prompt("Введи ім'я гравця:", state.name);
+    if (input && input.trim()) {
+      state.name = input.trim().slice(0,20);
+      addLog("ім'я змінено на " + state.name);
+      render(); save(); scheduleSync();
+    }
+  }
+
+  // ===================== background music (procedural, no files) =====================
+
+  var audioCtx = null, masterGain = null, musicTimer = null, musicOn = false;
+  var SCALE = [261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25]; // C major pentatonic-ish, 2 octaves
+  var LEAD_PATTERN = [0,2,4,2,5,4,2,1,0,3,4,5];
+  var BASS_PATTERN = [0,3,5,3];
+  var NOTE_DUR = 0.24;
+
+  function ensureAudio(){
+    if (!audioCtx) {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new Ctx();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.18;
+      masterGain.connect(audioCtx.destination);
+    }
+  }
+  function playNote(freq, time, dur, type, vol){
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(vol, time + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+    osc.connect(gain); gain.connect(masterGain);
+    osc.start(time); osc.stop(time + dur + 0.05);
+  }
+  function scheduleLoop(){
+    if (!musicOn) return;
+    var start = audioCtx.currentTime + 0.05;
+    LEAD_PATTERN.forEach(function(idx, i){
+      playNote(SCALE[idx], start + i*NOTE_DUR, NOTE_DUR*0.85, "triangle", 0.05);
+      if (i % 3 === 0) playNote(SCALE[idx]*2, start + i*NOTE_DUR, NOTE_DUR*0.5, "sine", 0.02);
+    });
+    BASS_PATTERN.forEach(function(idx, i){
+      playNote(SCALE[idx]/2, start + i*(NOTE_DUR*3), NOTE_DUR*2.6, "sine", 0.07);
+    });
+    var loopDur = LEAD_PATTERN.length * NOTE_DUR;
+    musicTimer = setTimeout(scheduleLoop, loopDur * 1000);
+  }
+  function toggleMusic(){
+    ensureAudio();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    musicOn = !musicOn;
+    var btn = document.getElementById("musicBtn");
+    if (musicOn) {
+      btn.textContent = "🎵 музика"; btn.classList.add("on");
+      scheduleLoop();
+    } else {
+      btn.textContent = "🔇 музика"; btn.classList.remove("on");
+      if (musicTimer) clearTimeout(musicTimer);
+    }
+  }
+
+  // ===================== game loop =====================
+
+  function tick(){
+    state.tickCounter++;
+    var income = totalIncomePerSec();
+    if (income > 0) state.balance += income;
+    if (state.tickCounter % 5 === 0 && state.energy < state.maxEnergy) {
+      state.energy = Math.min(state.maxEnergy, state.energy + 1);
+    }
+    if (state.tickCounter % 4 === 0) {
+      var m = state.market;
+      var changePct = (Math.random()*10 - 4.5) / 100;
+      var newPrice = Math.max(1, m.price * (1 + changePct));
+      m.price = Math.round(newPrice*100)/100;
+      m.history.push(m.price);
+      if (m.history.length > 60) m.history.shift();
+      if (currentTab === "market") renderMarket();
+    }
+    render();
+    if (state.tickCounter % 5 === 0) save();
+    if (state.tickCounter % 20 === 0) scheduleSync();
+  }
+
+  // ===================== init =====================
+
+  function init(){
+    document.getElementById("workBtn").addEventListener("click", work);
+    document.getElementById("rechargeBtn").addEventListener("click", recharge);
+    document.getElementById("nameDisplay").addEventListener("click", editName);
+    document.getElementById("musicBtn").addEventListener("click", toggleMusic);
+    document.querySelectorAll(".tab").forEach(function(t){ t.addEventListener("click", function(){ setActiveTab(t.dataset.tab); }); });
+
+    if (state.log.length === 0) addLog("вітаємо в life.exe — час будувати імперію");
+
+    render();
+    renderCasino();
+    setInterval(tick, 1000);
+    window.addEventListener("beforeunload", save);
+
+    initOnline();
+  }
+
+  init();
+})();
+</script>
 </body>
 </html>
