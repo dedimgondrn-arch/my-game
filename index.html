@@ -1,401 +1,1078 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Симулятор Перекупа Авто</title>
-  <!-- Tailwind CSS CDN -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Симулятор Перекупа & Автодилера — Standalone Edition</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React & ReactDOM CDN -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <!-- Babel для запуска React прямо в браузере -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    h1, h2, h3, .font-display { font-family: 'Unbounded', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-2 font-sans select-none">
-  <div id="root"></div>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-2 sm:p-4 select-none antialiased">
+  <div id="root" class="w-full max-w-xl"></div>
 
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // Web Audio Synthesizer
+    // --- SOUND SYNTHESIS ENGINE (Web Audio API) ---
     class SoundEngine {
-      constructor() { this.ctx = null; this.enabled = true; }
-      init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
-      playTone(freq, type = 'sine', duration = 0.1, gainVal = 0.1) {
-        if (!this.enabled) return;
-        try {
-          this.init();
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      toggleMute() {
+        this.muted = !this.muted;
+        return this.muted;
+      }
+      playClick() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.04);
+      }
+      playCash() {
+        if (this.muted) return;
+        this.init();
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
-          osc.type = type;
+          const time = this.ctx.currentTime + idx * 0.05;
+          osc.frequency.setValueAtTime(freq, time);
+          gain.gain.setValueAtTime(0.15, time);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(time);
+          osc.stop(time + 0.12);
+        });
+      }
+      playHorn() {
+        if (this.muted) return;
+        this.init();
+        [440, 554.37].forEach(freq => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
           osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-          gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start();
-          osc.stop(this.ctx.currentTime + duration);
-        } catch(e) {}
+          osc.stop(this.ctx.currentTime + 0.25);
+        });
       }
-      playTap() { this.playTone(800, 'sine', 0.05, 0.05); }
-      playCash() { 
-        this.playTone(523, 'triangle', 0.1, 0.1);
-        setTimeout(() => this.playTone(659, 'triangle', 0.1, 0.1), 80);
-        setTimeout(() => this.playTone(784, 'triangle', 0.2, 0.15), 160);
+      playGavel() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.12);
       }
-      playEngine() { this.playTone(110, 'sawtooth', 0.3, 0.15); }
-      playGavel() { this.playTone(220, 'square', 0.15, 0.2); }
-      playWrench() { this.playTone(400, 'triangle', 0.1, 0.1); }
-      playAlert() { this.playTone(330, 'square', 0.2, 0.15); }
     }
     const sound = new SoundEngine();
 
-    const CAR_MODELS = [
-      { brand: 'ВАЗ', model: '2107 «Семёрка»', year: 2005, basePrice: 450, class: 'economy', color: '#991b1b', colorName: 'Бордовый' },
-      { brand: 'Lada', model: 'Priora Хэтчбек', year: 2011, basePrice: 1200, class: 'economy', color: '#1e293b', colorName: 'Космос' },
-      { brand: 'Hyundai', model: 'Solaris 1.6', year: 2014, basePrice: 3800, class: 'comfort', color: '#f8fafc', colorName: 'Белый' },
-      { brand: 'Volkswagen', model: 'Passat B6', year: 2008, basePrice: 4200, class: 'comfort', color: '#334155', colorName: 'Серый металлик' },
-      { brand: 'Toyota', model: 'Camry 3.5 V50', year: 2013, basePrice: 8500, class: 'comfort', color: '#0f172a', colorName: 'Черный' },
-      { brand: 'BMW', model: '5-Series E39 M', year: 2001, basePrice: 5200, class: 'sports', color: '#1e1b4b', colorName: 'Синий' },
-      { brand: 'Mercedes-Benz', model: 'E-Class W211', year: 2005, basePrice: 6100, class: 'comfort', color: '#475569', colorName: 'Серебро' },
-      { brand: 'BMW', model: 'M5 F90 Comp', year: 2019, basePrice: 42000, class: 'sports', color: '#4c1d95', colorName: 'Фиолетовый' },
-      { brand: 'Porsche', model: 'Cayenne GTS', year: 2016, basePrice: 28000, class: 'suv', color: '#831843', colorName: 'Малиновый' },
-      { brand: 'Toyota', model: 'Land Cruiser 200', year: 2015, basePrice: 34000, class: 'suv', color: '#020617', colorName: 'Черный' },
-      { brand: 'ГАЗ', model: '24 «Волга» Раритет', year: 1982, basePrice: 2900, class: 'retro', color: '#3f6212', colorName: 'Оливковый' }
+    // --- CAR TEMPLATES & CATALOG ---
+    const CAR_TEMPLATES = [
+      {
+        model: 'Lada Priora 1.6 MT (Хэтчбек)',
+        year: 2011,
+        tier: 'budget',
+        basePrice: 280000,
+        image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=700&auto=format&fit=crop&q=80',
+        engine: '1.6 л / 98 л.с. / Бензин',
+        transmission: 'Механика',
+        drive: 'Передний'
+      },
+      {
+        model: 'ВАЗ 2107 «Семёрка»',
+        year: 2008,
+        tier: 'budget',
+        basePrice: 110000,
+        image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=700&auto=format&fit=crop&q=80',
+        engine: '1.6 л / 74 л.с. / Инжектор',
+        transmission: 'Механика',
+        drive: 'Задний'
+      },
+      {
+        model: 'Hyundai Solaris 1.6 AT',
+        year: 2016,
+        tier: 'mid',
+        basePrice: 880000,
+        image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=700&auto=format&fit=crop&q=80',
+        engine: '1.6 л / 123 л.с. / Бензин',
+        transmission: 'Автомат',
+        drive: 'Передний'
+      },
+      {
+        model: 'Toyota Camry 3.5 V6 (XV50)',
+        year: 2014,
+        tier: 'mid',
+        basePrice: 1650000,
+        image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=700&auto=format&fit=crop&q=80',
+        engine: '3.5 л / 249 л.с. / Бензин',
+        transmission: 'Автомат',
+        drive: 'Передний'
+      },
+      {
+        model: 'BMW 530i E60 M-Sport',
+        year: 2007,
+        tier: 'premium',
+        basePrice: 950000,
+        image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=700&auto=format&fit=crop&q=80',
+        engine: '3.0 л / 272 л.с. / N52B30',
+        transmission: 'Автомат',
+        drive: 'Задний'
+      },
+      {
+        model: 'Mercedes-Benz E350 W211',
+        year: 2006,
+        tier: 'premium',
+        basePrice: 890000,
+        image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=700&auto=format&fit=crop&q=80',
+        engine: '3.5 л / 272 л.с. / M272',
+        transmission: 'Автомат',
+        drive: 'Полный 4MATIC'
+      },
+      {
+        model: 'Porsche Cayenne Turbo 4.8',
+        year: 2008,
+        tier: 'legendary',
+        basePrice: 1250000,
+        image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=700&auto=format&fit=crop&q=80',
+        engine: '4.8 л / 500 л.с. / V8 Twin-Turbo',
+        transmission: 'Автомат',
+        drive: 'Полный'
+      }
     ];
 
-    const SELLERS = [
-      { name: 'Дядя Витя (дедушка)', type: 'grandpa', phrase: 'Дедушка только по выходным ездил!' },
-      { name: 'Арсен Срочный', type: 'hasty', phrase: 'Брат, срочно нужны деньги, отдаю с торгом!' },
-      { name: 'Максим Мажор', type: 'greedy', phrase: 'Машина идеал, торга нет и не будет.' },
-      { name: 'Серый Перекуп', type: 'scammer', phrase: 'Не бит, не крашен, один хозяин.' }
+    const DEFECTS_DATABASE = [
+      { id: 'paint_hood', name: 'Капот в шпатлёвке (вторичный окрас)', type: 'paint', discDiscount: 25000, repairCost: 14000, discovered: false },
+      { id: 'paint_door', name: 'Дверь водителя крашена (слой 380 мкм)', type: 'paint', discDiscount: 18000, repairCost: 10000, discovered: false },
+      { id: 'engine_oil', name: 'Масложор и течь прокладки ГБЦ', type: 'engine', discDiscount: 40000, repairCost: 22000, discovered: false },
+      { id: 'gearbox_synchro', name: 'Хруст 2-й передачи при переключении', type: 'gearbox', discDiscount: 30000, repairCost: 16000, discovered: false },
+      { id: 'suspension_lever', name: 'Стук шаровой и люфт сайлентблоков', type: 'suspension', discDiscount: 15000, repairCost: 8000, discovered: false },
+      { id: 'obd_catalyst', name: 'Ошибка P0420: Низкая эффективность катализатора', type: 'electronics', discDiscount: 35000, repairCost: 18000, discovered: false }
     ];
 
-    function generateCar(id) {
-      const template = CAR_MODELS[Math.floor(Math.random() * CAR_MODELS.length)];
-      const seller = SELLERS[Math.floor(Math.random() * SELLERS.length)];
-      const mileage = Math.floor(Math.random() * 220000) + 40000;
-      const isScam = seller.type === 'scammer' && Math.random() < 0.6;
-      
-      const defects = {
-        engine: Math.floor(Math.random() * 40) + 60,
-        gearbox: Math.floor(Math.random() * 40) + 60,
-        bodywork: Math.floor(Math.random() * 40) + 60,
-        hasEngineKnock: Math.random() < 0.25,
-        hasGearboxSlip: Math.random() < 0.25,
-        paintThickness: isScam ? 450 : Math.floor(Math.random() * 60) + 110,
-        legalIssue: isScam ? 'Залог в банке' : 'Чистая'
-      };
+    const TUNING_OPTIONS = [
+      { id: 'torus_wheels', name: 'Диски «Торусы R16»', category: 'wheels', cost: 32000, valueBoost: 55000, installed: false, desc: 'Легендарные катки для суеты. Студенты и пацаны с района в восторге!' },
+      { id: 'tint_bunker', name: 'Тонировка «Вкруг 5% Бункер»', category: 'tint', cost: 9000, valueBoost: 18000, installed: false, desc: 'Глухой бункер. Скрывает салон от лишних глаз.' },
+      { id: 'lowering_springs', name: 'Занижение -70 мм (Короткоходки)', category: 'suspension', cost: 18000, valueBoost: 28000, installed: false, desc: 'Вид имеет! Чёткая посадка по заветам стиля.' },
+      { id: 'stinger_exhaust', name: 'Прямоток Stinger Sport 4-2-1', category: 'exhaust', cost: 24000, valueBoost: 38000, installed: false, desc: 'Басистый спортивный звук с приятными отстрелами.' },
+      { id: 'stage1_chip', name: 'Чип-Тюнинг Stage 1 + Попкорн', category: 'stage', cost: 15000, valueBoost: 26000, installed: false, desc: 'Отзывчивая педаль газа и лёгкий прирост мощности.' },
+      { id: 'pride_sub', name: 'Автозвук Pride 15" + Усилитель', category: 'audio', cost: 45000, valueBoost: 70000, installed: false, desc: 'Шевелит лобовое стекло и привлекает молодёжь.' },
+      { id: 'detailing_polish', name: 'Глубокая полировка + Керамика', category: 'body', cost: 16000, valueBoost: 30000, installed: false, desc: 'Зеркальный блеск кузова, ускоряет продажу в 2 раза.' }
+    ];
 
-      const marketAvg = template.basePrice;
-      const askingPrice = Math.round((marketAvg * (0.85 + Math.random() * 0.3)) / 50) * 50;
+    function generateCar(cityId = 'msk') {
+      const template = CAR_TEMPLATES[Math.floor(Math.random() * CAR_TEMPLATES.length)];
+      const numDefects = Math.floor(Math.random() * 3) + 1;
+      const defects = [];
+      const shuffledDefects = [...DEFECTS_DATABASE].sort(() => 0.5 - Math.random());
+      for (let i = 0; i < numDefects; i++) {
+        defects.push({ ...shuffledDefects[i] });
+      }
+
+      const sellerPersonalities = ['greedy', 'urgent', 'naive', 'crafty'];
+      const personality = sellerPersonalities[Math.floor(Math.random() * sellerPersonalities.length)];
+      const names = ['Руслан', 'Михаил Сергеевич', 'Денис', 'Василий', 'Артур', 'Владлен'];
+
+      const mileageReal = Math.floor(Math.random() * 120000) + 70000;
+      const isRolled = Math.random() > 0.5;
+      const mileageShown = isRolled ? Math.max(45000, mileageReal - (Math.floor(Math.random() * 60000) + 30000)) : mileageReal;
+
+      const randomDiscountFactor = personality === 'urgent' ? 0.88 : (personality === 'greedy' ? 1.08 : 1.0);
+      const askingPrice = Math.round((template.basePrice * randomDiscountFactor) / 5000) * 5000;
 
       return {
-        id: 'car_' + id + '_' + Date.now(),
-        brand: template.brand,
+        id: 'car_' + Math.random().toString(36).substr(2, 9),
         model: template.model,
         year: template.year,
-        color: template.color,
-        colorName: template.colorName,
-        mileage: mileage,
-        price: askingPrice,
-        marketPrice: marketAvg,
-        seller: seller,
+        tier: template.tier,
+        engine: template.engine,
+        transmission: template.transmission,
+        drive: template.drive,
+        image: template.image,
+        baseMarketPrice: template.basePrice,
+        askingPrice: askingPrice,
+        purchasePrice: null,
+        myListingPrice: null,
+        investedCost: 0,
+        cityId: cityId,
+        seller: {
+          name: names[Math.floor(Math.random() * names.length)],
+          personality: personality,
+          patience: 100,
+          minPriceLimit: Math.round(askingPrice * (personality === 'urgent' ? 0.78 : (personality === 'greedy' ? 0.94 : 0.85)) / 5000) * 5000
+        },
+        mileage: {
+          shown: mileageShown,
+          real: mileageReal,
+          isRolled: isRolled
+        },
+        bodyParts: {
+          hood: { paintThickness: defects.some(d => d.id === 'paint_hood') ? 480 : 120, hasBondo: defects.some(d => d.id === 'paint_hood'), inspected: false },
+          roof: { paintThickness: 110, hasBondo: false, inspected: false },
+          doorFL: { paintThickness: defects.some(d => d.id === 'paint_door') ? 380 : 115, hasBondo: false, inspected: false },
+          doorFR: { paintThickness: 125, hasBondo: false, inspected: false },
+          fenderFL: { paintThickness: 130, hasBondo: false, inspected: false },
+          fenderFR: { paintThickness: 120, hasBondo: false, inspected: false }
+        },
         defects: defects,
-        inspection: { vin: false, paint: false },
-        spentRepairs: 0,
-        spentTuning: 0,
-        customPrice: askingPrice,
-        isListed: false
+        tuning: TUNING_OPTIONS.map(t => ({ ...t })),
+        overallCondition: Math.max(30, 95 - defects.length * 15),
+        testDrived: false,
+        obdScanned: false,
+        autotekaChecked: false,
+        isForSale: false,
+        isOwned: false
       };
     }
 
-    function CarGraphic({ car }) {
-      return (
-        <div className="relative w-full h-28 bg-slate-950 flex items-center justify-center rounded-2xl border border-slate-800 overflow-hidden shadow-inner">
-          <svg viewBox="0 0 320 140" className="w-56 h-24 drop-shadow-xl">
-            <ellipse cx="160" cy="118" rx="130" ry="12" fill="#000" opacity="0.6" />
-            <path d="M 45 92 Q 40 75 60 70 L 95 68 L 130 38 Q 145 32 185 32 L 230 36 Q 255 42 275 70 L 290 75 Q 300 85 295 95 L 25 95 Q 20 92 45 92 Z" fill={car.color} stroke="#000" strokeWidth="2" />
-            <path d="M 132 40 L 102 66 L 155 66 L 155 40 Z" fill="#38bdf8" opacity="0.8" />
-            <path d="M 163 40 L 163 66 L 225 66 L 215 42 Q 195 40 163 40 Z" fill="#38bdf8" opacity="0.8" />
-            <circle cx="85" cy="98" r="20" fill="#1e293b" stroke="#64748b" strokeWidth="3" />
-            <circle cx="240" cy="98" r="20" fill="#1e293b" stroke="#64748b" strokeWidth="3" />
-          </svg>
-          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 text-[10px] font-mono text-slate-300">
-            {car.colorName} • {car.year} г.
-          </div>
-        </div>
-      );
-    }
-
+    // --- MAIN APP COMPONENT ---
     function App() {
-      const [money, setMoney] = useState(1500);
+      const [cash, setCash] = useState(() => {
+        const saved = localStorage.getItem('sim_cash');
+        return saved ? Number(saved) : 350000;
+      });
+      const [bankDeposit, setBankDeposit] = useState(0);
       const [day, setDay] = useState(1);
-      const [reputation, setReputation] = useState(20);
-      const [activeTab, setActiveTab] = useState('market');
-      const [marketCars, setMarketCars] = useState([]);
-      const [myCars, setMyCars] = useState([]);
-      const [activeChatCar, setActiveChatCar] = useState(null);
-      const [testDriveCar, setTestDriveCar] = useState(null);
-      const [testDriveSpeed, setTestDriveSpeed] = useState(0);
-      const [testDriveTime, setTestDriveTime] = useState(10);
-      const [testGasPressed, setTestGasPressed] = useState(false);
-      const [auctionCar, setAuctionCar] = useState(null);
-      const [auctionBid, setAuctionBid] = useState(0);
-      const [auctionTime, setAuctionTime] = useState(10);
-      const [auctionActive, setAuctionActive] = useState(false);
-      const [auctionLeader, setAuctionLeader] = useState('');
-      const [stats, setStats] = useState({ bought: 0, sold: 0, profit: 0 });
+      const [activeApp, setActiveApp] = useState('market'); // market | garage | chat | auction | bank
+      const [marketCars, setMarketCars] = useState(() => [generateCar(), generateCar(), generateCar(), generateCar()]);
+      const [garageCars, setGarageCars] = useState([]);
+      const [buyerLeads, setBuyerLeads] = useState([]);
+      const [activeAuction, setActiveAuction] = useState(null);
+      const [isMuted, setIsMuted] = useState(false);
+
+      // Active Modals
+      const [inspectingCar, setInspectingCar] = useState(null);
+      const [testDrivingCar, setTestDrivingCar] = useState(null);
+      const [bargainingCar, setBargainingCar] = useState(null);
+      const [tuningCar, setTuningCar] = useState(null);
+      const [sellingCar, setSellingCar] = useState(null);
 
       useEffect(() => {
-        setMarketCars([generateCar(1), generateCar(2), generateCar(3), generateCar(4)]);
-      }, []);
+        localStorage.setItem('sim_cash', cash.toString());
+      }, [cash]);
 
+      // ADVANCE NEXT DAY
       const handleNextDay = () => {
-        setDay(d => d + 1);
+        sound.playClick();
         sound.playCash();
-        setMarketCars([generateCar(Date.now() + 1), generateCar(Date.now() + 2), generateCar(Date.now() + 3), generateCar(Date.now() + 4)]);
-        
-        const listed = myCars.filter(c => c.isListed);
-        if (listed.length > 0) {
-          const target = listed[Math.floor(Math.random() * listed.length)];
-          const offer = Math.round(target.customPrice * (0.88 + Math.random() * 0.15));
-          if (confirm(`📞 Покупатель предлагает купить ваш ${target.brand} ${target.model} за $${offer}! Продать?`)) {
-            const cost = target.price + target.spentRepairs + target.spentTuning;
-            const profit = offer - cost;
-            setMoney(m => m + offer);
-            setMyCars(cars => cars.filter(c => c.id !== target.id));
-            setReputation(r => r + (profit > 0 ? 15 : 5));
-            setStats(s => ({ bought: s.bought, sold: s.sold + 1, profit: s.profit + profit }));
-            alert(`🎉 Продано! Прибыль: +$${profit}`);
+        const nextDay = day + 1;
+        setDay(nextDay);
+
+        const interest = Math.round(bankDeposit * 0.01);
+        setBankDeposit(prev => prev + interest);
+
+        const rent = 2500;
+        setCash(prev => prev - rent);
+
+        const forSale = garageCars.filter(c => c.isForSale);
+        if (forSale.length > 0 && Math.random() > 0.25) {
+          const target = forSale[Math.floor(Math.random() * forSale.length)];
+          const tuningBoost = target.tuning.filter(t => t.installed).reduce((s, t) => s + t.valueBoost, 0);
+          const isPriora = target.model.includes('Priora');
+          const hasTorus = target.tuning.find(t => t.id === 'torus_wheels')?.installed;
+          
+          let buyerName = 'Артём (Студент)';
+          let buyerMsg = `Салам! Заберу ${target.model}. Сколько окончательно скинешь?`;
+          let offerRatio = 0.9;
+
+          if (isPriora && hasTorus) {
+            buyerName = 'Мага «Борода»';
+            buyerMsg = `Вах, на Торусах и в бункере — чисто яд! Забираю прямо сегодня без лишних слов!`;
+            offerRatio = 1.05;
           }
+
+          const estValue = (target.myListingPrice || target.baseMarketPrice) + tuningBoost;
+          const offer = Math.round((estValue * offerRatio) / 5000) * 5000;
+
+          const lead = {
+            id: 'lead_' + Date.now(),
+            carId: target.id,
+            carModel: target.model,
+            buyerName: buyerName,
+            message: buyerMsg,
+            offerPrice: offer,
+            askingPrice: target.myListingPrice || estValue
+          };
+
+          setBuyerLeads(prev => [lead, ...prev]);
         }
+
+        setMarketCars(prev => [generateCar(), ...prev.slice(0, 4)]);
       };
 
-      const buyCar = (car, price) => {
-        if (money < price) { alert('Недостаточно денег!'); return; }
-        if (myCars.length >= 6) { alert('Гараж полон (макс 6)!'); return; }
+      const handleBuyCar = (car, finalPrice) => {
+        if (garageCars.length >= 4) {
+          alert('Гараж заполнен (макс 4 авто)! Продайте машину, чтобы освободить место.');
+          return;
+        }
         sound.playCash();
-        setMoney(m => m - price);
-        setMyCars(prev => [...prev, { ...car, price: price, isListed: false }]);
+        setCash(prev => prev - finalPrice);
+        const bought = {
+          ...car,
+          isOwned: true,
+          purchasePrice: finalPrice,
+          investedCost: 0,
+          isForSale: false
+        };
+        setGarageCars(prev => [...prev, bought]);
         setMarketCars(prev => prev.filter(c => c.id !== car.id));
-        setStats(s => ({ ...s, bought: s.bought + 1 }));
-        setActiveChatCar(null);
-        setActiveTab('garage');
+        setBargainingCar(null);
+        setActiveApp('garage');
       };
 
-      const repairCar = (carId, type, cost) => {
-        if (money < cost) { alert('Не хватает денег на ремонт!'); return; }
-        sound.playWrench();
-        setMoney(m => m - cost);
-        setMyCars(prev => prev.map(c => {
-          if (c.id !== carId) return c;
-          const def = { ...c.defects };
-          if (type === 'engine') def.engine = 100;
-          if (type === 'gearbox') def.gearbox = 100;
-          if (type === 'body') def.bodywork = 100;
-          return { ...c, defects: def, spentRepairs: c.spentRepairs + cost };
+      const handleSellLead = (lead) => {
+        const car = garageCars.find(c => c.id === lead.carId);
+        if (!car) return;
+        sound.playCash();
+        setCash(prev => prev + lead.offerPrice);
+        setGarageCars(prev => prev.filter(c => c.id !== car.id));
+        setBuyerLeads(prev => prev.filter(l => l.id !== lead.id));
+        alert(`🎉 Успешно! ${car.model} продана за ${lead.offerPrice.toLocaleString()} ₽!`);
+      };
+
+      const handleRepair = (car, defect) => {
+        if (cash < defect.repairCost) {
+          alert('Недостаточно средств на ремонт!');
+          return;
+        }
+        sound.playClick();
+        setCash(prev => prev - defect.repairCost);
+        setGarageCars(prev => prev.map(c => {
+          if (c.id === car.id) {
+            return {
+              ...c,
+              investedCost: c.investedCost + defect.repairCost,
+              defects: c.defects.filter(d => d.id !== defect.id),
+              overallCondition: Math.min(100, c.overallCondition + 15)
+            };
+          }
+          return c;
         }));
       };
 
-      // Test Drive
-      useEffect(() => {
-        if (!testDriveCar) return;
-        const interval = setInterval(() => {
-          setTestDriveTime(t => t <= 1 ? 0 : t - 1);
-        }, 1000);
-        return () => clearInterval(interval);
-      }, [testDriveCar]);
-
-      useEffect(() => {
-        if (!testDriveCar) return;
-        const phys = setInterval(() => {
-          setTestDriveSpeed(s => testGasPressed ? Math.min(140, s + 8) : Math.max(0, s - 5));
-        }, 100);
-        return () => clearInterval(phys);
-      }, [testDriveCar, testGasPressed]);
-
-      // Auction
-      useEffect(() => {
-        if (!auctionActive || !auctionCar || auctionTime <= 0) return;
-        const timer = setInterval(() => {
-          setAuctionTime(t => {
-            if (t <= 1) { setAuctionActive(false); return 0; }
-            if (Math.random() < 0.45 && auctionBid < auctionCar.marketPrice * 0.85) {
-              setAuctionBid(b => b + 100);
-              setAuctionLeader(['Илья Автоподбор', 'Артур Перекуп', 'Марат СТО'][Math.floor(Math.random() * 3)]);
-              sound.playTap();
-            }
-            return t - 1;
-          });
-        }, 1000);
-        return () => clearInterval(timer);
-      }, [auctionActive, auctionCar, auctionTime, auctionBid]);
-
       return (
-        <div className="w-full max-w-md bg-slate-900 border-2 border-slate-700 rounded-[38px] overflow-hidden shadow-2xl flex flex-col h-[94vh] relative">
+        <div className="w-full bg-slate-900 border-2 border-slate-700/80 rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden relative h-[95vh] max-h-[920px]">
           
-          <div className="bg-slate-950 px-5 py-2.5 flex items-center justify-between text-xs font-mono border-b border-slate-800">
-            <span className="font-bold text-amber-400">ДЕНЬ {day}</span>
-            <span className="text-emerald-400 font-bold font-mono">${money.toLocaleString()}</span>
+          {/* Status Bar */}
+          <div className="bg-slate-950 px-5 pt-3 pb-2 flex items-center justify-between border-b border-slate-800 text-[11px] text-slate-400 shrink-0">
+            <div className="flex items-center space-x-2 font-bold font-mono text-white">
+              <span>12:40</span>
+              <span className="text-amber-400">День {day}</span>
+            </div>
+
+            <div className="w-20 h-3 bg-slate-900 rounded-full border border-slate-800 flex items-center justify-center">
+              <div className="w-6 h-1 bg-slate-700 rounded-full" />
+            </div>
+
+            <button 
+              onClick={() => setIsMuted(sound.toggleMute())} 
+              className="text-slate-400 hover:text-amber-400 font-mono text-[10px]"
+            >
+              {isMuted ? '🔇 Звук ВЫКЛ' : '🔊 Звук ВКЛ'}
+            </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-3 space-y-3 pb-20">
+          {/* Balance Header */}
+          <div className="bg-slate-950/90 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between shrink-0">
+            <div>
+              <span className="text-[9px] text-slate-500 uppercase font-bold block">Баланс:</span>
+              <span className="text-sm font-black font-mono text-amber-400">
+                {cash.toLocaleString()} ₽
+              </span>
+            </div>
+
+            <button
+              onClick={handleNextDay}
+              className="py-1 px-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all shadow-md shadow-amber-500/20"
+            >
+              След. день ▶
+            </button>
+          </div>
+
+          {/* Screen Content */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-4">
             
-            {activeTab === 'market' && (
+            {/* APP 1: MARKET */}
+            {activeApp === 'market' && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-extrabold text-sm text-white">🚗 АвтоБазар</h2>
-                  <button onClick={handleNextDay} className="px-3 py-1 rounded-xl bg-amber-600 text-white font-bold text-xs">
-                    След. день ❯
+                  <h2 className="text-sm font-black font-display uppercase tracking-wider text-slate-200">
+                    🚗 Авторынок (Доступно: {marketCars.length})
+                  </h2>
+                  <button 
+                    onClick={() => {
+                      sound.playClick();
+                      setMarketCars([generateCar(), generateCar(), generateCar(), generateCar()]);
+                    }}
+                    className="text-[11px] text-amber-400 hover:underline font-bold"
+                  >
+                    🔄 Обновить
                   </button>
                 </div>
 
-                {marketCars.map(car => (
-                  <div key={car.id} className="p-3 rounded-2xl bg-slate-800 border border-slate-700 space-y-2">
-                    <CarGraphic car={car} />
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-bold text-sm text-white">{car.brand} {car.model}</h3>
-                        <p className="text-[11px] text-slate-400">{car.mileage.toLocaleString()} км • {car.seller.name}</p>
+                <div className="grid grid-cols-1 gap-3">
+                  {marketCars.map(car => (
+                    <div key={car.id} className="bg-slate-950/80 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition-all p-3 space-y-2">
+                      <div className="flex items-start space-x-3">
+                        <img src={car.image} alt={car.model} className="w-24 h-18 object-cover rounded-xl border border-slate-800 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-xs font-bold text-white truncate">{car.model}</h3>
+                          <div className="text-[10px] text-slate-400">{car.year} г. • {car.engine}</div>
+                          <div className="text-[10px] text-slate-400">Пробег: <span className="text-slate-200 font-mono">{car.mileage.shown.toLocaleString()} км</span></div>
+                          <div className="text-xs font-black font-mono text-emerald-400 mt-1">
+                            {car.askingPrice.toLocaleString()} ₽
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm font-black text-emerald-400 font-mono">${car.price}</div>
-                        <span className="text-[10px] text-slate-400">Рынок: ~${car.marketPrice}</span>
-                      </div>
-                    </div>
 
-                    <div className="flex gap-2 text-[10px]">
-                      <button onClick={() => {
-                        setTestDriveCar(car);
-                        setTestDriveSpeed(0);
-                        setTestDriveTime(10);
-                      }} className="flex-1 py-1 rounded bg-indigo-950 border border-indigo-500/50 text-indigo-300">
-                        ⏱️ Тест-драйв 10с
-                      </button>
-                      <button onClick={() => buyCar(car, car.price)} className="flex-1 py-1 rounded bg-emerald-600 text-white font-bold">
-                        Купить за ${car.price}
-                      </button>
+                      <div className="flex items-center space-x-1.5 pt-1 border-t border-slate-900">
+                        <button
+                          onClick={() => { sound.playClick(); setInspectingCar(car); }}
+                          className="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-200 rounded-lg text-center"
+                        >
+                          🔍 Осмотр / ЛКП
+                        </button>
+                        <button
+                          onClick={() => { sound.playClick(); setTestDrivingCar(car); }}
+                          className="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-200 rounded-lg text-center"
+                        >
+                          ⏱️ Тест-Драйв
+                        </button>
+                        <button
+                          onClick={() => { sound.playClick(); setBargainingCar(car); }}
+                          className="flex-1 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-[10px] font-black rounded-lg text-center shadow-md shadow-amber-500/20"
+                        >
+                          💬 Торг / Купить
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
 
-            {activeTab === 'garage' && (
+            {/* APP 2: GARAGE */}
+            {activeApp === 'garage' && (
               <div className="space-y-3">
-                <h2 className="font-extrabold text-sm text-white">🏢 Гараж ({myCars.length}/6)</h2>
-                {myCars.map(car => (
-                  <div key={car.id} className="p-3 rounded-2xl bg-slate-800 border border-slate-700 space-y-2">
-                    <CarGraphic car={car} />
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-sm text-white">{car.brand} {car.model}</h3>
-                      <span className="text-xs font-bold text-emerald-400">${car.customPrice}</span>
-                    </div>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-black font-display uppercase tracking-wider text-slate-200">
+                    🏠 Мой Гараж ({garageCars.length} / 4 авто)
+                  </h2>
+                </div>
 
-                    <div className="flex gap-1 text-[10px]">
-                      {car.defects.engine < 100 && (
-                        <button onClick={() => repairCar(car.id, 'engine', 150)} className="px-2 py-1 rounded bg-indigo-900 text-indigo-200">
-                          Починить ДВС ($150)
-                        </button>
-                      )}
-                      {car.defects.bodywork < 100 && (
-                        <button onClick={() => repairCar(car.id, 'body', 200)} className="px-2 py-1 rounded bg-indigo-900 text-indigo-200">
-                          Покрасить ($200)
-                        </button>
-                      )}
-                    </div>
-
-                    <button onClick={() => {
-                      setMyCars(cars => cars.map(c => c.id === car.id ? { ...c, isListed: !c.isListed } : c));
-                    }} className={`w-full py-1.5 rounded-xl text-xs font-bold ${car.isListed ? 'bg-amber-600' : 'bg-emerald-600'} text-white`}>
-                      {car.isListed ? 'Снять с продажи' : 'Выставить на продажу'}
+                {garageCars.length === 0 ? (
+                  <div className="text-center py-12 bg-slate-950/40 rounded-2xl border border-dashed border-slate-800 p-6 space-y-3">
+                    <div className="text-3xl">🚗💨</div>
+                    <div className="text-xs text-slate-400">Гараж пуст. Купите первый автомобиль на Авторынке!</div>
+                    <button 
+                      onClick={() => setActiveApp('market')}
+                      className="px-4 py-2 bg-amber-500 text-slate-950 font-bold text-xs rounded-xl"
+                    >
+                      Перейти на рынок
                     </button>
                   </div>
-                ))}
-              </div>
-            )}
-
-            {activeTab === 'auction' && (
-              <div className="space-y-3">
-                <h2 className="font-extrabold text-sm text-white">🔨 Аукцион</h2>
-                {!auctionActive ? (
-                  <button onClick={() => {
-                    const car = generateCar(Date.now());
-                    setAuctionCar(car);
-                    setAuctionBid(Math.round(car.marketPrice * 0.4));
-                    setAuctionTime(10);
-                    setAuctionLeader('Старт');
-                    setAuctionActive(true);
-                  }} className="w-full py-3 rounded-xl bg-purple-600 font-bold text-xs text-white">
-                    Запустить торги
-                  </button>
                 ) : (
-                  <div className="p-3 bg-slate-800 rounded-xl space-y-2">
-                    <CarGraphic car={auctionCar} />
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-emerald-400 font-mono">${auctionBid}</div>
-                      <span className="text-xs text-slate-400">Лидер: {auctionLeader} ({auctionTime}с)</span>
-                    </div>
-                    <button onClick={() => {
-                      setAuctionBid(b => b + 100);
-                      setAuctionLeader('Вы');
-                      setAuctionTime(t => t + 3);
-                    }} className="w-full py-2 bg-purple-600 text-white font-bold text-xs rounded-xl">
-                      Поднять ставку +$100
-                    </button>
-                    {auctionLeader === 'Вы' && (
-                      <button onClick={() => { buyCar(auctionCar, auctionBid); setAuctionActive(false); }} className="w-full py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl">
-                        Забрать за ${auctionBid}
-                      </button>
-                    )}
+                  <div className="space-y-3">
+                    {garageCars.map(car => (
+                      <div key={car.id} className="bg-slate-950/80 border border-slate-800 rounded-2xl p-3 space-y-3">
+                        <div className="flex items-start space-x-3">
+                          <img src={car.image} alt={car.model} className="w-24 h-18 object-cover rounded-xl border border-slate-800 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <h3 className="text-xs font-bold text-white truncate">{car.model}</h3>
+                              {car.isForSale && (
+                                <span className="bg-emerald-500/20 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-bold">На продаже</span>
+                              )}
+                            </div>
+                            <div className="text-[10px] text-slate-400">Куплен: <span className="text-slate-200 font-mono font-bold">{car.purchasePrice?.toLocaleString()} ₽</span></div>
+                            <div className="text-[10px] text-slate-400">Вложено: <span className="text-amber-400 font-mono font-bold">+{car.investedCost.toLocaleString()} ₽</span></div>
+                            <div className="text-[10px] text-slate-400">Состояние: <span className="text-emerald-400 font-bold">{car.overallCondition}%</span></div>
+                          </div>
+                        </div>
+
+                        {car.defects.length > 0 && (
+                          <div className="bg-slate-900/90 p-2 rounded-xl border border-rose-900/40 space-y-1.5">
+                            <div className="text-[10px] font-bold text-rose-400">
+                              ⚠️ Найденные дефекты ({car.defects.length}):
+                            </div>
+                            {car.defects.map(d => (
+                              <div key={d.id} className="flex items-center justify-between text-[9px] bg-slate-950 p-1.5 rounded-lg">
+                                <span className="text-slate-300">{d.name}</span>
+                                <button
+                                  onClick={() => handleRepair(car, d)}
+                                  className="px-2 py-1 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded"
+                                >
+                                  Починить ({d.repairCost.toLocaleString()} ₽)
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-900">
+                          <button
+                            onClick={() => { sound.playClick(); setTuningCar(car); }}
+                            className="py-1.5 bg-indigo-600/80 hover:bg-indigo-600 text-[10px] font-bold text-white rounded-lg text-center"
+                          >
+                            🛠️ Тюнинг
+                          </button>
+                          <button
+                            onClick={() => { sound.playClick(); setSellingCar(car); }}
+                            className="py-1.5 bg-emerald-600/80 hover:bg-emerald-600 text-[10px] font-bold text-white rounded-lg text-center"
+                          >
+                            📢 Выставить
+                          </button>
+                          <button
+                            onClick={() => {
+                              const quickPrice = Math.round((car.baseMarketPrice * 0.7) / 5000) * 5000;
+                              if (confirm(`Сдать ${car.model} перекупу за ${quickPrice.toLocaleString()} ₽?`)) {
+                                sound.playCash();
+                                setCash(prev => prev + quickPrice);
+                                setGarageCars(prev => prev.filter(c => c.id !== car.id));
+                              }
+                            }}
+                            className="py-1.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 rounded-lg text-center"
+                          >
+                            ⚡ Сдать (-30%)
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
             )}
 
-            {activeTab === 'bank' && (
+            {/* APP 3: CHAT */}
+            {activeApp === 'chat' && (
               <div className="space-y-3">
-                <h2 className="font-extrabold text-sm text-white">💳 Банк</h2>
-                <div className="p-4 rounded-xl bg-emerald-700 text-white font-mono text-2xl font-bold">
-                  ${money.toLocaleString()}
-                </div>
-                <button onClick={() => { sound.playCash(); setMoney(m => m + 500); }} className="w-full py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl">
-                  Взять микрозайм +$500
-                </button>
+                <h2 className="text-sm font-black font-display uppercase tracking-wider text-slate-200">
+                  💬 Входящие сообщения ({buyerLeads.length})
+                </h2>
+
+                {buyerLeads.length === 0 ? (
+                  <div className="text-center py-12 bg-slate-950/40 rounded-2xl border border-dashed border-slate-800 p-6 space-y-2">
+                    <div className="text-3xl">📨</div>
+                    <div className="text-xs text-slate-400">Пока нет сообщений от покупателей. Выставьте машины на продажу из Гаража и перейдите на следующий день!</div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {buyerLeads.map(lead => (
+                      <div key={lead.id} className="bg-slate-950/90 border border-slate-800 rounded-2xl p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="font-bold text-xs text-amber-400">{lead.buyerName}</div>
+                          <div className="text-[10px] text-slate-500">Авто: {lead.carModel}</div>
+                        </div>
+                        <div className="text-xs text-slate-200 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                          «{lead.message}»
+                        </div>
+                        <div className="flex items-center justify-between text-xs pt-1">
+                          <span className="text-slate-400 text-[10px]">Предложение: <b className="text-emerald-400 font-mono text-xs">{lead.offerPrice.toLocaleString()} ₽</b></span>
+                          <div className="flex space-x-1.5">
+                            <button
+                              onClick={() => {
+                                sound.playClick();
+                                setBuyerLeads(prev => prev.filter(l => l.id !== lead.id));
+                              }}
+                              className="px-2.5 py-1 bg-slate-800 text-slate-400 hover:text-white rounded-lg text-[10px]"
+                            >
+                              Отклонить
+                            </button>
+                            <button
+                              onClick={() => handleSellLead(lead)}
+                              className="px-3 py-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-lg text-[10px]"
+                            >
+                              Продать
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
+
+            {/* APP 4: AUCTION */}
+            {activeApp === 'auction' && (
+              <div className="space-y-3">
+                <h2 className="text-sm font-black font-display uppercase tracking-wider text-slate-200">
+                  🔨 Закрытый Конфискат-Аукцион
+                </h2>
+
+                {!activeAuction ? (
+                  <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-center space-y-3">
+                    <div className="text-3xl">🏛️</div>
+                    <div className="text-xs text-slate-300 font-bold">Таможенный и банковский конфискат</div>
+                    <p className="text-[11px] text-slate-400">
+                      Возможность урвать премиальное авто на 40% ниже рынка в борьбе против ботов.
+                    </p>
+                    <button
+                      onClick={() => {
+                        sound.playGavel();
+                        const aucCar = generateCar();
+                        aucCar.tier = 'premium';
+                        const startBid = Math.round(aucCar.baseMarketPrice * 0.55 / 10000) * 10000;
+                        setActiveAuction({
+                          car: aucCar,
+                          currentBid: startBid,
+                          highestBidder: 'Бот «Перекуп_777»',
+                          isPlayerWinning: false
+                        });
+                      }}
+                      className="w-full py-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black rounded-xl text-xs uppercase"
+                    >
+                      Начать аукцион
+                    </button>
+                  </div>
+                ) : (
+                  <div className="bg-slate-950 border border-amber-500/40 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-amber-400">Лот: {activeAuction.car.model}</span>
+                    </div>
+
+                    <img src={activeAuction.car.image} alt="Auction Car" className="w-full h-32 object-cover rounded-xl border border-slate-800" />
+
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Рыночная цена:</span>
+                        <span className="text-slate-200 font-mono">{activeAuction.car.baseMarketPrice.toLocaleString()} ₽</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Текущая ставка:</span>
+                        <span className="text-emerald-400 font-mono font-black text-sm">{activeAuction.currentBid.toLocaleString()} ₽</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Лидер:</span>
+                        <span className="text-amber-400 font-bold">{activeAuction.highestBidder}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => {
+                          const nextBid = activeAuction.currentBid + 25000;
+                          if (cash < nextBid) { alert('Недостаточно наличных!'); return; }
+                          sound.playClick();
+                          setActiveAuction(prev => ({
+                            ...prev,
+                            currentBid: nextBid,
+                            highestBidder: 'Вы (Игрок)',
+                            isPlayerWinning: true
+                          }));
+                        }}
+                        className="flex-1 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs"
+                      >
+                        Повысить (+25 000 ₽)
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          if (activeAuction.isPlayerWinning) {
+                            sound.playGavel();
+                            sound.playCash();
+                            setCash(prev => prev - activeAuction.currentBid);
+                            setGarageCars(prev => [...prev, { ...activeAuction.car, isOwned: true, purchasePrice: activeAuction.currentBid, investedCost: 0 }]);
+                            alert(`🎉 Поздравляем! Вы выиграли аукцион и забрали ${activeAuction.car.model}!`);
+                            setActiveAuction(null);
+                            setActiveApp('garage');
+                          } else {
+                            alert('Лот ушёл другому перекупу!');
+                            setActiveAuction(null);
+                          }
+                        }}
+                        className="py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs"
+                      >
+                        Удар молотка 🔨
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* APP 5: BANK */}
+            {activeApp === 'bank' && (
+              <div className="space-y-3">
+                <h2 className="text-sm font-black font-display uppercase tracking-wider text-slate-200">
+                  🏦 АвтоБанк & Кредитование
+                </h2>
+
+                <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-3">
+                  <div className="text-xs font-bold text-amber-400">Вклад «Доходный перекуп» (1% в день)</div>
+                  <div className="text-xs text-slate-300">На депозите: <span className="text-emerald-400 font-mono font-bold">{bankDeposit.toLocaleString()} ₽</span></div>
+                  
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => {
+                        if (cash < 50000) { alert('Минимум 50 000 ₽'); return; }
+                        sound.playCash();
+                        setCash(prev => prev - 50000);
+                        setBankDeposit(prev => prev + 50000);
+                      }}
+                      className="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white rounded-xl"
+                    >
+                      + 50 000 ₽
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (bankDeposit < 50000) { alert('На депозите меньше 50 000 ₽'); return; }
+                        sound.playCash();
+                        setBankDeposit(prev => prev - 50000);
+                        setCash(prev => prev + 50000);
+                      }}
+                      className="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white rounded-xl"
+                    >
+                      - 50 000 ₽
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-2">
+                  <div className="text-xs font-bold text-rose-400">Экспресс-микрозайм «До перепродажи»</div>
+                  <button
+                    onClick={() => {
+                      sound.playCash();
+                      setCash(prev => prev + 200000);
+                      alert('Вам зачислено 200 000 ₽ кредита!');
+                    }}
+                    className="w-full py-2 bg-rose-600/80 hover:bg-rose-600 text-white font-bold rounded-xl text-xs"
+                  >
+                    Взять 200 000 ₽
+                  </button>
+                </div>
+              </div>
+            )}
+
           </div>
 
-          {/* Test Drive Modal */}
-          {testDriveCar && (
-            <div className="fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50">
-              <div className="w-full max-w-sm bg-slate-900 border border-slate-700 p-4 rounded-2xl space-y-3">
-                <h3 className="font-bold text-sm text-white">Тест-драйв: {testDriveTime} сек</h3>
-                <div className="bg-black p-4 rounded-xl text-center">
-                  <div className="text-3xl font-black text-emerald-400 font-mono">{Math.round(testDriveSpeed)} км/ч</div>
-                </div>
-                {testDriveTime > 0 ? (
-                  <button onMouseDown={() => { setTestGasPressed(true); sound.playEngine(); }} onMouseUp={() => setTestGasPressed(false)} className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl">
-                    ГАЗ В ПОЛ
-                  </button>
-                ) : (
-                  <button onClick={() => setTestDriveCar(null)} className="w-full py-2 bg-emerald-600 text-white font-bold rounded-xl">
-                    Завершить
-                  </button>
+          {/* Bottom Dock */}
+          <div className="bg-slate-950 border-t border-slate-800 p-2 shrink-0">
+            <div className="grid grid-cols-5 gap-1 text-[10px]">
+              <button
+                onClick={() => { sound.playClick(); setActiveApp('market'); }}
+                className={`py-1.5 flex flex-col items-center rounded-xl transition-all ${
+                  activeApp === 'market' ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>🚗</span>
+                <span className="mt-0.5">Рынок</span>
+              </button>
+
+              <button
+                onClick={() => { sound.playClick(); setActiveApp('garage'); }}
+                className={`py-1.5 flex flex-col items-center rounded-xl transition-all relative ${
+                  activeApp === 'garage' ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>🏠</span>
+                <span className="mt-0.5">Гараж</span>
+              </button>
+
+              <button
+                onClick={() => { sound.playClick(); setActiveApp('chat'); }}
+                className={`py-1.5 flex flex-col items-center rounded-xl transition-all relative ${
+                  activeApp === 'chat' ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>💬</span>
+                <span className="mt-0.5">Чат</span>
+                {buyerLeads.length > 0 && (
+                  <span className="absolute top-1 right-3 w-2 h-2 bg-rose-500 rounded-full animate-ping" />
                 )}
+              </button>
+
+              <button
+                onClick={() => { sound.playClick(); setActiveApp('auction'); }}
+                className={`py-1.5 flex flex-col items-center rounded-xl transition-all ${
+                  activeApp === 'auction' ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>🔨</span>
+                <span className="mt-0.5">Аукцион</span>
+              </button>
+
+              <button
+                onClick={() => { sound.playClick(); setActiveApp('bank'); }}
+                className={`py-1.5 flex flex-col items-center rounded-xl transition-all ${
+                  activeApp === 'bank' ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>🏦</span>
+                <span className="mt-0.5">Банк</span>
+              </button>
+            </div>
+          </div>
+
+          {/* INSPECTION MODAL */}
+          {inspectingCar && (
+            <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-sm z-50 p-4 flex flex-col overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <h3 className="text-xs font-black font-display text-white">🔍 Осмотр ЛКП: {inspectingCar.model}</h3>
+                <button onClick={() => setInspectingCar(null)} className="text-slate-400 hover:text-white text-sm font-bold">✕</button>
+              </div>
+
+              <div className="space-y-3 mt-3">
+                <div className="text-[11px] text-slate-300">
+                  Нажимайте на детали кузова для замера толщиномером:
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {Object.entries(inspectingCar.bodyParts).map(([partKey, partVal]) => (
+                    <button
+                      key={partKey}
+                      onClick={() => {
+                        sound.playClick();
+                        setInspectingCar(prev => ({
+                          ...prev,
+                          bodyParts: {
+                            ...prev.bodyParts,
+                            [partKey]: { ...partVal, inspected: true }
+                          }
+                        }));
+                      }}
+                      className={`p-2.5 rounded-xl border text-left transition-all ${
+                        partVal.inspected 
+                          ? (partVal.paintThickness > 300 ? 'bg-rose-950/60 border-rose-600 text-rose-200' : 'bg-emerald-950/60 border-emerald-600 text-emerald-200')
+                          : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="font-bold capitalize">{partKey === 'hood' ? 'Капот' : (partKey === 'roof' ? 'Крыша' : (partKey === 'doorFL' ? 'Дверь водителя' : 'Крыло'))}</div>
+                      <div className="text-[10px] font-mono mt-1">
+                        {partVal.inspected ? `${partVal.paintThickness} мкм ${partVal.paintThickness > 300 ? '⚠️ ШПАТЛЁВКА' : '✅ Завод'}` : '🔍 Замерить ЛКП'}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setInspectingCar(null)}
+                  className="w-full py-2.5 bg-amber-500 text-slate-950 font-bold rounded-xl text-xs mt-4"
+                >
+                  Закрыть осмотр
+                </button>
               </div>
             </div>
           )}
 
-          {/* Bottom Nav */}
-          <div className="absolute bottom-0 left-0 right-0 bg-slate-950 border-t border-slate-800 p-2 flex justify-around text-xs font-bold">
-            <button onClick={() => setActiveTab('market')} className="text-indigo-400">🚗 Базар</button>
-            <button onClick={() => setActiveTab('garage')} className="text-slate-400">🏢 Гараж</button>
-            <button onClick={() => setActiveTab('auction')} className="text-slate-400">🔨 Аукцион</button>
-            <button onClick={() => setActiveTab('bank')} className="text-slate-400">💳 Банк</button>
-          </div>
+          {/* TEST DRIVE MODAL */}
+          {testDrivingCar && (
+            <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-sm z-50 p-4 flex flex-col justify-between">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <h3 className="text-xs font-black font-display text-white">⏱️ Тест-Драйв</h3>
+                <button onClick={() => setTestDrivingCar(null)} className="text-slate-400 hover:text-white text-sm font-bold">✕</button>
+              </div>
+
+              <div className="text-center space-y-4 my-auto">
+                <div className="text-5xl animate-bounce">🏎️💨</div>
+                <div className="text-sm font-bold text-white">{testDrivingCar.model}</div>
+                <div className="bg-slate-900 border border-slate-800 p-3 rounded-2xl text-xs text-slate-300 space-y-1">
+                  {testDrivingCar.defects.length > 0 ? (
+                    <div className="text-rose-400 font-bold">⚠️ Обнаружен посторонний стук в подвеске и вибрация!</div>
+                  ) : (
+                    <div className="text-emerald-400 font-bold">✅ Мотор шепчет, коробка переключает плавно!</div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => sound.playHorn()}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs rounded-xl"
+                >
+                  📢 Посигналить
+                </button>
+              </div>
+
+              <button
+                onClick={() => setTestDrivingCar(null)}
+                className="w-full py-2.5 bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs"
+              >
+                Завершить
+              </button>
+            </div>
+          )}
+
+          {/* BARGAIN MODAL */}
+          {bargainingCar && (
+            <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-sm z-50 p-4 flex flex-col justify-between overflow-y-auto">
+              <div>
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <h3 className="text-xs font-black font-display text-white">💬 Торг с продавцом ({bargainingCar.seller.name})</h3>
+                  <button onClick={() => setBargainingCar(null)} className="text-slate-400 hover:text-white text-sm font-bold">✕</button>
+                </div>
+
+                <div className="space-y-3 mt-3 text-xs">
+                  <div className="bg-slate-900 border border-slate-800 p-3 rounded-2xl">
+                    <div className="text-slate-400 text-[10px]">Цена продавца: <b className="text-amber-400 font-mono text-xs">{bargainingCar.askingPrice.toLocaleString()} ₽</b></div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <button
+                      onClick={() => {
+                        sound.playClick();
+                        const discount = Math.round(bargainingCar.askingPrice * 0.06 / 5000) * 5000;
+                        setBargainingCar(prev => ({
+                          ...prev,
+                          askingPrice: Math.max(prev.seller.minPriceLimit, prev.askingPrice - discount)
+                        }));
+                      }}
+                      className="w-full p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left text-slate-200 text-xs"
+                    >
+                      «У вас тут крашеные детали. Скидывайте 6%!»
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        sound.playClick();
+                        const discount = Math.round(bargainingCar.askingPrice * 0.1 / 5000) * 5000;
+                        setBargainingCar(prev => ({
+                          ...prev,
+                          askingPrice: Math.max(prev.seller.minPriceLimit, prev.askingPrice - discount)
+                        }));
+                      }}
+                      className="w-full p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left text-slate-200 text-xs"
+                    >
+                      «Забираю прямо сейчас за наличку!»
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => handleBuyCar(bargainingCar, bargainingCar.askingPrice)}
+                className="w-full py-2.5 bg-emerald-500 text-slate-950 font-black rounded-xl text-xs uppercase"
+              >
+                Купить за {bargainingCar.askingPrice.toLocaleString()} ₽
+              </button>
+            </div>
+          )}
+
+          {/* TUNING MODAL */}
+          {tuningCar && (
+            <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-sm z-50 p-4 flex flex-col overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <h3 className="text-xs font-black font-display text-white">🛠️ Тюнинг: {tuningCar.model}</h3>
+                <button onClick={() => setTuningCar(null)} className="text-slate-400 hover:text-white text-sm font-bold">✕</button>
+              </div>
+
+              <div className="space-y-2.5 mt-3 flex-1 overflow-y-auto">
+                {tuningCar.tuning.map(t => (
+                  <div key={t.id} className="bg-slate-900 border border-slate-800 p-2.5 rounded-xl flex items-center justify-between text-xs">
+                    <div>
+                      <div className="font-bold text-white">{t.name}</div>
+                      <div className="text-[10px] text-slate-400">{t.desc}</div>
+                    </div>
+                    {t.installed ? (
+                      <span className="text-[10px] text-emerald-400 font-bold">Установлено</span>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          if (cash < t.cost) { alert('Недостаточно наличных!'); return; }
+                          sound.playCash();
+                          setCash(prev => prev - t.cost);
+                          const updatedCar = {
+                            ...tuningCar,
+                            investedCost: tuningCar.investedCost + t.cost,
+                            tuning: tuningCar.tuning.map(item => item.id === t.id ? { ...item, installed: true } : item)
+                          };
+                          setTuningCar(updatedCar);
+                          setGarageCars(prev => prev.map(c => c.id === updatedCar.id ? updatedCar : c));
+                        }}
+                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] rounded-lg"
+                      >
+                        {t.cost.toLocaleString()} ₽
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setTuningCar(null)}
+                className="w-full py-2.5 bg-amber-500 text-slate-950 font-bold rounded-xl text-xs mt-3"
+              >
+                Готово
+              </button>
+            </div>
+          )}
+
+          {/* SELL LISTING MODAL */}
+          {sellingCar && (
+            <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-sm z-50 p-4 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <h3 className="text-xs font-black font-display text-white">📢 Выставить: {sellingCar.model}</h3>
+                  <button onClick={() => setSellingCar(null)} className="text-slate-400 hover:text-white text-sm font-bold">✕</button>
+                </div>
+
+                <div className="space-y-3 mt-4 text-xs">
+                  <div>
+                    <label className="text-slate-400 text-[10px] block mb-1">Укажите цену продажи (₽):</label>
+                    <input
+                      type="number"
+                      defaultValue={Math.round(((sellingCar.purchasePrice || sellingCar.baseMarketPrice) + sellingCar.investedCost) * 1.25 / 5000) * 5000}
+                      id="sellPriceInput"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold text-sm outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  const inputVal = Number(document.getElementById('sellPriceInput').value);
+                  if (!inputVal || inputVal <= 0) return;
+                  sound.playClick();
+                  setGarageCars(prev => prev.map(c => c.id === sellingCar.id ? { ...c, isForSale: true, myListingPrice: inputVal } : c));
+                  setSellingCar(null);
+                  alert(`✅ Объявление опубликовано! Ожидайте сообщений в Чате.`);
+                }}
+                className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs uppercase"
+              >
+                Опубликовать
+              </button>
+            </div>
+          )}
+
         </div>
       );
     }
