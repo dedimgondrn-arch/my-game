@@ -1,533 +1,914 @@
-```html
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
 <title>Auto Seller</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
 }
 
-body {
-    min-height: 100vh;
+:root{
+    --bg:#090b0f;
+    --panel:#11151b;
+    --panel2:#171c23;
+    --line:#252c35;
+    --text:#f1f3f5;
+    --muted:#89929d;
+    --accent:#e6e9ed;
+    --green:#55c878;
+    --red:#e45d63;
+    --yellow:#d9ad55;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+button,input{
+    font-family:inherit;
+}
+
+/* =====================================================
+   APP
+===================================================== */
+
+#app{
+    width:100vw;
+    height:100vh;
+    position:relative;
+    overflow:hidden;
     background:
-        radial-gradient(circle at 20% 20%, #172554 0%, transparent 35%),
-        radial-gradient(circle at 80% 80%, #312e81 0%, transparent 35%),
-        #050816;
-    color: white;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+        linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px),
+        #090b0f;
+    background-size:50px 50px;
 }
 
-/* =========================
-   ТЕЛЕФОН
-========================= */
+/* =====================================================
+   TOP BAR
+===================================================== */
 
-.phone {
-    width: 390px;
-    height: 820px;
-    max-width: 100vw;
-    max-height: 100vh;
-    background: #080b14;
-    border: 8px solid #171b27;
-    border-radius: 38px;
-    box-shadow:
-        0 0 0 2px #303644,
-        0 30px 80px rgba(0,0,0,.7);
-    overflow: hidden;
-    position: relative;
+.topbar{
+    height:64px;
+    position:absolute;
+    left:0;
+    right:0;
+    top:0;
+    z-index:20;
+    background:rgba(9,11,15,.96);
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 24px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.brand-logo{
+    width:36px;
+    height:36px;
+    border:1px solid #3b424c;
+    border-radius:9px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    background:#151a20;
+}
+
+.brand-name{
+    font-weight:700;
+    letter-spacing:.5px;
+}
+
+.brand-sub{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:2px;
+}
+
+.top-money{
+    font-weight:700;
+    font-size:15px;
+}
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.main{
+    position:absolute;
+    top:64px;
+    bottom:0;
+    left:0;
+    right:0;
+    display:flex;
+}
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+.sidebar{
+    width:235px;
+    flex-shrink:0;
+    border-right:1px solid var(--line);
+    background:#0c0f14;
+    padding:18px 12px;
+}
+
+.profile{
+    padding:14px;
+    margin-bottom:16px;
+    border:1px solid var(--line);
+    background:#11151b;
+    border-radius:10px;
+}
+
+.profile-title{
+    font-size:12px;
+    color:var(--muted);
+}
+
+.profile-city{
+    font-weight:700;
+    margin-top:5px;
 }
 
-/* Верхняя часть */
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.nav button{
+    width:100%;
+    height:46px;
+    border:0;
+    background:transparent;
+    color:#929aa4;
+    text-align:left;
+    border-radius:8px;
+    padding:0 13px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:14px;
+}
+
+.nav button:hover{
+    background:#151a20;
+    color:white;
+}
+
+.nav button.active{
+    background:#1b2027;
+    color:white;
+    border:1px solid #2c333c;
+}
+
+.nav-icon{
+    width:22px;
+    text-align:center;
+    font-size:17px;
+}
+
+/* =====================================================
+   CONTENT
+===================================================== */
+
+.content{
+    flex:1;
+    min-width:0;
+    overflow:auto;
+    scrollbar-width:thin;
+}
+
+.page{
+    width:100%;
+    max-width:1250px;
+    margin:0 auto;
+    padding:30px;
+}
+
+.page-title{
+    font-size:27px;
+    font-weight:700;
+    letter-spacing:-.5px;
+}
 
-.status-bar {
-    height: 34px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 18px;
-    font-size: 12px;
-    color: #dbeafe;
-    background: #080b14;
+.page-sub{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:6px;
+    margin-bottom:25px;
 }
 
-.status-right {
-    display: flex;
-    gap: 8px;
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+.hero{
+    min-height:240px;
+    border:1px solid var(--line);
+    background:
+        linear-gradient(100deg,#11161d 0%,#0d1117 55%,#121820 100%);
+    border-radius:12px;
+    padding:30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:18px;
+}
+
+.hero-left{
+    max-width:600px;
 }
 
-/* Экран */
+.hero-label{
+    color:#8e98a4;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+}
+
+.hero h1{
+    font-size:38px;
+    margin-top:10px;
+    letter-spacing:-1.5px;
+}
 
-.screen {
-    height: calc(100% - 94px);
-    overflow-y: auto;
-    scrollbar-width: none;
-    padding-bottom: 20px;
+.hero p{
+    color:#8c96a2;
+    margin-top:12px;
+    line-height:1.5;
+    max-width:520px;
 }
 
-.screen::-webkit-scrollbar {
-    display: none;
+.hero-stat{
+    text-align:right;
 }
 
-/* Верх приложения */
+.hero-stat small{
+    color:var(--muted);
+}
 
-.app-header {
-    padding: 18px 18px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.hero-money{
+    font-size:31px;
+    font-weight:bold;
+    margin-top:5px;
 }
 
-.app-header h1 {
-    font-size: 25px;
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
 }
 
-.app-header span {
-    color: #94a3b8;
-    font-size: 13px;
+.stat{
+    border:1px solid var(--line);
+    background:var(--panel);
+    padding:18px;
+    border-radius:10px;
 }
 
-/* =========================
-   РАБОЧИЙ СТОЛ
-========================= */
+.stat small{
+    color:var(--muted);
+    font-size:12px;
+}
 
-.home {
-    padding: 12px 18px;
+.stat strong{
+    display:block;
+    margin-top:9px;
+    font-size:23px;
 }
 
-.welcome {
-    background: linear-gradient(135deg, #111827, #172554);
-    border: 1px solid #263656;
-    border-radius: 22px;
-    padding: 20px;
-    margin-bottom: 20px;
+/* =====================================================
+   MARKET
+===================================================== */
+
+.market-toolbar{
+    display:flex;
+    gap:8px;
+    margin-bottom:18px;
 }
 
-.welcome small {
-    color: #94a3b8;
+.filter{
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:#aeb5bd;
+    padding:10px 13px;
+    border-radius:7px;
+    font-size:12px;
 }
 
-.welcome h2 {
-    margin-top: 5px;
-    font-size: 25px;
+.car-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
 }
 
-.balance {
-    margin-top: 16px;
-    font-size: 28px;
-    font-weight: bold;
+.car-card{
+    border:1px solid var(--line);
+    background:#101419;
+    border-radius:11px;
+    overflow:hidden;
+    transition:.15s;
 }
 
-.balance-label {
-    color: #94a3b8;
-    font-size: 12px;
-    margin-top: 3px;
+.car-card:hover{
+    border-color:#3a424d;
+    transform:translateY(-2px);
 }
 
-.apps {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
+.car-image{
+    height:190px;
+    background:
+        linear-gradient(145deg,#20262e,#0e1115);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
 }
 
-.app-icon {
-    border: none;
-    color: white;
-    background: #111827;
-    border: 1px solid #202b42;
-    border-radius: 20px;
-    padding: 15px 5px;
-    min-height: 100px;
-    cursor: pointer;
-    transition: .15s;
+.car-image::after{
+    content:"";
+    position:absolute;
+    width:180px;
+    height:70px;
+    background:rgba(255,255,255,.025);
+    filter:blur(25px);
+    transform:rotate(-15deg);
 }
 
-.app-icon:active {
-    transform: scale(.94);
+.car-emoji{
+    font-size:85px;
+    filter:grayscale(.8);
+    position:relative;
+    z-index:2;
 }
 
-.app-emoji {
-    width: 52px;
-    height: 52px;
-    margin: auto;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 27px;
-    background: #1e293b;
+.car-city{
+    position:absolute;
+    left:12px;
+    top:12px;
+    z-index:3;
+    background:rgba(0,0,0,.55);
+    border:1px solid #363d46;
+    border-radius:5px;
+    padding:5px 8px;
+    font-size:11px;
 }
 
-.app-name {
-    margin-top: 8px;
-    font-size: 12px;
+.car-body{
+    padding:16px;
 }
 
-/* =========================
-   КНОПКА НАЗАД
-========================= */
+.car-name{
+    font-size:19px;
+    font-weight:bold;
+}
 
-.back-button {
-    border: none;
-    background: #172033;
-    color: white;
-    border-radius: 12px;
-    padding: 9px 13px;
-    cursor: pointer;
+.car-year{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:4px;
 }
 
-/* =========================
-   АВТОРЫНОК
-========================= */
+.specs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px;
+    margin-top:14px;
+}
 
-.market-list {
-    padding: 0 18px;
+.spec{
+    background:#151a20;
+    border:1px solid #20262e;
+    padding:8px;
+    border-radius:6px;
+    font-size:11px;
+    color:#adb5be;
 }
 
-.car-card {
-    background: #101521;
-    border: 1px solid #202b3d;
-    border-radius: 20px;
-    overflow: hidden;
-    margin-bottom: 15px;
+.price-row{
+    margin-top:16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:end;
 }
 
-.car-photo {
-    height: 155px;
-    background: linear-gradient(135deg, #1e293b, #0f172a);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 65px;
+.price{
+    font-size:22px;
+    font-weight:bold;
 }
 
-.car-info {
-    padding: 15px;
+.seller{
+    color:var(--muted);
+    font-size:11px;
 }
 
-.car-title {
-    font-size: 19px;
-    font-weight: bold;
+.actions{
+    display:flex;
+    gap:7px;
+    margin-top:13px;
 }
 
-.car-city {
-    margin-top: 4px;
-    color: #94a3b8;
-    font-size: 13px;
+.btn{
+    border:1px solid #303741;
+    background:#1a2027;
+    color:white;
+    border-radius:7px;
+    padding:11px 12px;
+    cursor:pointer;
+    font-size:12px;
 }
 
-.car-specs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 7px;
-    margin-top: 13px;
+.btn:hover{
+    background:#222932;
 }
 
-.spec {
-    background: #151c2b;
-    border-radius: 10px;
-    padding: 8px;
-    font-size: 12px;
-    color: #cbd5e1;
+.btn-main{
+    flex:1;
+    background:#e8eaed;
+    border-color:#e8eaed;
+    color:#111;
+    font-weight:bold;
 }
 
-.car-price {
-    margin-top: 14px;
-    font-size: 23px;
-    font-weight: bold;
+.btn-main:hover{
+    background:white;
 }
 
-.buy-button {
-    width: 100%;
-    margin-top: 12px;
-    padding: 13px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #2563eb, #4f46e5);
-    color: white;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
+/* =====================================================
+   GARAGE
+===================================================== */
+
+.garage-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
 }
 
-/* =========================
-   БАНК
-========================= */
+.garage-car{
+    border:1px solid var(--line);
+    background:var(--panel);
+    border-radius:10px;
+    padding:15px;
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
 
-.bank-card {
-    margin: 0 18px 15px;
-    padding: 22px;
-    border-radius: 22px;
-    background: linear-gradient(135deg, #064e3b, #065f46);
-    border: 1px solid #08785a;
+.garage-photo{
+    width:130px;
+    height:85px;
+    background:#171c22;
+    border:1px solid #282f38;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:48px;
 }
 
-.bank-card small {
-    color: #a7f3d0;
+.garage-info{
+    flex:1;
 }
 
-.bank-money {
-    font-size: 31px;
-    font-weight: bold;
-    margin-top: 8px;
+.garage-info h3{
+    font-size:17px;
 }
 
-.bank-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding: 0 18px;
+.garage-info p{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:5px;
 }
+
+/* =====================================================
+   BANK
+===================================================== */
 
-.bank-action {
-    background: #111827;
-    border: 1px solid #253047;
-    color: white;
-    border-radius: 17px;
-    padding: 17px;
-    cursor: pointer;
+.bank-balance{
+    border:1px solid var(--line);
+    background:linear-gradient(120deg,#11181a,#0f1515);
+    border-radius:11px;
+    padding:25px;
+    margin-bottom:15px;
 }
 
-.bank-action strong {
-    display: block;
-    font-size: 16px;
-    margin-bottom: 5px;
+.bank-balance small{
+    color:var(--muted);
 }
 
-.bank-action span {
-    color: #94a3b8;
-    font-size: 12px;
+.bank-number{
+    font-size:35px;
+    font-weight:bold;
+    margin-top:8px;
 }
 
-/* =========================
-   СТАТИСТИКА
-========================= */
+.bank-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
 
-.stats-grid {
-    padding: 0 18px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+.bank-box{
+    border:1px solid var(--line);
+    background:var(--panel);
+    border-radius:10px;
+    padding:20px;
 }
 
-.stat-card {
-    background: #111827;
-    border: 1px solid #222e44;
-    border-radius: 18px;
-    padding: 18px;
+.bank-box h3{
+    font-size:15px;
 }
 
-.stat-card small {
-    color: #94a3b8;
+.bank-box p{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:6px;
 }
 
-.stat-card strong {
-    display: block;
-    font-size: 24px;
-    margin-top: 7px;
+.bank-value{
+    font-size:23px;
+    font-weight:bold;
+    margin-top:15px;
 }
 
-/* =========================
-   ГОРОДА
-========================= */
+/* =====================================================
+   CITY
+===================================================== */
 
-.city-list {
-    padding: 0 18px;
+.city-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
 }
 
-.city-card {
-    background: #111827;
-    border: 1px solid #202c42;
-    border-radius: 18px;
-    padding: 17px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.city{
+    border:1px solid var(--line);
+    background:var(--panel);
+    padding:20px;
+    border-radius:10px;
 }
 
-.city-card h3 {
-    font-size: 17px;
+.city h3{
+    font-size:18px;
 }
 
-.city-card p {
-    margin-top: 4px;
-    color: #94a3b8;
-    font-size: 12px;
+.city p{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:6px;
 }
 
-.city-button {
-    border: none;
-    background: #1d4ed8;
-    color: white;
-    padding: 10px 13px;
-    border-radius: 10px;
-    cursor: pointer;
+.city button{
+    width:100%;
+    margin-top:17px;
 }
 
-/* =========================
-   НАСТРОЙКИ
-========================= */
+/* =====================================================
+   TABLE
+===================================================== */
+
+.table{
+    border:1px solid var(--line);
+    background:var(--panel);
+    border-radius:10px;
+    overflow:hidden;
+}
 
-.settings {
-    padding: 0 18px;
+.table-row{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr;
+    padding:14px 16px;
+    border-bottom:1px solid var(--line);
+    font-size:12px;
 }
 
-.setting {
-    background: #111827;
-    border: 1px solid #202c42;
-    border-radius: 17px;
-    padding: 17px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.table-row:last-child{
+    border-bottom:0;
 }
 
-.setting span {
-    color: #94a3b8;
-    font-size: 13px;
+.table-head{
+    color:var(--muted);
+    background:#0d1116;
 }
 
-.danger {
-    background: #7f1d1d;
-    border-color: #991b1b;
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal-bg{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    background:rgba(0,0,0,.72);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
 }
 
-/* =========================
-   НИЖНЯЯ ПАНЕЛЬ
-========================= */
+.modal-bg.show{
+    display:flex;
+}
 
-.bottom-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: rgba(9,13,23,.96);
-    border-top: 1px solid #20283a;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: center;
+.modal{
+    width:100%;
+    max-width:520px;
+    background:#11151b;
+    border:1px solid #303741;
+    border-radius:12px;
+    box-shadow:0 25px 80px rgba(0,0,0,.7);
+    overflow:hidden;
 }
 
-.nav-button {
-    border: none;
-    background: transparent;
-    color: #64748b;
-    cursor: pointer;
-    font-size: 11px;
+.modal-head{
+    padding:18px 20px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
 }
 
-.nav-button.active {
-    color: #60a5fa;
+.modal-head h2{
+    font-size:18px;
 }
 
-.nav-icon {
-    display: block;
-    font-size: 20px;
-    margin-bottom: 2px;
+.close{
+    border:0;
+    background:transparent;
+    color:#89929d;
+    font-size:22px;
+    cursor:pointer;
 }
 
-/* =========================
-   УВЕДОМЛЕНИЕ
-========================= */
+.modal-body{
+    padding:20px;
+}
 
-.toast {
-    position: absolute;
-    left: 15px;
-    right: 15px;
-    bottom: 72px;
-    background: #1e293b;
-    border: 1px solid #334155;
-    padding: 13px 15px;
-    border-radius: 13px;
-    transform: translateY(120px);
-    opacity: 0;
-    transition: .25s;
-    z-index: 100;
-    text-align: center;
-    font-size: 13px;
+.modal-car{
+    display:flex;
+    gap:15px;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--line);
 }
 
-.toast.show {
-    transform: translateY(0);
-    opacity: 1;
+.modal-photo{
+    width:120px;
+    height:80px;
+    border-radius:7px;
+    background:#181e25;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:45px;
 }
 
-/* =========================
-   МОДАЛЬНОЕ ОКНО
-========================= */
+.modal-car h3{
+    margin-top:5px;
+}
 
-.modal {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,.72);
-    display: none;
-    align-items: flex-end;
-    z-index: 50;
+.modal-car p{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:5px;
 }
 
-.modal.show {
-    display: flex;
+.trade-current{
+    margin-top:20px;
+    color:var(--muted);
+    font-size:12px;
 }
 
-.modal-box {
-    width: 100%;
-    background: #0d1320;
-    border-radius: 25px 25px 0 0;
-    padding: 22px;
-    border-top: 1px solid #27334a;
+.trade-price{
+    font-size:27px;
+    font-weight:bold;
+    margin-top:5px;
 }
 
-.modal-box h2 {
-    margin-bottom: 10px;
+.input{
+    width:100%;
+    margin-top:15px;
+    background:#0b0e12;
+    border:1px solid #303741;
+    color:white;
+    border-radius:7px;
+    padding:13px;
+    font-size:16px;
+    outline:none;
 }
 
-.modal-box p {
-    color: #94a3b8;
-    line-height: 1.5;
-    font-size: 14px;
+.input:focus{
+    border-color:#69727d;
 }
 
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 18px;
+.modal-actions{
+    display:flex;
+    gap:8px;
+    margin-top:15px;
 }
 
-.modal-buttons button {
-    flex: 1;
-    border: none;
-    padding: 13px;
-    border-radius: 12px;
-    color: white;
-    cursor: pointer;
+.modal-actions .btn{
+    flex:1;
 }
+
+/* =====================================================
+   TOAST
+===================================================== */
 
-.cancel {
-    background: #1e293b;
+.toast{
+    position:fixed;
+    z-index:200;
+    right:22px;
+    bottom:22px;
+    background:#151a20;
+    border:1px solid #303741;
+    color:white;
+    padding:13px 16px;
+    border-radius:8px;
+    font-size:13px;
+    opacity:0;
+    transform:translateY(15px);
+    pointer-events:none;
+    transition:.2s;
 }
 
-.confirm {
-    background: #2563eb;
+.toast.show{
+    opacity:1;
+    transform:translateY(0);
 }
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:800px){
+
+    .topbar{
+        height:58px;
+        padding:0 14px;
+    }
+
+    .brand-sub{
+        display:none;
+    }
+
+    .top-money{
+        font-size:13px;
+    }
+
+    .main{
+        top:58px;
+    }
+
+    .sidebar{
+        position:absolute;
+        left:0;
+        right:0;
+        bottom:0;
+        height:65px;
+        width:100%;
+        z-index:30;
+        padding:5px;
+        border-right:0;
+        border-top:1px solid var(--line);
+        background:#0b0e12;
+    }
+
+    .profile{
+        display:none;
+    }
+
+    .nav{
+        height:100%;
+        flex-direction:row;
+        justify-content:space-around;
+    }
+
+    .nav button{
+        height:54px;
+        width:auto;
+        flex:1;
+        padding:0;
+        justify-content:center;
+        flex-direction:column;
+        gap:1px;
+        font-size:9px;
+        border-radius:6px;
+    }
+
+    .nav-icon{
+        font-size:18px;
+    }
+
+    .content{
+        padding-bottom:65px;
+    }
+
+    .page{
+        padding:20px 13px 30px;
+    }
+
+    .page-title{
+        font-size:24px;
+    }
+
+    .hero{
+        min-height:210px;
+        padding:20px;
+        display:block;
+    }
+
+    .hero h1{
+        font-size:29px;
+    }
+
+    .hero-stat{
+        text-align:left;
+        margin-top:25px;
+    }
+
+    .hero-money{
+        font-size:26px;
+    }
+
+    .cards{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .car-grid{
+        grid-template-columns:1fr;
+    }
+
+    .car-image{
+        height:205px;
+    }
+
+    .city-grid{
+        grid-template-columns:1fr;
+    }
+
+    .bank-grid{
+        grid-template-columns:1fr;
+    }
+
+    .garage-car{
+        padding:10px;
+        gap:10px;
+    }
+
+    .garage-photo{
+        width:95px;
+        height:70px;
+        font-size:38px;
+    }
+
+    .table-row{
+        grid-template-columns:1.5fr 1fr 1fr;
+    }
+
+    .table-row div:nth-child(4){
+        display:none;
+    }
+
+    .modal-bg{
+        align-items:flex-end;
+        padding:0;
+    }
 
-/* ПК */
+    .modal{
+        max-width:none;
+        border-radius:15px 15px 0 0;
+    }
 
-@media (min-width: 600px) {
-    .phone {
-        transform: scale(.9);
+    .toast{
+        left:12px;
+        right:12px;
+        bottom:80px;
+        text-align:center;
     }
 }
 </style>
@@ -535,291 +916,420 @@ body {
 
 <body>
 
-<div class="phone">
+<div id="app">
 
-    <div class="status-bar">
-        <span id="clock">15:50</span>
+    <header class="topbar">
 
-        <div class="status-right">
-            <span>▮▮▮</span>
-            <span>Wi-Fi</span>
-            <span>🔋</span>
-        </div>
-    </div>
+        <div class="brand">
 
-    <main id="screen" class="screen"></main>
-
-    <div class="bottom-bar">
-        <button class="nav-button active" onclick="openApp('home')">
-            <span class="nav-icon">⌂</span>
-            Главная
-        </button>
-
-        <button class="nav-button" onclick="openApp('market')">
-            <span class="nav-icon">🚗</span>
-            Рынок
-        </button>
-
-        <button class="nav-button" onclick="openApp('bank')">
-            <span class="nav-icon">₽</span>
-            Банк
-        </button>
-    </div>
-
-    <div id="toast" class="toast"></div>
-
-    <div id="modal" class="modal">
-        <div class="modal-box">
-            <h2 id="modalTitle">Подтверждение</h2>
-            <p id="modalText"></p>
-
-            <div class="modal-buttons">
-                <button class="cancel" onclick="closeModal()">Отмена</button>
-                <button class="confirm" id="modalConfirm">Подтвердить</button>
+            <div class="brand-logo">
+                AS
             </div>
+
+            <div>
+                <div class="brand-name">
+                    AUTO SELLER
+                </div>
+
+                <div class="brand-sub">
+                    Симулятор автомобильного бизнеса
+                </div>
+            </div>
+
         </div>
+
+        <div class="top-money" id="topMoney">
+            500 000 ₽
+        </div>
+
+    </header>
+
+
+    <main class="main">
+
+        <aside class="sidebar">
+
+            <div class="profile">
+
+                <div class="profile-title">
+                    ТЕКУЩЕЕ МЕСТОПОЛОЖЕНИЕ
+                </div>
+
+                <div class="profile-city" id="sideCity">
+                    Томск
+                </div>
+
+            </div>
+
+
+            <nav class="nav">
+
+                <button onclick="openPage('home')" id="nav-home">
+                    <span class="nav-icon">⌂</span>
+                    Главная
+                </button>
+
+                <button onclick="openPage('market')" id="nav-market">
+                    <span class="nav-icon">🚗</span>
+                    Авторынок
+                </button>
+
+                <button onclick="openPage('garage')" id="nav-garage">
+                    <span class="nav-icon">▣</span>
+                    Гараж
+                </button>
+
+                <button onclick="openPage('bank')" id="nav-bank">
+                    <span class="nav-icon">₽</span>
+                    Банк
+                </button>
+
+                <button onclick="openPage('cities')" id="nav-cities">
+                    <span class="nav-icon">◎</span>
+                    Города
+                </button>
+
+                <button onclick="openPage('stats')" id="nav-stats">
+                    <span class="nav-icon">▥</span>
+                    Статистика
+                </button>
+
+                <button onclick="openPage('settings')" id="nav-settings">
+                    <span class="nav-icon">⚙</span>
+                    Настройки
+                </button>
+
+            </nav>
+
+        </aside>
+
+
+        <section class="content" id="content"></section>
+
+    </main>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div class="modal-bg" id="modalBg">
+
+    <div class="modal">
+
+        <div class="modal-head">
+
+            <h2 id="modalTitle">
+                Торг
+            </h2>
+
+            <button class="close" onclick="closeModal()">
+                ×
+            </button>
+
+        </div>
+
+        <div class="modal-body" id="modalBody"></div>
+
     </div>
 
 </div>
 
+
+<div class="toast" id="toast"></div>
+
+
 <script>
 
 /* =====================================================
-   AUTO SELLER
-   ОСНОВНАЯ ЛОГИКА ИГРЫ
+   СОХРАНЕНИЕ
 ===================================================== */
 
-/* ---------- СОХРАНЕНИЕ ---------- */
+const DEFAULT_GAME = {
 
-const defaultGame = {
-    money: 500000,
+    money:500000,
 
-    currentCity: "Томск",
+    city:"Томск",
 
-    carsBought: 0,
-    carsSold: 0,
-    totalProfit: 0,
+    bought:0,
 
-    garage: [],
+    sold:0,
 
-    deposit: {
-        amount: 0,
-        rate: 0.08
-    },
+    profit:0,
 
-    credit: {
-        amount: 0,
-        rate: 0.15
-    }
+    garage:[],
+
+    deposit:0,
+
+    credit:0,
+
+    creditInterest:0,
+
+    history:[]
+
 };
 
-let game = JSON.parse(localStorage.getItem("autoSellerSave"));
+let game =
+    JSON.parse(localStorage.getItem("AUTO_SELLER_SAVE"))
+    || JSON.parse(JSON.stringify(DEFAULT_GAME));
 
-if (!game) {
-    game = structuredClone(defaultGame);
-    saveGame();
+
+function save(){
+
+    localStorage.setItem(
+        "AUTO_SELLER_SAVE",
+        JSON.stringify(game)
+    );
+
+    updateHeader();
 }
 
-function saveGame() {
-    localStorage.setItem("autoSellerSave", JSON.stringify(game));
+
+/* =====================================================
+   УТИЛИТЫ
+===================================================== */
+
+function money(n){
+
+    return Math.floor(n).toLocaleString("ru-RU")+" ₽";
+
 }
 
 
-/* ---------- АВТОМОБИЛИ ---------- */
+function toast(text){
 
-/*
-    Пока только 3 машины.
-    Позже добавим 20+.
-*/
+    const el=document.getElementById("toast");
 
-const cars = [
+    el.textContent=text;
+
+    el.classList.add("show");
+
+    clearTimeout(window.toastTimer);
+
+    window.toastTimer=setTimeout(()=>{
+
+        el.classList.remove("show");
+
+    },2300);
+
+}
+
+
+function updateHeader(){
+
+    document.getElementById("topMoney").textContent=money(game.money);
+
+    document.getElementById("sideCity").textContent=game.city;
+
+}
+
+
+/* =====================================================
+   МАШИНЫ
+===================================================== */
+
+const cars=[
 
     {
-        id: 1,
-        name: "Lada Priora",
-        year: 2012,
-        mileage: 164000,
-        power: 98,
-        condition: "Хорошее",
-        city: "Томск",
-        price: 185000,
-        emoji: "🚘"
+        id:1,
+        name:"Lada Priora",
+        year:2012,
+        mileage:164000,
+        power:98,
+        condition:"Хорошее",
+        city:"Томск",
+        price:185000,
+        seller:"Алексей",
+        emoji:"🚘"
     },
 
     {
-        id: 2,
-        name: "VAZ 2114",
-        year: 2010,
-        mileage: 198000,
-        power: 81,
-        condition: "Среднее",
-        city: "Москва",
-        price: 145000,
-        emoji: "🚗"
+        id:2,
+        name:"Lada 2114",
+        year:2010,
+        mileage:198000,
+        power:81,
+        condition:"Среднее",
+        city:"Москва",
+        price:145000,
+        seller:"Сергей",
+        emoji:"🚗"
     },
 
     {
-        id: 3,
-        name: "Lada Granta",
-        year: 2017,
-        mileage: 97000,
-        power: 106,
-        condition: "Отличное",
-        city: "Санкт-Петербург",
-        price: 395000,
-        emoji: "🚙"
+        id:3,
+        name:"Lada Granta",
+        year:2017,
+        mileage:97000,
+        power:106,
+        condition:"Отличное",
+        city:"Санкт-Петербург",
+        price:395000,
+        seller:"Илья",
+        emoji:"🚙"
+    },
+
+    {
+        id:4,
+        name:"Lada Vesta",
+        year:2019,
+        mileage:82000,
+        power:106,
+        condition:"Хорошее",
+        city:"Новосибирск",
+        price:620000,
+        seller:"Максим",
+        emoji:"🚘"
+    },
+
+    {
+        id:5,
+        name:"Toyota Camry",
+        year:2011,
+        mileage:205000,
+        power:181,
+        condition:"Среднее",
+        city:"Москва",
+        price:790000,
+        seller:"Роман",
+        emoji:"🚗"
+    },
+
+    {
+        id:6,
+        name:"BMW 3 Series",
+        year:2008,
+        mileage:230000,
+        power:218,
+        condition:"Требует ремонта",
+        city:"Томск",
+        price:530000,
+        seller:"Дмитрий",
+        emoji:"🚙"
     }
 
 ];
 
 
-/* ---------- УТИЛИТЫ ---------- */
+/* =====================================================
+   НАВИГАЦИЯ
+===================================================== */
 
-function money(value) {
-    return Math.floor(value).toLocaleString("ru-RU") + " ₽";
-}
+function openPage(page){
 
-function showToast(text) {
+    document.querySelectorAll(".nav button")
+        .forEach(x=>x.classList.remove("active"));
 
-    const toast = document.getElementById("toast");
+    const nav=document.getElementById("nav-"+page);
 
-    toast.textContent = text;
-    toast.classList.add("show");
-
-    setTimeout(() => {
-        toast.classList.remove("show");
-    }, 2200);
-}
+    if(nav) nav.classList.add("active");
 
 
-/* ---------- ЧАСЫ ---------- */
+    if(page==="home") renderHome();
 
-function updateClock() {
+    if(page==="market") renderMarket();
 
-    const now = new Date();
+    if(page==="garage") renderGarage();
 
-    let h = String(now.getHours()).padStart(2, "0");
-    let m = String(now.getMinutes()).padStart(2, "0");
+    if(page==="bank") renderBank();
 
-    document.getElementById("clock").textContent = h + ":" + m;
-}
+    if(page==="cities") renderCities();
 
-setInterval(updateClock, 1000);
-updateClock();
+    if(page==="stats") renderStats();
+
+    if(page==="settings") renderSettings();
 
 
-/* ---------- ЭКРАН ---------- */
+    updateHeader();
 
-function openApp(app) {
-
-    const screen = document.getElementById("screen");
-
-    if (app === "home") {
-        renderHome();
-    }
-
-    if (app === "market") {
-        renderMarket();
-    }
-
-    if (app === "bank") {
-        renderBank();
-    }
-
-    if (app === "stats") {
-        renderStats();
-    }
-
-    if (app === "cities") {
-        renderCities();
-    }
-
-    if (app === "settings") {
-        renderSettings();
-    }
-
-    document.querySelectorAll(".nav-button").forEach(btn => {
-        btn.classList.remove("active");
-    });
-
-    if (app === "home") {
-        document.querySelectorAll(".nav-button")[0].classList.add("active");
-    }
-
-    if (app === "market") {
-        document.querySelectorAll(".nav-button")[1].classList.add("active");
-    }
-
-    if (app === "bank") {
-        document.querySelectorAll(".nav-button")[2].classList.add("active");
-    }
-
-    screen.scrollTop = 0;
 }
 
 
 /* =====================================================
-   ГЛАВНЫЙ ЭКРАН
+   ГЛАВНАЯ
 ===================================================== */
 
-function renderHome() {
+function renderHome(){
 
-    document.getElementById("screen").innerHTML = `
+    document.getElementById("content").innerHTML=`
 
-        <div class="home">
+        <div class="page">
 
-            <div class="welcome">
+            <div class="page-title">
+                Главная
+            </div>
 
-                <small>AUTO SELLER</small>
+            <div class="page-sub">
+                Ваш автомобильный бизнес
+            </div>
 
-                <h2>Добро пожаловать 👋</h2>
 
-                <div class="balance">
-                    ${money(game.money)}
+            <div class="hero">
+
+                <div class="hero-left">
+
+                    <div class="hero-label">
+                        AUTO SELLER
+                    </div>
+
+                    <h1>
+                        Покупай дешевле.<br>
+                        Продавай дороже.
+                    </h1>
+
+                    <p>
+                        Ищи выгодные объявления,
+                        торгуйся с продавцами,
+                        покупай автомобили и
+                        зарабатывай на перепродаже.
+                    </p>
+
                 </div>
 
-                <div class="balance-label">
-                    Доступные деньги
+
+                <div class="hero-stat">
+
+                    <small>
+                        Доступный капитал
+                    </small>
+
+                    <div class="hero-money">
+                        ${money(game.money)}
+                    </div>
+
                 </div>
 
             </div>
 
-            <div class="apps">
 
-                <button class="app-icon" onclick="openApp('market')">
-                    <div class="app-emoji">🚗</div>
-                    <div class="app-name">Авторынок</div>
-                </button>
+            <div class="cards">
 
-                <button class="app-icon" onclick="openApp('bank')">
-                    <div class="app-emoji">🏦</div>
-                    <div class="app-name">Банк</div>
-                </button>
+                <div class="stat">
+                    <small>Куплено</small>
+                    <strong>${game.bought}</strong>
+                </div>
 
-                <button class="app-icon" onclick="openApp('stats')">
-                    <div class="app-emoji">📊</div>
-                    <div class="app-name">Статистика</div>
-                </button>
+                <div class="stat">
+                    <small>Продано</small>
+                    <strong>${game.sold}</strong>
+                </div>
 
-                <button class="app-icon" onclick="openApp('cities')">
-                    <div class="app-emoji">🗺️</div>
-                    <div class="app-name">Города</div>
-                </button>
+                <div class="stat">
+                    <small>Прибыль</small>
+                    <strong>${money(game.profit)}</strong>
+                </div>
 
-                <button class="app-icon" onclick="showGarage()">
-                    <div class="app-emoji">🔧</div>
-                    <div class="app-name">Гараж</div>
-                </button>
-
-                <button class="app-icon" onclick="openApp('settings')">
-                    <div class="app-emoji">⚙️</div>
-                    <div class="app-name">Настройки</div>
-                </button>
+                <div class="stat">
+                    <small>Гараж</small>
+                    <strong>${game.garage.length}</strong>
+                </div>
 
             </div>
 
         </div>
+
     `;
+
 }
 
 
@@ -827,658 +1337,123 @@ function renderHome() {
    АВТОРЫНОК
 ===================================================== */
 
-function renderMarket() {
+function renderMarket(){
 
-    let html = `
+    let html=`
 
-        <div class="app-header">
-            <div>
-                <h1>Авторынок</h1>
-                <span>Объявления автомобилей</span>
+        <div class="page">
+
+            <div class="page-title">
+                Авторынок
             </div>
-        </div>
 
-        <div class="market-list">
-    `;
+            <div class="page-sub">
+                Объявления частных продавцов
+            </div>
 
-    cars.forEach(car => {
+            <div class="market-toolbar">
 
-        html += `
-
-            <div class="car-card">
-
-                <div class="car-photo">
-                    ${car.emoji}
+                <div class="filter">
+                    Все города
                 </div>
 
-                <div class="car-info">
+                <div class="filter">
+                    Сначала выгодные
+                </div>
 
-                    <div class="car-title">
-                        ${car.name}
-                    </div>
+                <div class="filter">
+                    Частные продавцы
+                </div>
+
+            </div>
+
+            <div class="car-grid">
+    `;
+
+
+    cars.forEach(car=>{
+
+        html+=`
+
+            <article class="car-card">
+
+                <div class="car-image">
 
                     <div class="car-city">
-                        📍 ${car.city}
+                        ${car.city}
                     </div>
 
-                    <div class="car-specs">
-
-                        <div class="spec">
-                            📅 ${car.year} год
-                        </div>
-
-                        <div class="spec">
-                            🛣️ ${car.mileage.toLocaleString("ru-RU")} км
-                        </div>
-
-                        <div class="spec">
-                            ⚡ ${car.power} л.с.
-                        </div>
-
-                        <div class="spec">
-                            🔧 ${car.condition}
-                        </div>
-
-                    </div>
-
-                    <div class="car-price">
-                        ${money(car.price)}
-                    </div>
-
-                    <button class="buy-button"
-                        onclick="buyCar(${car.id})">
-                        Купить
-                    </button>
-
-                </div>
-
-            </div>
-
-        `;
-    });
-
-    html += `
-        </div>
-    `;
-
-    document.getElementById("screen").innerHTML = html;
-}
-
-
-/* =====================================================
-   ПОКУПКА
-===================================================== */
-
-function buyCar(id) {
-
-    const car = cars.find(c => c.id === id);
-
-    if (!car) return;
-
-    if (game.currentCity !== car.city) {
-
-        showToast(
-            `Машина находится в городе ${car.city}`
-        );
-
-        return;
-    }
-
-    if (game.money < car.price) {
-
-        showToast("Недостаточно денег");
-
-        return;
-    }
-
-    showModal(
-        "Покупка автомобиля",
-        `Купить ${car.name} за ${money(car.price)}?`,
-        () => {
-
-            if (game.money < car.price) {
-                showToast("Недостаточно денег");
-                return;
-            }
-
-            game.money -= car.price;
-
-            game.carsBought++;
-
-            game.garage.push({
-                ...car,
-                purchasePrice: car.price
-            });
-
-            saveGame();
-
-            closeModal();
-
-            showToast(`${car.name} куплена!`);
-
-            setTimeout(() => {
-                renderMarket();
-            }, 500);
-
-        }
-    );
-}
-
-
-/* =====================================================
-   БАНК
-===================================================== */
-
-function renderBank() {
-
-    document.getElementById("screen").innerHTML = `
-
-        <div class="app-header">
-
-            <div>
-                <h1>Банк</h1>
-                <span>AutoBank</span>
-            </div>
-
-        </div>
-
-        <div class="bank-card">
-
-            <small>Текущий баланс</small>
-
-            <div class="bank-money">
-                ${money(game.money)}
-            </div>
-
-        </div>
-
-        <div class="bank-actions">
-
-            <button class="bank-action"
-                onclick="depositMoney()">
-
-                <strong>💰 Депозит</strong>
-
-                <span>
-                    На депозите:
-                    ${money(game.deposit.amount)}
-                </span>
-
-            </button>
-
-            <button class="bank-action"
-                onclick="takeCredit()">
-
-                <strong>💳 Кредит</strong>
-
-                <span>
-                    Долг:
-                    ${money(game.credit.amount)}
-                </span>
-
-            </button>
-
-            <button class="bank-action"
-                onclick="repayCredit()">
-
-                <strong>↩️ Погасить</strong>
-
-                <span>
-                    Кредит:
-                    ${money(game.credit.amount)}
-                </span>
-
-            </button>
-
-            <button class="bank-action"
-                onclick="withdrawDeposit()">
-
-                <strong>💵 Снять</strong>
-
-                <span>
-                    Депозит:
-                    ${money(game.deposit.amount)}
-                </span>
-
-            </button>
-
-        </div>
-    `;
-}
-
-
-/* ---------- ДЕПОЗИТ ---------- */
-
-function depositMoney() {
-
-    const amount = Number(
-        prompt("Введите сумму для депозита:")
-    );
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-        return;
-    }
-
-    if (amount > game.money) {
-
-        showToast("Недостаточно денег");
-
-        return;
-    }
-
-    game.money -= amount;
-
-    game.deposit.amount += amount;
-
-    saveGame();
-
-    showToast(
-        `На депозит внесено ${money(amount)}`
-    );
-
-    renderBank();
-}
-
-
-/* ---------- СНЯТИЕ ДЕПОЗИТА ---------- */
-
-function withdrawDeposit() {
-
-    if (game.deposit.amount <= 0) {
-
-        showToast("Депозит пуст");
-
-        return;
-    }
-
-    const amount = Number(
-        prompt(
-            `Доступно: ${money(game.deposit.amount)}\n\nСколько снять?`
-        )
-    );
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-        return;
-    }
-
-    if (amount > game.deposit.amount) {
-
-        showToast("На депозите недостаточно денег");
-
-        return;
-    }
-
-    game.deposit.amount -= amount;
-
-    game.money += amount;
-
-    saveGame();
-
-    showToast(`Снято ${money(amount)}`);
-
-    renderBank();
-}
-
-
-/* ---------- КРЕДИТ ---------- */
-
-function takeCredit() {
-
-    if (game.credit.amount > 0) {
-
-        showToast(
-            "Сначала погасите текущий кредит"
-        );
-
-        return;
-    }
-
-    const amount = Number(
-        prompt("Введите сумму кредита:")
-    );
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-        return;
-    }
-
-    const MAX_CREDIT = 1000000;
-
-    if (amount > MAX_CREDIT) {
-
-        showToast(
-            `Максимальный кредит: ${money(MAX_CREDIT)}`
-        );
-
-        return;
-    }
-
-    game.credit.amount = amount;
-
-    game.money += amount;
-
-    saveGame();
-
-    showToast(
-        `Вы получили кредит ${money(amount)}`
-    );
-
-    renderBank();
-}
-
-
-/* ---------- ПОГАШЕНИЕ ---------- */
-
-function repayCredit() {
-
-    if (game.credit.amount <= 0) {
-
-        showToast("У вас нет кредита");
-
-        return;
-    }
-
-    const amount = Number(
-        prompt(
-            `Долг: ${money(game.credit.amount)}\n\nСколько погасить?`
-        )
-    );
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-        return;
-    }
-
-    if (amount > game.money) {
-
-        showToast("Недостаточно денег");
-
-        return;
-    }
-
-    if (amount > game.credit.amount) {
-
-        showToast(
-            "Нельзя погасить больше суммы долга"
-        );
-
-        return;
-    }
-
-    game.money -= amount;
-
-    game.credit.amount -= amount;
-
-    saveGame();
-
-    showToast(
-        `Погашено ${money(amount)}`
-    );
-
-    renderBank();
-}
-
-
-/* =====================================================
-   СТАТИСТИКА
-===================================================== */
-
-function renderStats() {
-
-    document.getElementById("screen").innerHTML = `
-
-        <div class="app-header">
-
-            <div>
-                <h1>Статистика</h1>
-                <span>Ваш бизнес</span>
-            </div>
-
-        </div>
-
-        <div class="stats-grid">
-
-            <div class="stat-card">
-                <small>Деньги</small>
-                <strong>${money(game.money)}</strong>
-            </div>
-
-            <div class="stat-card">
-                <small>Куплено машин</small>
-                <strong>${game.carsBought}</strong>
-            </div>
-
-            <div class="stat-card">
-                <small>Продано машин</small>
-                <strong>${game.carsSold}</strong>
-            </div>
-
-            <div class="stat-card">
-                <small>Прибыль</small>
-                <strong>${money(game.totalProfit)}</strong>
-            </div>
-
-            <div class="stat-card">
-                <small>В гараже</small>
-                <strong>${game.garage.length}</strong>
-            </div>
-
-            <div class="stat-card">
-                <small>Город</small>
-                <strong>${game.currentCity}</strong>
-            </div>
-
-        </div>
-    `;
-}
-
-
-/* =====================================================
-   ГОРОДА
-===================================================== */
-
-const cities = [
-    {
-        name: "Томск",
-        travel: 0
-    },
-
-    {
-        name: "Москва",
-        travel: 15000
-    },
-
-    {
-        name: "Санкт-Петербург",
-        travel: 18000
-    },
-
-    {
-        name: "Новосибирск",
-        travel: 7000
-    }
-];
-
-
-function renderCities() {
-
-    let html = `
-
-        <div class="app-header">
-
-            <div>
-                <h1>Города</h1>
-                <span>
-                    Сейчас вы в: ${game.currentCity}
-                </span>
-            </div>
-
-        </div>
-
-        <div class="city-list">
-    `;
-
-    cities.forEach(city => {
-
-        const isCurrent =
-            city.name === game.currentCity;
-
-        html += `
-
-            <div class="city-card">
-
-                <div>
-
-                    <h3>
-                        ${city.name}
-                        ${isCurrent ? " 📍" : ""}
-                    </h3>
-
-                    <p>
-                        ${isCurrent
-                            ? "Текущее местоположение"
-                            : "Стоимость поездки: " +
-                              money(city.travel)}
-                    </p>
-
-                </div>
-
-                ${
-                    isCurrent
-                    ? `<button
-                        class="city-button"
-                        disabled>
-                        Здесь
-                      </button>`
-                    : `<button
-                        class="city-button"
-                        onclick="travelTo('${city.name}', ${city.travel})">
-                        Поехать
-                      </button>`
-                }
-
-            </div>
-        `;
-    });
-
-    html += `</div>`;
-
-    document.getElementById("screen").innerHTML = html;
-}
-
-
-/* ---------- ПОЕЗДКА ---------- */
-
-function travelTo(city, price) {
-
-    if (game.money < price) {
-
-        showToast(
-            "Недостаточно денег на поездку"
-        );
-
-        return;
-    }
-
-    showModal(
-        "Поездка",
-        `Поехать в ${city} за ${money(price)}?`,
-        () => {
-
-            game.money -= price;
-
-            game.currentCity = city;
-
-            saveGame();
-
-            closeModal();
-
-            showToast(
-                `Вы приехали в ${city}!`
-            );
-
-            renderCities();
-        }
-    );
-}
-
-
-/* =====================================================
-   ГАРАЖ
-===================================================== */
-
-function showGarage() {
-
-    let html = `
-
-        <div class="app-header">
-
-            <div>
-                <h1>Гараж</h1>
-                <span>
-                    Автомобили в собственности
-                </span>
-            </div>
-
-        </div>
-
-        <div class="market-list">
-    `;
-
-    if (game.garage.length === 0) {
-
-        html += `
-
-            <div style="
-                text-align:center;
-                color:#94a3b8;
-                padding:50px 20px;
-            ">
-
-                🚗
-
-                <br><br>
-
-                В гараже пока пусто.
-
-                <br>
-
-                Купите первую машину
-                на авторынке.
-
-            </div>
-
-        `;
-
-    } else {
-
-        game.garage.forEach((car, index) => {
-
-            html += `
-
-                <div class="car-card">
-
-                    <div class="car-photo">
+                    <div class="car-emoji">
                         ${car.emoji}
                     </div>
 
-                    <div class="car-info">
+                </div>
 
-                        <div class="car-title">
-                            ${car.name}
+
+                <div class="car-body">
+
+                    <div class="car-name">
+                        ${car.name}
+                    </div>
+
+                    <div class="car-year">
+                        ${car.year} год · ${car.seller}
+                    </div>
+
+
+                    <div class="specs">
+
+                        <div class="spec">
+                            Пробег<br>
+                            <b>${car.mileage.toLocaleString("ru-RU")} км</b>
                         </div>
 
-                        <div class="car-city">
-                            📍 Куплена в ${car.city}
+                        <div class="spec">
+                            Мощность<br>
+                            <b>${car.power} л.с.</b>
                         </div>
 
-                        <div class="car-price">
-                            ${money(car.purchasePrice)}
+                        <div class="spec">
+                            Состояние<br>
+                            <b>${car.condition}</b>
                         </div>
+
+                        <div class="spec">
+                            Владелец<br>
+                            <b>Частник</b>
+                        </div>
+
+                    </div>
+
+
+                    <div class="price-row">
+
+                        <div class="price">
+                            ${money(car.price)}
+                        </div>
+
+                        <div class="seller">
+                            ${car.seller}
+                        </div>
+
+                    </div>
+
+
+                    <div class="actions">
 
                         <button
-                            class="buy-button"
-                            onclick="sellCar(${index})">
+                            class="btn"
+                            onclick="openTrade(${car.id})">
 
-                            Продать
+                            Торг
+
+                        </button>
+
+                        <button
+                            class="btn btn-main"
+                            onclick="buyDirect(${car.id})">
+
+                            Купить
 
                         </button>
 
@@ -1486,66 +1461,1378 @@ function showGarage() {
 
                 </div>
 
-            `;
-        });
-    }
+            </article>
 
-    html += `</div>`;
+        `;
 
-    document.getElementById("screen").innerHTML = html;
+    });
+
+
+    html+=`
+
+            </div>
+
+        </div>
+    `;
+
+
+    document.getElementById("content").innerHTML=html;
+
 }
 
 
-/* ---------- ПРОДАЖА ---------- */
+/* =====================================================
+   ПРЯМАЯ ПОКУПКА
+===================================================== */
 
-function sellCar(index) {
+function buyDirect(id){
 
-    const car = game.garage[index];
+    const car=cars.find(x=>x.id===id);
 
-    if (!car) return;
+    if(!car) return;
+
+
+    if(car.city!==game.city){
+
+        toast(
+            "Машина находится в "+car.city+
+            ". Сначала нужно приехать туда."
+        );
+
+        return;
+
+    }
+
+
+    if(game.money<car.price){
+
+        toast("Недостаточно денег");
+
+        return;
+
+    }
+
+
+    purchaseCar(car,car.price);
+
+}
+
+
+/* =====================================================
+   СИСТЕМА ТОРГА
+===================================================== */
+
+function openTrade(id){
+
+    const car=cars.find(x=>x.id===id);
+
+    if(!car) return;
+
+
+    document.getElementById("modalTitle")
+        .textContent="Переговоры с продавцом";
+
+
+    document.getElementById("modalBody").innerHTML=`
+
+        <div class="modal-car">
+
+            <div class="modal-photo">
+                ${car.emoji}
+            </div>
+
+            <div>
+
+                <div style="color:#89929d;font-size:11px">
+                    ПРОДАВЕЦ
+                </div>
+
+                <h3>
+                    ${car.seller}
+                </h3>
+
+                <p>
+                    ${car.name} · ${car.year}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="trade-current">
+            Продавец просит
+        </div>
+
+        <div class="trade-price">
+            ${money(car.price)}
+        </div>
+
+
+        <input
+            class="input"
+            id="tradeInput"
+            type="number"
+            placeholder="Ваше предложение, ₽"
+            value="${Math.floor(car.price*.9)}"
+        >
+
+
+        <div class="modal-actions">
+
+            <button
+                class="btn"
+                onclick="closeModal()">
+
+                Отмена
+
+            </button>
+
+            <button
+                class="btn btn-main"
+                onclick="makeOffer(${car.id})">
+
+                Сделать предложение
+
+            </button>
+
+        </div>
+
+    `;
+
+
+    document.getElementById("modalBg")
+        .classList.add("show");
+
+}
+
+
+/* =====================================================
+   ПРЕДЛОЖЕНИЕ
+===================================================== */
+
+function makeOffer(id){
+
+    const car=cars.find(x=>x.id===id);
+
+    if(!car) return;
+
+
+    const input=document.getElementById("tradeInput");
+
+    const offer=Number(input.value);
+
+
+    if(!Number.isFinite(offer)||offer<=0){
+
+        toast("Введите корректную сумму");
+
+        return;
+
+    }
+
+
+    if(offer>=car.price){
+
+        closeModal();
+
+        purchaseCar(car,car.price);
+
+        return;
+
+    }
+
 
     /*
-        Пока продажная цена равна
-        покупной.
-        
-        Позже сделаем:
-        - торг
-        - рынок
-        - спрос
-        - состояние
-        - случайную цену
-        - прибыль/убыток
+        Логика переговоров.
+
+        Чем ближе предложение к цене продавца,
+        тем выше шанс согласия.
     */
 
-    const salePrice = Math.floor(
-        car.purchasePrice * 1.10
-    );
+    const ratio=offer/car.price;
 
-    showModal(
-        "Продажа автомобиля",
-        `Продать ${car.name} за ${money(salePrice)}?`,
-        () => {
 
-            game.money += salePrice;
+    if(ratio>=.95){
 
-            game.carsSold++;
+        closeModal();
 
-            game.totalProfit +=
-                salePrice - car.purchasePrice;
+        showCounterOffer(car,offer);
 
-            game.garage.splice(index, 1);
+        return;
 
-            saveGame();
+    }
+
+
+    if(ratio>=.85){
+
+        const roll=Math.random();
+
+        if(roll<.65){
 
             closeModal();
 
-            showToast(
-                `Машина продана за ${money(salePrice)}`
+            showCounterOffer(car,offer);
+
+        }else{
+
+            closeModal();
+
+            toast(
+                "Продавец отказался. Слишком низкая цена."
             );
 
-            showGarage();
         }
+
+        return;
+
+    }
+
+
+    if(ratio>=.75){
+
+        closeModal();
+
+        toast(
+            "Продавец: «Нет, за такие деньги не отдам»"
+        );
+
+        return;
+
+    }
+
+
+    closeModal();
+
+    toast(
+        "Продавец отказался от переговоров."
     );
+
+}
+
+
+/* =====================================================
+   ВСТРЕЧНОЕ ПРЕДЛОЖЕНИЕ
+===================================================== */
+
+function showCounterOffer(car,offer){
+
+    /*
+        Продавец делает встречную цену.
+        Чем ниже предложение игрока,
+        тем выше встречная цена.
+    */
+
+    let counter=Math.round(
+        (offer+car.price)/2/1000
+    )*1000;
+
+
+    if(counter>=car.price){
+        counter=car.price-1000;
+    }
+
+
+    document.getElementById("modalTitle")
+        .textContent="Встречное предложение";
+
+
+    document.getElementById("modalBody").innerHTML=`
+
+        <div class="modal-car">
+
+            <div class="modal-photo">
+                ${car.emoji}
+            </div>
+
+            <div>
+
+                <div style="color:#89929d;font-size:11px">
+                    ${car.seller}
+                </div>
+
+                <h3>
+                    ${car.name}
+                </h3>
+
+                <p>
+                    «Могу немного уступить»
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="trade-current">
+            Ваше предложение
+        </div>
+
+        <div style="font-size:18px;margin-top:4px">
+            ${money(offer)}
+        </div>
+
+
+        <div class="trade-current"
+             style="margin-top:18px">
+
+            Встречное предложение продавца
+
+        </div>
+
+        <div class="trade-price">
+            ${money(counter)}
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="btn"
+                onclick="continueTrade(${car.id},${offer},${counter})">
+
+                Ещё торг
+
+            </button>
+
+            <button
+                class="btn btn-main"
+                onclick="acceptOffer(${car.id},${counter})">
+
+                Согласиться
+
+            </button>
+
+        </div>
+
+    `;
+
+
+    document.getElementById("modalBg")
+        .classList.add("show");
+
+}
+
+
+/* =====================================================
+   ПРОДОЛЖИТЬ ТОРГ
+===================================================== */
+
+function continueTrade(id,oldOffer,counter){
+
+    const car=cars.find(x=>x.id===id);
+
+    document.getElementById("modalTitle")
+        .textContent="Продолжаем торг";
+
+
+    document.getElementById("modalBody").innerHTML=`
+
+        <div style="color:#89929d;font-size:13px">
+            Продавец предлагает:
+        </div>
+
+        <div style="
+            font-size:28px;
+            font-weight:bold;
+            margin-top:6px;
+        ">
+            ${money(counter)}
+        </div>
+
+        <input
+            class="input"
+            id="tradeInput2"
+            type="number"
+            placeholder="Новая цена"
+            value="${Math.floor((oldOffer+counter)/2/1000)*1000}"
+        >
+
+        <div class="modal-actions">
+
+            <button
+                class="btn"
+                onclick="closeModal()">
+
+                Уйти
+
+            </button>
+
+            <button
+                class="btn btn-main"
+                onclick="secondOffer(${car.id},${counter})">
+
+                Предложить
+
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+function secondOffer(id,counter){
+
+    const car=cars.find(x=>x.id===id);
+
+    const offer=Number(
+        document.getElementById("tradeInput2").value
+    );
+
+
+    if(!Number.isFinite(offer)||offer<=0){
+
+        toast("Введите цену");
+
+        return;
+
+    }
+
+
+    if(offer>=counter){
+
+        acceptOffer(id,counter);
+
+        return;
+
+    }
+
+
+    const difference=counter-offer;
+
+
+    if(difference<=counter*.05){
+
+        closeModal();
+
+        showCounterOffer(car,offer);
+
+    }else{
+
+        closeModal();
+
+        toast(
+            "Продавец: «Ниже уже не получится»"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   СОГЛАСИЕ
+===================================================== */
+
+function acceptOffer(id,price){
+
+    const car=cars.find(x=>x.id===id);
+
+    closeModal();
+
+    purchaseCar(car,price);
+
+}
+
+
+/* =====================================================
+   ПОКУПКА
+===================================================== */
+
+function purchaseCar(car,price){
+
+    if(car.city!==game.city){
+
+        toast(
+            "Сначала нужно приехать в "+car.city
+        );
+
+        return;
+
+    }
+
+
+    if(game.money<price){
+
+        toast("Недостаточно денег");
+
+        return;
+
+    }
+
+
+    game.money-=price;
+
+    game.bought++;
+
+
+    game.garage.push({
+
+        ...car,
+
+        purchasePrice:price,
+
+        purchaseCity:game.city,
+
+        idOwned:Date.now()+Math.random()
+
+    });
+
+
+    game.history.unshift({
+
+        type:"Покупка",
+
+        car:car.name,
+
+        amount:price,
+
+        date:new Date().toLocaleString("ru-RU")
+
+    });
+
+
+    save();
+
+
+    toast(
+        car.name+" куплена за "+money(price)
+    );
+
+
+    openPage("garage");
+
+}
+
+
+/* =====================================================
+   ГАРАЖ
+===================================================== */
+
+function renderGarage(){
+
+    let html=`
+
+        <div class="page">
+
+            <div class="page-title">
+                Гараж
+            </div>
+
+            <div class="page-sub">
+                Ваши автомобили
+            </div>
+
+    `;
+
+
+    if(game.garage.length===0){
+
+        html+=`
+
+            <div class="stat"
+                 style="text-align:center;padding:60px 20px">
+
+                <div style="font-size:55px">
+                    🚘
+                </div>
+
+                <h3 style="margin-top:15px">
+                    Гараж пуст
+                </h3>
+
+                <p style="
+                    color:#89929d;
+                    font-size:13px;
+                    margin-top:8px
+                ">
+                    Найдите выгодный автомобиль
+                    на авторынке.
+                </p>
+
+            </div>
+
+        `;
+
+    }else{
+
+        html+=`<div class="garage-list">`;
+
+
+        game.garage.forEach((car,index)=>{
+
+            const recommended=Math.floor(
+                car.purchasePrice*1.12
+            );
+
+
+            html+=`
+
+                <div class="garage-car">
+
+                    <div class="garage-photo">
+                        ${car.emoji}
+                    </div>
+
+                    <div class="garage-info">
+
+                        <h3>
+                            ${car.name}
+                        </h3>
+
+                        <p>
+                            Куплена за
+                            ${money(car.purchasePrice)}
+                        </p>
+
+                        <p>
+                            Рекомендуемая продажа:
+                            ${money(recommended)}
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="btn"
+                        onclick="sellCar(${index})">
+
+                        Продать
+
+                    </button>
+
+                </div>
+
+            `;
+
+        });
+
+
+        html+=`</div>`;
+
+    }
+
+
+    html+=`</div>`;
+
+
+    document.getElementById("content").innerHTML=html;
+
+}
+
+
+/* =====================================================
+   ПРОДАЖА
+===================================================== */
+
+function sellCar(index){
+
+    const car=game.garage[index];
+
+    const base=Math.floor(
+        car.purchasePrice*1.12
+    );
+
+
+    document.getElementById("modalTitle")
+        .textContent="Продажа автомобиля";
+
+
+    document.getElementById("modalBody").innerHTML=`
+
+        <div class="modal-car">
+
+            <div class="modal-photo">
+                ${car.emoji}
+            </div>
+
+            <div>
+
+                <h3>
+                    ${car.name}
+                </h3>
+
+                <p>
+                    Куплена за
+                    ${money(car.purchasePrice)}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <input
+            class="input"
+            id="sellPrice"
+            type="number"
+            value="${base}"
+            placeholder="Цена продажи"
+        >
+
+
+        <div class="modal-actions">
+
+            <button
+                class="btn"
+                onclick="closeModal()">
+
+                Отмена
+
+            </button>
+
+            <button
+                class="btn btn-main"
+                onclick="confirmSell(${index})">
+
+                Выставить на продажу
+
+            </button>
+
+        </div>
+
+    `;
+
+
+    document.getElementById("modalBg")
+        .classList.add("show");
+
+}
+
+
+function confirmSell(index){
+
+    const car=game.garage[index];
+
+    const price=Number(
+        document.getElementById("sellPrice").value
+    );
+
+
+    if(!Number.isFinite(price)||price<=0){
+
+        toast("Введите корректную цену");
+
+        return;
+
+    }
+
+
+    const profit=price-car.purchasePrice;
+
+
+    game.money+=price;
+
+    game.sold++;
+
+    game.profit+=profit;
+
+
+    game.history.unshift({
+
+        type:"Продажа",
+
+        car:car.name,
+
+        amount:price,
+
+        profit:profit,
+
+        date:new Date().toLocaleString("ru-RU")
+
+    });
+
+
+    game.garage.splice(index,1);
+
+
+    save();
+
+    closeModal();
+
+    toast(
+        "Автомобиль продан за "+money(price)
+    );
+
+    renderGarage();
+
+}
+
+
+/* =====================================================
+   БАНК
+===================================================== */
+
+function renderBank(){
+
+    document.getElementById("content").innerHTML=`
+
+        <div class="page">
+
+            <div class="page-title">
+                AutoBank
+            </div>
+
+            <div class="page-sub">
+                Управление деньгами бизнеса
+            </div>
+
+
+            <div class="bank-balance">
+
+                <small>
+                    Доступный баланс
+                </small>
+
+                <div class="bank-number">
+                    ${money(game.money)}
+                </div>
+
+            </div>
+
+
+            <div class="bank-grid">
+
+
+                <div class="bank-box">
+
+                    <h3>
+                        Депозит
+                    </h3>
+
+                    <p>
+                        8% годовых
+                    </p>
+
+                    <div class="bank-value">
+                        ${money(game.deposit)}
+                    </div>
+
+                    <div class="actions">
+
+                        <button
+                            class="btn btn-main"
+                            onclick="deposit()">
+
+                            Внести
+
+                        </button>
+
+                        <button
+                            class="btn"
+                            onclick="withdrawDeposit()">
+
+                            Снять
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bank-box">
+
+                    <h3>
+                        Кредит
+                    </h3>
+
+                    <p>
+                        15% годовых
+                    </p>
+
+                    <div class="bank-value">
+                        ${money(game.credit)}
+                    </div>
+
+                    <div class="actions">
+
+                        <button
+                            class="btn btn-main"
+                            onclick="takeCredit()">
+
+                            Взять
+
+                        </button>
+
+                        <button
+                            class="btn"
+                            onclick="repayCredit()">
+
+                            Погасить
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+function deposit(){
+
+    const amount=Number(
+        prompt("Сколько внести на депозит?")
+    );
+
+
+    if(!Number.isFinite(amount)||amount<=0)
+        return;
+
+
+    if(amount>game.money){
+
+        toast("Недостаточно денег");
+
+        return;
+
+    }
+
+
+    game.money-=amount;
+
+    game.deposit+=amount;
+
+    save();
+
+    toast(
+        "Внесено "+money(amount)
+    );
+
+    renderBank();
+
+}
+
+
+function withdrawDeposit(){
+
+    if(game.deposit<=0){
+
+        toast("Депозит пуст");
+
+        return;
+
+    }
+
+
+    const amount=Number(
+        prompt(
+            "Доступно: "+money(game.deposit)+
+            "\nСколько снять?"
+        )
+    );
+
+
+    if(!Number.isFinite(amount)||amount<=0)
+        return;
+
+
+    if(amount>game.deposit){
+
+        toast("Недостаточно средств");
+
+        return;
+
+    }
+
+
+    game.deposit-=amount;
+
+    game.money+=amount;
+
+    save();
+
+    toast(
+        "Получено "+money(amount)
+    );
+
+    renderBank();
+
+}
+
+
+function takeCredit(){
+
+    if(game.credit>0){
+
+        toast(
+            "Сначала погасите текущий кредит"
+        );
+
+        return;
+
+    }
+
+
+    const amount=Number(
+        prompt("Сколько взять в кредит? Максимум 1 000 000 ₽")
+    );
+
+
+    if(!Number.isFinite(amount)||amount<=0)
+        return;
+
+
+    if(amount>1000000){
+
+        toast("Лимит кредита: 1 000 000 ₽");
+
+        return;
+
+    }
+
+
+    game.credit=amount;
+
+    game.money+=amount;
+
+    save();
+
+    toast(
+        "Кредит получен: "+money(amount)
+    );
+
+    renderBank();
+
+}
+
+
+function repayCredit(){
+
+    if(game.credit<=0){
+
+        toast("Кредита нет");
+
+        return;
+
+    }
+
+
+    const amount=Number(
+        prompt(
+            "Долг: "+money(game.credit)+
+            "\nСколько погасить?"
+        )
+    );
+
+
+    if(!Number.isFinite(amount)||amount<=0)
+        return;
+
+
+    if(amount>game.money){
+
+        toast("Недостаточно денег");
+
+        return;
+
+    }
+
+
+    if(amount>game.credit){
+
+        toast("Сумма больше долга");
+
+        return;
+
+    }
+
+
+    game.money-=amount;
+
+    game.credit-=amount;
+
+    save();
+
+    toast(
+        "Погашено "+money(amount)
+    );
+
+    renderBank();
+
+}
+
+
+/* =====================================================
+   ГОРОДА
+===================================================== */
+
+const cities=[
+
+    {
+        name:"Томск",
+        price:0
+    },
+
+    {
+        name:"Новосибирск",
+        price:7000
+    },
+
+    {
+        name:"Москва",
+        price:15000
+    },
+
+    {
+        name:"Санкт-Петербург",
+        price:18000
+    },
+
+    {
+        name:"Екатеринбург",
+        price:11000
+    },
+
+    {
+        name:"Казань",
+        price:12000
+    }
+
+];
+
+
+function renderCities(){
+
+    let html=`
+
+        <div class="page">
+
+            <div class="page-title">
+                Города
+            </div>
+
+            <div class="page-sub">
+                Сейчас вы находитесь в ${game.city}
+            </div>
+
+            <div class="city-grid">
+
+    `;
+
+
+    cities.forEach(city=>{
+
+        const current=city.name===game.city;
+
+
+        html+=`
+
+            <div class="city">
+
+                <h3>
+                    ${city.name}
+                </h3>
+
+                <p>
+                    ${
+                        current
+                        ? "Вы сейчас здесь"
+                        : "Стоимость поездки: "+money(city.price)
+                    }
+                </p>
+
+
+                <button
+                    class="btn ${current?'':'btn-main'}"
+                    ${current?'disabled':''}
+                    onclick="travel('${city.name}',${city.price})">
+
+                    ${
+                        current
+                        ? "Текущее место"
+                        : "Поехать"
+                    }
+
+                </button>
+
+            </div>
+
+        `;
+
+    });
+
+
+    html+=`
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.getElementById("content").innerHTML=html;
+
+}
+
+
+function travel(city,price){
+
+    if(game.money<price){
+
+        toast("Недостаточно денег");
+
+        return;
+
+    }
+
+
+    if(price>0){
+
+        game.money-=price;
+
+    }
+
+
+    game.city=city;
+
+    save();
+
+    toast(
+        "Вы прибыли в "+city
+    );
+
+    renderCities();
+
+}
+
+
+/* =====================================================
+   СТАТИСТИКА
+===================================================== */
+
+function renderStats(){
+
+    let history="";
+
+
+    if(game.history.length===0){
+
+        history=`
+
+            <div style="
+                padding:25px;
+                color:#89929d;
+                text-align:center
+            ">
+                История пока пуста.
+            </div>
+
+        `;
+
+    }else{
+
+        game.history
+        .slice(0,20)
+        .forEach(item=>{
+
+            history+=`
+
+                <div class="table-row">
+
+                    <div>
+                        ${item.type}
+                    </div>
+
+                    <div>
+                        ${item.car}
+                    </div>
+
+                    <div>
+                        ${money(item.amount)}
+                    </div>
+
+                    <div>
+                        ${item.date}
+                    </div>
+
+                </div>
+
+            `;
+
+        });
+
+    }
+
+
+    document.getElementById("content").innerHTML=`
+
+        <div class="page">
+
+            <div class="page-title">
+                Статистика
+            </div>
+
+            <div class="page-sub">
+                Финансовая история бизнеса
+            </div>
+
+
+            <div class="cards">
+
+                <div class="stat">
+                    <small>Капитал</small>
+                    <strong>${money(game.money)}</strong>
+                </div>
+
+                <div class="stat">
+                    <small>Куплено</small>
+                    <strong>${game.bought}</strong>
+                </div>
+
+                <div class="stat">
+                    <small>Продано</small>
+                    <strong>${game.sold}</strong>
+                </div>
+
+                <div class="stat">
+                    <small>Прибыль</small>
+                    <strong>${money(game.profit)}</strong>
+                </div>
+
+            </div>
+
+
+            <div style="margin-top:25px">
+
+                <div class="page-title"
+                     style="font-size:18px;margin-bottom:12px">
+
+                    История операций
+
+                </div>
+
+                <div class="table">
+
+                    <div class="table-row table-head">
+
+                        <div>Операция</div>
+                        <div>Автомобиль</div>
+                        <div>Сумма</div>
+                        <div>Дата</div>
+
+                    </div>
+
+                    ${history}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
 }
 
 
@@ -1553,129 +2840,121 @@ function sellCar(index) {
    НАСТРОЙКИ
 ===================================================== */
 
-function renderSettings() {
+function renderSettings(){
 
-    document.getElementById("screen").innerHTML = `
+    document.getElementById("content").innerHTML=`
 
-        <div class="app-header">
+        <div class="page">
 
-            <div>
-                <h1>Настройки</h1>
-                <span>Auto Seller</span>
+            <div class="page-title">
+                Настройки
             </div>
+
+            <div class="page-sub">
+                Управление игрой
+            </div>
+
+
+            <div class="stat">
+
+                <h3>
+                    Сохранение
+                </h3>
+
+                <p style="
+                    color:#89929d;
+                    margin-top:7px;
+                    font-size:13px
+                ">
+                    Прогресс сохраняется автоматически
+                    в браузере.
+                </p>
+
+            </div>
+
+
+            <div class="stat"
+                 style="margin-top:12px">
+
+                <h3>
+                    Версия
+                </h3>
+
+                <p style="
+                    color:#89929d;
+                    margin-top:7px;
+                    font-size:13px
+                ">
+                    Auto Seller 0.2
+                </p>
+
+            </div>
+
+
+            <button
+                class="btn"
+                style="
+                    margin-top:15px;
+                    background:#281416;
+                    border-color:#4a2428;
+                    color:#ed7b80
+                "
+                onclick="resetGame()">
+
+                Сбросить сохранение
+
+            </button>
 
         </div>
 
-        <div class="settings">
-
-            <div class="setting">
-
-                <div>
-                    <strong>Версия</strong>
-                    <br>
-                    <span>Auto Seller 0.1</span>
-                </div>
-
-                <span>✓</span>
-
-            </div>
-
-            <div class="setting">
-
-                <div>
-                    <strong>Сохранение</strong>
-                    <br>
-                    <span>Автоматически</span>
-                </div>
-
-                <span>💾</span>
-
-            </div>
-
-            <div class="setting danger"
-                 onclick="resetGame()">
-
-                <div>
-                    <strong>Сбросить игру</strong>
-                    <br>
-                    <span>Удалить весь прогресс</span>
-                </div>
-
-                <span>🗑️</span>
-
-            </div>
-
-        </div>
     `;
+
 }
 
 
 /* =====================================================
-   МОДАЛЬНОЕ ОКНО
+   MODAL
 ===================================================== */
 
-let modalAction = null;
+function closeModal(){
 
-function showModal(title, text, action) {
+    document.getElementById("modalBg")
+        .classList.remove("show");
 
-    document.getElementById("modalTitle").textContent = title;
-
-    document.getElementById("modalText").textContent = text;
-
-    modalAction = action;
-
-    document.getElementById("modalConfirm").onclick = () => {
-
-        if (modalAction) {
-            modalAction();
-        }
-    };
-
-    document.getElementById("modal").classList.add("show");
 }
 
 
-function closeModal() {
+function resetGame(){
 
-    document.getElementById("modal").classList.remove("show");
+    if(!confirm(
+        "Удалить весь прогресс Auto Seller?"
+    )) return;
 
-    modalAction = null;
-}
 
+    localStorage.removeItem("AUTO_SELLER_SAVE");
 
-/* =====================================================
-   СБРОС
-===================================================== */
-
-function resetGame() {
-
-    showModal(
-        "Сброс игры",
-        "Весь прогресс будет удалён. Продолжить?",
-        () => {
-
-            game = structuredClone(defaultGame);
-
-            saveGame();
-
-            closeModal();
-
-            showToast("Игра сброшена");
-
-            renderHome();
-        }
+    game=JSON.parse(
+        JSON.stringify(DEFAULT_GAME)
     );
+
+    save();
+
+    toast("Прогресс удалён");
+
+    openPage("home");
+
 }
 
 
 /* =====================================================
-   ЗАПУСК
+   START
 ===================================================== */
 
-renderHome();
+openPage("home");
 
 </script>
 
 </body>
 </html>
 ```
+
