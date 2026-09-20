@@ -427,6 +427,21 @@ input,select{
  .phone{height:100vh}
 }
 </style>
+
+<style id="autoseller10">
+/* Auto Seller 1.0 — smartphone UI */
+:root{--as-bg:#070b12;--as-card:#101722;--as-card2:#151d2a;--as-line:#263143;--as-accent:#4da3ff;--as-green:#39d98a;--as-red:#ff5d6c;--as-yellow:#ffc857}
+.phone-screen{background:linear-gradient(180deg,#08101c 0%,#0b111b 100%)!important;color:#eef4ff!important}
+.app{padding:14px 13px 88px!important}
+.as-top{display:flex;align-items:center;gap:8px;margin-bottom:12px}.as-back{border:1px solid var(--as-line);background:#121a27;color:#fff;border-radius:12px;padding:8px 11px}.as-title{flex:1}.as-title b{font-size:18px}.as-title small{display:block;color:#7f8da3;margin-top:2px}
+.card{background:linear-gradient(145deg,var(--as-card),#0d141f)!important;border:1px solid var(--as-line)!important;border-radius:17px!important;box-shadow:0 7px 24px #0005!important}
+.as-chip{display:inline-flex;padding:5px 8px;border-radius:999px;background:#182438;color:#a9c9ee;font-size:11px}.as-chip.green{color:#7ff0b7}.as-chip.red{color:#ff8b96}.as-chip.yellow{color:#ffd878}
+.as-carimg{height:145px;border-radius:15px;overflow:hidden;background:#111b29;position:relative;margin-bottom:10px}.as-carimg img{width:100%;height:100%;object-fit:cover}.as-carimg:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,#0009)}.as-carimg span{position:absolute;z-index:2;bottom:8px;left:10px;font-weight:800;text-shadow:0 2px 8px #000}
+.as-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.as-stat{background:#0d1520;border:1px solid #202b3c;border-radius:12px;padding:9px}.as-stat small{color:#77869c;display:block}.as-stat b{display:block;margin-top:3px}
+.as-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.as-btn{width:100%;border:0;border-radius:12px;padding:11px;background:#1a2637;color:#fff;font-weight:700}.as-btn.main{background:linear-gradient(135deg,#287ee5,#4aa7ff)}.as-btn.green{background:#16865a}.as-btn.red{background:#9e2d3a}.as-btn:disabled{opacity:.45}
+.as-msg{padding:11px;border-radius:14px;background:#131e2d;margin:7px 0;border:1px solid #263246}.as-msg .meta{font-size:11px;color:#7f8da3}.as-price{font-size:20px;font-weight:900}.as-muted{color:#8190a6;font-size:12px}.as-bar{height:7px;background:#202b3b;border-radius:99px;overflow:hidden;margin-top:6px}.as-bar i{display:block;height:100%;background:linear-gradient(90deg,#e35d6a,#ffd05a,#37d98c)}
+.as-phone-home{padding:5px}.as-appicon{display:flex;align-items:center;gap:10px;padding:13px;border-radius:16px;background:#111a28;border:1px solid #233047;margin-bottom:8px}.as-appicon b{font-size:24px}.as-kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.as-kpi .card{padding:12px}.as-event{border-left:3px solid var(--as-yellow)}
+</style>
 </head>
 
 <body>
@@ -2102,7 +2117,117 @@ updateMoney();
 openApp("home");
 
 </script>
+
+<script>
+/* =========================================================
+   AUTO SELLER 1.0 — expansion layer
+   Keeps the original 0.4 save compatible and adds the requested systems.
+========================================================= */
+(function(){
+ const AS_KEY='AUTO_SELLER_V10';
+ const oldSave=window.save;
+ const baseCars=window.cars||[];
+ const extraCars=[
+  ['Toyota Camry XV40',2008,215000,167,520000,'Москва'],['BMW 3 E90',2009,188000,156,690000,'Санкт-Петербург'],
+  ['Mercedes-Benz C W204',2011,172000,184,920000,'Москва'],['Kia Rio III',2014,143000,123,510000,'Казань'],
+  ['Hyundai Solaris I',2013,154000,123,495000,'Новосибирск'],['Volkswagen Polo V',2015,126000,105,575000,'Екатеринбург'],
+  ['Skoda Octavia A5',2012,181000,152,545000,'Томск'],['Ford Focus III',2013,149000,125,560000,'Новосибирск'],
+  ['Renault Logan II',2015,118000,102,525000,'Казань'],['Nissan Qashqai J10',2010,194000,141,730000,'Москва'],
+  ['Toyota Corolla E150',2011,164000,124,670000,'Новосибирск'],['Mazda 6 GH',2009,207000,147,610000,'Санкт-Петербург'],
+  ['Lexus IS250',2008,201000,208,980000,'Москва'],['Audi A4 B8',2010,176000,160,820000,'Екатеринбург'],
+  ['BMW 5 E60',2007,242000,218,650000,'Томск'],['Mercedes-Benz E W211',2008,225000,224,720000,'Санкт-Петербург'],
+  ['Lada Vesta',2017,98000,106,690000,'Томск'],['Lada Granta',2018,88000,106,515000,'Новосибирск'],
+  ['UAZ Patriot',2014,133000,135,580000,'Екатеринбург'],['Mitsubishi Outlander XL',2011,185000,147,710000,'Казань']
+ ];
+ function img(name){return 'https://loremflickr.com/900/520/car,'+encodeURIComponent(name.replace(/[^\wА-Яа-яЁё -]/g,''))+'?lock='+Math.abs(hash(name));}
+ function hash(x){let h=0;for(let i=0;i<x.length;i++)h=(h*31+x.charCodeAt(i))|0;return Math.abs(h)}
+ const more=extraCars.map((x,i)=>({id:100+i,name:x[0],year:x[1],mileage:x[2],power:x[3],condition:62+(i%31),city:x[5],price:x[4],emoji:'🚘',engine:60+(i%36),body:58+((i*3)%40),suspension:61+((i*5)%35),electric:65+((i*7)%31),interior:60+((i*11)%38),vin:'AS1'+(1000+i),owners:1+(i%5),accidents:i%3,image:img(x[0])}));
+ baseCars.forEach(c=>{if(!c.image)c.image=img(c.name)});
+ window.cars=(baseCars.concat(more)).slice(0,40);
+ const city10=[['Томск',0],['Новосибирск',7000],['Кемерово',8500],['Красноярск',12000],['Екатеринбург',11000],['Казань',12000],['Нижний Новгород',13500],['Москва',15000],['Санкт-Петербург',18000],['Самара',12500],['Омск',9000],['Тюмень',8000]];
+ window.citiesData=city10;
+ const defaults={clockHour:12,clockMinute:0,listings:[],messages:[],offers:[],bankHistory:[],events:[],achievements:[],level:1,xp:0,garageCapacity:5,showroom:false,showroomLevel:0,lastSleepDay:0,marketMult:1,docs:{},stats:{deals:0,repairs:0,scams:0},antiDup:0};
+ function merge(){
+  game={...defaults,...game};
+  for(const k of ['listings','messages','offers','bankHistory','events','achievements'])if(!Array.isArray(game[k]))game[k]=[];
+  if(!game.docs)game.docs={}; if(!game.stats)game.stats={deals:0,repairs:0,scams:0};
+  if(!game.garage)game.garage=[]; if(!game.history)game.history=[];
+ }
+ merge();
+ const rawSave=window.save;
+ window.save=function(){merge();game.antiDup=Date.now();localStorage.setItem(AS_KEY,JSON.stringify(game));try{rawSave&&rawSave()}catch(e){}updateMoney&&updateMoney()};
+ try{const v=JSON.parse(localStorage.getItem(AS_KEY));if(v){game={...game,...v};merge()}}catch(e){}
+ function money10(n){return Math.floor(Number(n)||0).toLocaleString('ru-RU')+' ₽'}
+ function xpNeed(){return 100+game.level*75}
+ function gainXP(n){game.xp+=n;while(game.xp>=xpNeed()){game.xp-=xpNeed();game.level++;toast10('Новый уровень: '+levelName())}}
+ function levelName(){return ['Новичок','Перекуп','Опытный перекуп','Автотрейдер','Автобизнесмен','Владелец автосалона'][Math.min(5,game.level-1)]}
+ function toast10(t){try{toast(t)}catch(e){alert(t)}}
+ function cap(car){return car.purchasePrice>=500000?1.65:1.30}
+ function back(){home10()}
+ function top(title,sub=''){return `<div class="as-top"><button class="as-back" onclick="home10()">‹</button><div class="as-title"><b>${title}</b><small>${sub}</small></div><span class="as-chip">${money10(game.money)}</span></div>`}
+ function btn(t,fn,cl=''){return `<button class="as-btn ${cl}" onclick="${fn}">${t}</button>`}
+ function carImg(c){return c.image||img(c.name)}
+ function stat(label,val){return `<div class="as-stat"><small>${label}</small><b>${val}</b></div>`}
+ function bar(label,val){return `<div class="as-muted">${label}: ${val}%</div><div class="as-bar"><i style="width:${Math.max(0,Math.min(100,val))}%"></i></div>`}
+ window.home10=function(){
+  document.getElementById('app').innerHTML=`<div class="as-phone-home">${top('AUTO SELLER 1.0','День '+game.day+' · '+game.city)}
+  <div class="card" style="padding:14px"><div class="as-kpi"><div><small class="as-muted">Уровень</small><h2>${game.level}</h2></div><div><small class="as-muted">Репутация</small><h2>⭐ ${game.reputation}</h2></div></div><div class="as-bar"><i style="width:${game.xp/xpNeed()*100}%"></i></div><p class="as-muted">${levelName()} · XP ${game.xp}/${xpNeed()}</p></div>
+  <div class="as-appicon" onclick="market10()"><b>🚘</b><div><strong>Рынок</strong><div class="as-muted">${cars.length} автомобилей</div></div></div>
+  <div class="as-appicon" onclick="garage10()"><b>🏠</b><div><strong>Гараж</strong><div class="as-muted">${game.garage.length}/${game.garageCapacity} мест</div></div></div>
+  <div class="as-appicon" onclick="listings10()"><b>📢</b><div><strong>Объявления</strong><div class="as-muted">${game.listings.length} активных</div></div></div>
+  <div class="as-appicon" onclick="bank10()"><b>🏦</b><div><strong>Банк 2.0</strong><div class="as-muted">Операции и кредит</div></div></div>
+  <div class="as-appicon" onclick="cities10()"><b>🗺️</b><div><strong>Карта</strong><div class="as-muted">${city10.length} городов</div></div></div>
+  <div class="as-appicon" onclick="service10()"><b>🛠️</b><div><strong>СТО</strong><div class="as-muted">Ремонт · мойка · покраска · тюнинг</div></div></div>
+  <div class="as-appicon" onclick="docs10()"><b>📄</b><div><strong>Документы</strong><div class="as-muted">VIN · владельцы · ДТП · ограничения</div></div></div>
+  <div class="as-appicon" onclick="dealership10()"><b>🏪</b><div><strong>Автосалон</strong><div class="as-muted">${game.showroom?'Открыт':'Доступен с 5 уровня'}</div></div></div>
+  <div class="as-appicon" onclick="achievements10()"><b>🏆</b><div><strong>Достижения</strong><div class="as-muted">${game.achievements.length} получено</div></div></div>
+  <div style="margin-top:10px">${game.clockHour>=21?btn('😴 Спать до 09:00','sleep10()','main'):btn('⏰ Спать можно с 21:00','toast10(\'Сон доступен с 21:00\')')}</div>
+  </div>`;
+ };
+ window.updateClock=function(){const e=document.getElementById('clock');if(e)e.textContent=String(game.clockHour).padStart(2,'0')+':'+String(game.clockMinute).padStart(2,'0')};
+ function setTime(h,m=0){game.clockHour=h;game.clockMinute=m;updateClock()}
+ window.sleep10=function(){if(game.clockHour<21){toast10('Ложиться можно только после 21:00');return}game.day++;setTime(9,0);marketTick();generateNextDayOffers();randomEvent();save();home10();toast10('Доброе утро! День '+game.day)};
+ function marketTick(){game.marketMult=Math.max(.82,Math.min(1.18,game.marketMult+(Math.random()-.48)*.08));}
+ function generateNextDayOffers(){game.listings.forEach(l=>{if(l.status!=='active')return;const c=game.garage.find(x=>x.uid===l.carUid);if(!c)return;const fair=Math.round(l.price*(.97+Math.random()*.07));const names=['Алексей','Дмитрий','Илья','Максим','Антон','Сергей','Роман'];const n=names[Math.floor(Math.random()*names.length)];const amount=Math.max(1000,Math.round(fair*(.96+Math.random()*.04)/1000)*1000);game.messages.unshift({day:game.day,listing:l.id,name:n,text:`Привет! По машине интересно. Готов дать ${money10(amount)}.`,amount,listing:l.id});l.lastOffer=amount;});}
+ window.listings10=function(){document.getElementById('app').innerHTML=top('Объявления','Покупатели пишут не сразу')+(game.listings.length?game.listings.map(l=>{const c=game.garage.find(x=>x.uid===l.carUid);return c?`<div class="card" style="padding:12px"><div class="row"><b>${c.name}</b><span class="as-chip ${l.status==='sold'?'green':''}">${l.status==='active'?'Активно':l.status}</span></div><p class="as-muted">Цена ${money10(l.price)} · лимит ${money10(c.purchasePrice*cap(c))}</p>${l.lastOffer?`<p>Последнее предложение: <b>${money10(l.lastOffer)}</b></p>`:''}<div class="as-actions">${btn('💬 Сообщения',`messages10(${l.id})`)}${btn('Снять объявление',`cancelListing10(${l.id})`)}</div></div>`:''}).join(''):'<div class="card" style="padding:16px"><b>Нет объявлений</b><p class="as-muted">Разместите автомобиль из гаража.</p></div>');}
+ window.messages10=function(lid){const msgs=game.messages.filter(x=>x.listing===lid);document.getElementById('app').innerHTML=top('Сообщения','Переговоры с покупателями')+(msgs.length?msgs.map(m=>`<div class="as-msg"><b>${m.name}</b><div class="meta">День ${m.day}</div><p>${m.text}</p><b>${money10(m.amount)}</b><div class="as-actions">${btn('Продать',`acceptOffer10(${lid},${m.amount})`)}${btn('Торг +5 000',`counter10(${lid},${m.amount},5000)`)}</div></div>`).join(''):'<div class="card" style="padding:16px">Пока никто не написал.</div>');}
+ window.acceptOffer10=function(lid,amount){const l=game.listings.find(x=>x.id===lid),c=game.garage.find(x=>x.uid===l.carUid);if(!l||!c)return;if(amount>c.purchasePrice*cap(c)){toast10('Цена выше разрешённого лимита');return}game.money+=amount;game.sold++;game.profit+=amount-c.purchasePrice;l.status='sold';game.garage=game.garage.filter(x=>x.uid!==c.uid);game.history.unshift({type:'Продажа',car:c.name,amount,profit:amount-c.purchasePrice,day:game.day});game.stats.deals++;gainXP(35);checkAchievements();save();home10();toast10('Автомобиль продан покупателю');}
+ window.counter10=function(lid,amount,add){const l=game.listings.find(x=>x.id===lid);if(l)l.lastOffer=Math.min(l.price,amount+add);save();messages10(lid)}
+ window.cancelListing10=function(lid){const l=game.listings.find(x=>x.id===lid);if(l)l.status='cancelled';save();listings10()}
+ window.market10=function(){let html=top('Рынок','День '+game.day+' · цены меняются ежедневно');html+=cars.map(c=>`<div class="card" style="padding:12px"><div class="as-carimg"><img src="${carImg(c)}" loading="lazy"><span>${c.name}</span></div><div class="row"><div><b>${c.year} · ${c.mileage.toLocaleString('ru-RU')} км</b><div class="as-muted">${c.city} · ${Math.round(c.price*game.marketMult).toLocaleString('ru-RU')} ₽</div></div><span class="as-chip">${c.condition}%</span></div><div class="as-grid" style="margin-top:8px">${stat('Двигатель',c.engine+'%')}${stat('Кузов',c.body+'%')}</div><div class="as-actions">${btn('🔍 Осмотр',`inspect10(${c.id})`)}${btn('💬 Торг',`trade10(${c.id})`,'main')}</div></div>`).join('');document.getElementById('app').innerHTML=html}
+ window.inspect10=function(id){const c=cars.find(x=>x.id===id);if(!c)return;const hidden=Math.random()<.28;const realMileage=hidden?Math.round(c.mileage*(.65+.25*Math.random())):c.mileage;const doc=game.docs[c.id]||{owners:c.owners,accidents:c.accidents,restriction:Math.random()<.12};document.getElementById('app').innerHTML=top('Осмотр 2.0',c.name)+`<div class="card" style="padding:12px"><div class="as-carimg"><img src="${carImg(c)}"></div><h2>${c.name}</h2><p class="as-muted">Заявлено: ${c.mileage.toLocaleString('ru-RU')} км · ${c.year}</p><div class="as-grid">${stat('Двигатель',c.engine+'%')}${stat('Кузов',c.body+'%')}${stat('Подвеска',c.suspension+'%')}${stat('Электрика',c.electric+'%')}</div><div style="margin-top:10px">${bar('Состояние',c.condition)}</div><div class="as-msg"><b>Диагностика 2.0</b><p>Пробег по блокам: ${realMileage.toLocaleString('ru-RU')} км ${hidden?'⚠️ Возможна скрутка':'✓ совпадает'}</p><p>ДТП: ${doc.accidents} · Владельцев: ${doc.owners}</p><p>${doc.restriction?'⛔ Есть ограничение':'✓ Ограничений не найдено'}</p>${hidden?'<p>⚠️ Найден скрытый дефект, потребуется ремонт.</p>':'<p>✓ Критичных скрытых проблем не обнаружено.</p>'}</div>${btn('💬 Перейти к торгу',`trade10(${c.id})`,'main')}</div>`}
+ window.trade10=function(id){const c=cars.find(x=>x.id===id);if(!c)return;if(c.city!==game.city){toast10('Сначала приехать в '+c.city);return}if(game.reputation<25&&c.price>600000){toast10('Репутация слишком низкая для этой сделки');return}const market=Math.round(c.price*game.marketMult);const offer=Math.round(market*(.88+Math.random()*.09)/1000)*1000;const seller=['Андрей — спокойный','Виктор — торопится','Олег — хитрый','Никита — честный'][c.id%4];document.getElementById('app').innerHTML=top('Торг',seller)+`<div class="card" style="padding:14px"><div class="as-carimg"><img src="${carImg(c)}"></div><h2>${c.name}</h2><p>${seller}</p><p class="as-muted">Цена продавца: ${money10(market)}</p><div class="as-msg">«Могу отдать за ${money10(offer)}. Но решайте быстро.»</div><div class="as-actions">${btn('Купить',`buy10(${c.id},${offer})`,'main')}${btn('Предложить -5%',`buy10(${c.id},${Math.round(offer*.95/1000)*1000})`)}</div></div>`}
+ window.buy10=function(id,price){const c=cars.find(x=>x.id===id);if(!c||game.money<price){toast10('Недостаточно денег');return}if(game.garage.length>=game.garageCapacity){toast10('Гараж заполнен');return}game.money-=price;const o={...c,uid:Date.now()+Math.random(),purchasePrice:Math.floor(price),mileage:c.mileage,condition:c.condition};game.garage.push(o);game.bought++;game.stats.deals++;game.history.unshift({type:'Покупка',car:c.name,amount:price,profit:0,day:game.day});gainXP(20);save();garage10();toast10('Машина куплена');}
+ window.garage10=function(){let h=top('Гараж',`${game.garage.length}/${game.garageCapacity} мест`);if(!game.garage.length)h+='<div class="card" style="padding:20px;text-align:center">Гараж пуст</div>';game.garage.forEach((c,i)=>{const max=c.purchasePrice*cap(c);h+=`<div class="card" style="padding:12px"><div class="as-carimg"><img src="${carImg(c)}"><span>${c.name}</span></div><p class="as-muted">Покупка: ${money10(c.purchasePrice)} · максимум продажи: ${money10(max)}</p>${bar('Состояние',c.condition)}<div class="as-actions">${btn('📢 Объявить',`createListing10(${i})`,'main')}${btn('🛠️ СТО',`serviceCar10(${i})`)}${btn('📄 Документы',`docCar10(${i})`)}${btn('💰 Быстрая продажа',`quickSell10(${i})`)}</div></div>`});document.getElementById('app').innerHTML=h}
+ window.createListing10=function(i){const c=game.garage[i];if(!c)return;const suggested=Math.round(c.purchasePrice*(1.05+Math.random()*.15)/1000)*1000;const id=Date.now();game.listings.push({id,carUid:c.uid,price:suggested,status:'active',createdDay:game.day,lastOffer:null});game.messages.unshift({day:game.day,listing:id,name:'Сергей — перекуп',text:`Срочно заберу сегодня за ${money10(Math.round(suggested*.76/1000)*1000)}. Без осмотра.`,amount:Math.round(suggested*.76/1000)*1000,listing:id});save();listings10()}
+ window.quickSell10=function(i){const c=game.garage[i];const p=Math.round(c.purchasePrice*1.05/1000)*1000;acceptDirect10(i,p)}
+ function acceptDirect10(i,p){const c=game.garage[i];if(p>c.purchasePrice*cap(c))return;game.money+=p;game.garage.splice(i,1);game.sold++;game.profit+=p-c.purchasePrice;game.stats.deals++;gainXP(25);save();garage10()}
+ window.service10=function(){document.getElementById('app').innerHTML=top('СТО','Ремонт · покраска · мойка · тюнинг')+`<div class="card" style="padding:14px">Выберите машину в гараже.<div class="as-actions">${btn('🏠 В гараж','garage10()','main')}${btn('🚿 Мойка','toast10(\'Мойка доступна из карточки авто\')')}</div></div>`+game.garage.map((c,i)=>`<div class="card" style="padding:12px"><b>${c.name}</b><p class="as-muted">Состояние ${c.condition}%</p><div class="as-actions">${btn('🔧 Ремонт 25к',`repair10(${i},25)`)}${btn('🎨 Покраска 40к',`repair10(${i},40)`)}${btn('🚿 Мойка 5к',`wash10(${i})`)}${btn('🏁 Тюнинг 80к',`tune10(${i})`)}</div></div>`).join('')}
+ window.serviceCar10=function(i){service10()}
+ window.repair10=function(i,cost){if(game.money<cost){toast10('Не хватает денег');return}const c=game.garage[i];game.money-=cost;c.condition=Math.min(100,c.condition+Math.ceil(cost/2));game.stats.repairs++;game.bankHistory.unshift({day:game.day,type:'СТО',amount:-cost});gainXP(10);save();service10()}
+ window.wash10=function(i){if(game.money<5000)return toast10('Не хватает денег');game.money-=5000;game.garage[i].condition=Math.min(100,game.garage[i].condition+3);save();service10()}
+ window.tune10=function(i){if(game.money<80000)return toast10('Не хватает денег');game.money-=80000;game.garage[i].power+=15;game.garage[i].condition=Math.max(1,game.garage[i].condition-2);save();service10()}
+ window.bank10=function(){document.getElementById('app').innerHTML=top('Банк 2.0','История операций')+`<div class="card" style="padding:14px"><div class="as-grid">${stat('Баланс',money10(game.money))}${stat('Депозит',money10(game.deposit))}${stat('Кредит',money10(game.credit))}${stat('Ставка','15%')}</div><div class="as-actions">${btn('➕ Вклад',`bankDeposit10()`,'main')}${btn('➖ Снять вклад',`bankWithdraw10()`)}</div><div class="as-actions">${btn('💳 Кредит',`bankCredit10()`)}${btn('💸 Погасить',`bankPay10()`)}</div></div><h3>История</h3>`+(game.bankHistory.slice(0,25).map(x=>`<div class="as-msg"><b>${x.type}</b><div class="meta">День ${x.day}</div><span>${money10(x.amount)}</span></div>`).join('')||'<div class="card" style="padding:12px">История пуста.</div>')}
+ function promptNum(t){const n=Number(prompt(t));return Number.isFinite(n)&&n>0?n:0}
+ window.bankDeposit10=function(){const n=promptNum('Сумма вклада');if(!n||n>game.money)return toast10('Недостаточно денег');game.money-=n;game.deposit+=n;game.bankHistory.unshift({day:game.day,type:'Вклад',amount:-n});save();bank10()}
+ window.bankWithdraw10=function(){const n=promptNum('Сколько снять?');if(!n||n>game.deposit)return toast10('Недостаточно средств');game.deposit-=n;game.money+=n;game.bankHistory.unshift({day:game.day,type:'Снятие',amount:n});save();bank10()}
+ window.bankCredit10=function(){const n=promptNum('Кредит до 1 000 000 ₽');if(!n||game.credit>0||n>1000000)return toast10('Кредит недоступен');game.credit=n;game.money+=n;game.bankHistory.unshift({day:game.day,type:'Кредит',amount:n});save();bank10()}
+ window.bankPay10=function(){const n=promptNum('Сколько погасить?');if(!n||n>game.money||n>game.credit)return toast10('Некорректная сумма');game.money-=n;game.credit-=n;game.bankHistory.unshift({day:game.day,type:'Погашение',amount:-n});save();bank10()}
+ window.cities10=function(){document.getElementById('app').innerHTML=top('Карта','12 городов');document.getElementById('app').innerHTML+=city10.map(x=>`<div class="card" style="padding:12px"><div class="row"><div><b>${x[0]}</b><p class="as-muted">Поездка ${money10(x[1])}</p></div>${x[0]===game.city?'<span class="as-chip green">Вы здесь</span>':btn('Ехать',`travel10('${x[0]}',${x[1]})`,'main')}</div></div>`).join('')}
+ window.travel10=function(name,cost){if(game.money<cost)return toast10('Недостаточно денег');game.money-=cost;game.city=name;game.day++;setTime(12,0);if(game.deposit>0)game.deposit*=1.08/1+0.0001;marketTick();randomEvent();save();cities10();}
+ window.docs10=function(){document.getElementById('app').innerHTML=top('Документы / VIN','Проверка истории')+game.garage.map((c,i)=>`<div class="card" style="padding:12px"><b>${c.name}</b><p class="as-muted">VIN: ${c.vin||'AS-VIN-'+i}</p><p>Владельцев: ${c.owners||1} · ДТП: ${c.accidents||0}</p><p>${(c.restriction)?'⛔ Ограничения':'✓ Ограничений нет'}</p>${btn('Открыть документы',`docCar10(${i})`,'main')}</div>`).join('')||'<div class="card" style="padding:12px">В гараже нет машин.</div>'}
+ window.docCar10=function(i){const c=game.garage[i];document.getElementById('app').innerHTML=top('ПТС / VIN',c.name)+`<div class="card" style="padding:15px"><h2>${c.name}</h2><p>VIN: <b>${c.vin||'AS-'+c.uid}</b></p><p>Владельцев: ${c.owners||1}</p><p>ДТП: ${c.accidents||0}</p><p>Пробег: ${c.mileage.toLocaleString('ru-RU')} км</p><p>${c.restriction?'⛔ Ограничения/залог':'✓ Ограничений не найдено'}</p>${btn('Назад','docs10()')}</div>`}
+ window.randomEvent=function(){if(Math.random()>.35)return;const events=[['🚨 Срочная продажа','Продавец срочно сбрасывает 12% на случайный автомобиль.','deal'],['💎 Находка','В городе появилась машина ниже рынка.','find'],['🔧 Поломка','Одна машина в гараже потеряла 4% состояния.','break']];const e=events[Math.floor(Math.random()*events.length)];game.events.unshift({day:game.day,title:e[0],text:e[1]});if(e[2]==='break'&&game.garage.length){const c=game.garage[Math.floor(Math.random()*game.garage.length)];c.condition=Math.max(1,c.condition-4)}if(e[2]==='find')gainXP(15);}
+ window.achievements10=function(){document.getElementById('app').innerHTML=top('Достижения','Уровень '+game.level)+`<div class="card" style="padding:14px"><b>🏁 Первая сделка</b><p class="as-muted">Купить автомобиль</p></div><div class="card" style="padding:14px"><b>💰 Первый заработок</b><p class="as-muted">Продать автомобиль в плюс</p></div><div class="card" style="padding:14px"><b>🏪 Автосалон</b><p class="as-muted">Достичь 5 уровня</p></div><div class="card" style="padding:14px"><b>⭐ Репутация 90+</b><p class="as-muted">Наработать доверие рынка</p></div>`}
+ function checkAchievements(){if(game.sold>=1&&!game.achievements.includes('first'))game.achievements.push('first');if(game.level>=5&&!game.achievements.includes('dealer'))game.achievements.push('dealer');if(game.reputation>=90&&!game.achievements.includes('rep90'))game.achievements.push('rep90')}
+ window.dealership10=function(){if(game.level<5&&!game.showroom){toast10('Автосалон откроется с 5 уровня');return}game.showroom=true;document.getElementById('app').innerHTML=top('Автосалон','Ваш бизнес')+`<div class="card" style="padding:16px"><h2>🏪 Auto Seller</h2><p>Уровень салона: ${game.showroomLevel+1}</p><p class="as-muted">Витрина, несколько машин и новые сделки.</p>${btn('Улучшить салон за 500к',`upgradeShowroom10()`,'main')}</div>`}
+ window.upgradeShowroom10=function(){if(game.money<500000)return toast10('Нужно 500 000 ₽');game.money-=500000;game.showroomLevel++;game.showroom=true;gainXP(100);save();dealership10()}
+ window.checkAchievements=checkAchievements;
+ checkAchievements();save();home10();updateClock();
+})();
+</script>
 </body>
 </html>
 ```
+
 
