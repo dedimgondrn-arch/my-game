@@ -1,902 +1,1681 @@
+```html
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>life.exe — Успіх з нуля</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Auto Seller</title>
+
 <style>
-  :root {
-    --bg: #05070a; --panel: #0d1117; --panel2: #10151c; --border: #1f2933;
-    --text: #e6edf3; --muted: #6b7785; --accent: #3ecf8e; --accent-dim: #245a44;
-    --gold: #ffd166; --red: #ff5c5c; --blue: #5aa9ff; --purple: #b48cff;
-    --font: 'JetBrains Mono', 'Courier New', ui-monospace, monospace;
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --bg: #eef1ea; --panel: #ffffff; --panel2: #f4f6f1; --border: #c9d0c2;
-      --text: #16201a; --muted: #5b6b5e; --accent: #0e7a47; --accent-dim: #bfe3cf;
-      --gold: #97710b; --red: #b23a3a; --blue: #1f5fb2; --purple: #6a4fc2;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 20% 20%, #172554 0%, transparent 35%),
+        radial-gradient(circle at 80% 80%, #312e81 0%, transparent 35%),
+        #050816;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* =========================
+   ТЕЛЕФОН
+========================= */
+
+.phone {
+    width: 390px;
+    height: 820px;
+    max-width: 100vw;
+    max-height: 100vh;
+    background: #080b14;
+    border: 8px solid #171b27;
+    border-radius: 38px;
+    box-shadow:
+        0 0 0 2px #303644,
+        0 30px 80px rgba(0,0,0,.7);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Верхняя часть */
+
+.status-bar {
+    height: 34px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 18px;
+    font-size: 12px;
+    color: #dbeafe;
+    background: #080b14;
+}
+
+.status-right {
+    display: flex;
+    gap: 8px;
+}
+
+/* Экран */
+
+.screen {
+    height: calc(100% - 94px);
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding-bottom: 20px;
+}
+
+.screen::-webkit-scrollbar {
+    display: none;
+}
+
+/* Верх приложения */
+
+.app-header {
+    padding: 18px 18px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-header h1 {
+    font-size: 25px;
+}
+
+.app-header span {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+/* =========================
+   РАБОЧИЙ СТОЛ
+========================= */
+
+.home {
+    padding: 12px 18px;
+}
+
+.welcome {
+    background: linear-gradient(135deg, #111827, #172554);
+    border: 1px solid #263656;
+    border-radius: 22px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.welcome small {
+    color: #94a3b8;
+}
+
+.welcome h2 {
+    margin-top: 5px;
+    font-size: 25px;
+}
+
+.balance {
+    margin-top: 16px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.balance-label {
+    color: #94a3b8;
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.apps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.app-icon {
+    border: none;
+    color: white;
+    background: #111827;
+    border: 1px solid #202b42;
+    border-radius: 20px;
+    padding: 15px 5px;
+    min-height: 100px;
+    cursor: pointer;
+    transition: .15s;
+}
+
+.app-icon:active {
+    transform: scale(.94);
+}
+
+.app-emoji {
+    width: 52px;
+    height: 52px;
+    margin: auto;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 27px;
+    background: #1e293b;
+}
+
+.app-name {
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+/* =========================
+   КНОПКА НАЗАД
+========================= */
+
+.back-button {
+    border: none;
+    background: #172033;
+    color: white;
+    border-radius: 12px;
+    padding: 9px 13px;
+    cursor: pointer;
+}
+
+/* =========================
+   АВТОРЫНОК
+========================= */
+
+.market-list {
+    padding: 0 18px;
+}
+
+.car-card {
+    background: #101521;
+    border: 1px solid #202b3d;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.car-photo {
+    height: 155px;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 65px;
+}
+
+.car-info {
+    padding: 15px;
+}
+
+.car-title {
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.car-city {
+    margin-top: 4px;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.car-specs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-top: 13px;
+}
+
+.spec {
+    background: #151c2b;
+    border-radius: 10px;
+    padding: 8px;
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+.car-price {
+    margin-top: 14px;
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.buy-button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 13px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* =========================
+   БАНК
+========================= */
+
+.bank-card {
+    margin: 0 18px 15px;
+    padding: 22px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #064e3b, #065f46);
+    border: 1px solid #08785a;
+}
+
+.bank-card small {
+    color: #a7f3d0;
+}
+
+.bank-money {
+    font-size: 31px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.bank-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 18px;
+}
+
+.bank-action {
+    background: #111827;
+    border: 1px solid #253047;
+    color: white;
+    border-radius: 17px;
+    padding: 17px;
+    cursor: pointer;
+}
+
+.bank-action strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.bank-action span {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+/* =========================
+   СТАТИСТИКА
+========================= */
+
+.stats-grid {
+    padding: 0 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.stat-card {
+    background: #111827;
+    border: 1px solid #222e44;
+    border-radius: 18px;
+    padding: 18px;
+}
+
+.stat-card small {
+    color: #94a3b8;
+}
+
+.stat-card strong {
+    display: block;
+    font-size: 24px;
+    margin-top: 7px;
+}
+
+/* =========================
+   ГОРОДА
+========================= */
+
+.city-list {
+    padding: 0 18px;
+}
+
+.city-card {
+    background: #111827;
+    border: 1px solid #202c42;
+    border-radius: 18px;
+    padding: 17px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.city-card h3 {
+    font-size: 17px;
+}
+
+.city-card p {
+    margin-top: 4px;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.city-button {
+    border: none;
+    background: #1d4ed8;
+    color: white;
+    padding: 10px 13px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* =========================
+   НАСТРОЙКИ
+========================= */
+
+.settings {
+    padding: 0 18px;
+}
+
+.setting {
+    background: #111827;
+    border: 1px solid #202c42;
+    border-radius: 17px;
+    padding: 17px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.setting span {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.danger {
+    background: #7f1d1d;
+    border-color: #991b1b;
+}
+
+/* =========================
+   НИЖНЯЯ ПАНЕЛЬ
+========================= */
+
+.bottom-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(9,13,23,.96);
+    border-top: 1px solid #20283a;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+}
+
+.nav-button {
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.nav-button.active {
+    color: #60a5fa;
+}
+
+.nav-icon {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 2px;
+}
+
+/* =========================
+   УВЕДОМЛЕНИЕ
+========================= */
+
+.toast {
+    position: absolute;
+    left: 15px;
+    right: 15px;
+    bottom: 72px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 13px 15px;
+    border-radius: 13px;
+    transform: translateY(120px);
+    opacity: 0;
+    transition: .25s;
+    z-index: 100;
+    text-align: center;
+    font-size: 13px;
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* =========================
+   МОДАЛЬНОЕ ОКНО
+========================= */
+
+.modal {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.72);
+    display: none;
+    align-items: flex-end;
+    z-index: 50;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-box {
+    width: 100%;
+    background: #0d1320;
+    border-radius: 25px 25px 0 0;
+    padding: 22px;
+    border-top: 1px solid #27334a;
+}
+
+.modal-box h2 {
+    margin-bottom: 10px;
+}
+
+.modal-box p {
+    color: #94a3b8;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.modal-buttons button {
+    flex: 1;
+    border: none;
+    padding: 13px;
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+}
+
+.cancel {
+    background: #1e293b;
+}
+
+.confirm {
+    background: #2563eb;
+}
+
+/* ПК */
+
+@media (min-width: 600px) {
+    .phone {
+        transform: scale(.9);
     }
-  }
-  :root[data-theme="dark"] {
-    --bg: #05070a; --panel: #0d1117; --panel2: #10151c; --border: #1f2933;
-    --text: #e6edf3; --muted: #6b7785; --accent: #3ecf8e; --accent-dim: #245a44;
-    --gold: #ffd166; --red: #ff5c5c; --blue: #5aa9ff; --purple: #b48cff;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin:0; padding:0; background:var(--bg); color:var(--text); font-family:var(--font); -webkit-font-smoothing:antialiased; }
-  body {
-    min-height:100vh; display:flex; justify-content:center;
-    padding: calc(18px + env(safe-area-inset-top,0px)) 12px calc(40px + env(safe-area-inset-bottom,0px));
-  }
-  .app { width:100%; max-width:460px; }
-
-  .titlebar { display:flex; align-items:center; justify-content:space-between; background:var(--panel2); border:1px solid var(--border); border-bottom:none; border-radius:8px 8px 0 0; padding:8px 12px; font-size:12px; color:var(--muted); }
-  .titlebar .path .cursor { display:inline-block; width:7px; height:12px; background:var(--accent); margin-left:2px; animation:blink 1s steps(1) infinite; vertical-align:-2px; }
-  @keyframes blink { 50%{opacity:0;} }
-  .titlebar .right { display:flex; align-items:center; gap:8px; }
-  .musicBtn { background:none; border:1px solid var(--border); color:var(--muted); border-radius:4px; padding:3px 7px; font-family:var(--font); font-size:12px; cursor:pointer; }
-  .musicBtn.on { color:var(--gold); border-color:var(--gold); }
-  .onlineDot { font-size:10px; }
-  .onlineDot.on { color:var(--accent); }
-  .onlineDot.off { color:var(--muted); }
-  .dots span { display:inline-block; width:8px; height:8px; border-radius:50%; margin-left:6px; opacity:.5; }
-  .dots span:nth-child(1){background:var(--red);} .dots span:nth-child(2){background:var(--gold);} .dots span:nth-child(3){background:var(--accent);}
-
-  .panel { background:var(--panel); border:1px solid var(--border); padding:14px 14px 10px; }
-  .statrow { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed var(--border); font-size:13px; }
-  .statrow:last-child{ border-bottom:none; }
-  .statrow .label{ color:var(--muted); }
-  .statrow .val{ font-weight:700; }
-  .val.money{ color:var(--accent); } .val.income{ color:var(--gold); }
-  .energybar{ width:100%; height:10px; background:var(--panel2); border:1px solid var(--border); border-radius:5px; overflow:hidden; margin-top:4px;}
-  .energybar > div{ height:100%; background:linear-gradient(90deg,var(--blue),var(--accent)); transition:width .4s ease; }
-  .perk { font-size:10px; color:var(--gold); margin-top:2px; }
-
-  .actions{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
-  .btn{ font-family:var(--font); font-size:14px; font-weight:700; text-align:left; border:1px solid var(--border); border-radius:6px; padding:12px 14px; cursor:pointer; background:var(--panel); color:var(--text); display:flex; justify-content:space-between; align-items:center; transition:transform .08s ease; }
-  .btn:active{ transform:scale(0.98); }
-  .btn.primary{ background:var(--accent-dim); border-color:var(--accent); }
-  .btn.gold{ border-color:var(--gold); }
-  .btn:disabled{ opacity:.4; cursor:not-allowed; }
-  .btn .hint{ font-size:11px; color:var(--muted); font-weight:500; }
-  .btn.gold .hint{ color:var(--gold); }
-
-  .tabs{ display:flex; flex-wrap:wrap; margin-top:14px; border:1px solid var(--border); border-radius:6px; overflow:hidden; }
-  .tab{ flex:1 1 33.33%; text-align:center; padding:9px 4px; font-size:10.5px; font-weight:700; letter-spacing:.02em; color:var(--muted); cursor:pointer; background:var(--panel2); border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
-  .tab.active{ color:var(--accent); background:var(--panel); }
-  .tabpanel{ background:var(--panel); border:1px solid var(--border); border-top:none; padding:10px 12px 14px; min-height:170px; }
-
-  .row{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed var(--border); gap:8px; }
-  .row:last-child{ border-bottom:none; }
-  .row .who{ font-size:12.5px; }
-  .row .who .sub{ display:block; font-size:10.5px; color:var(--muted); font-weight:500; }
-  .row button{ font-family:var(--font); font-size:11px; font-weight:700; border-radius:4px; border:1px solid var(--accent); background:transparent; color:var(--accent); padding:6px 9px; cursor:pointer; white-space:nowrap; }
-  .row button.sell{ border-color:var(--red); color:var(--red); }
-  .row button:disabled{ opacity:.35; cursor:not-allowed; }
-
-  .casino-reels{ display:flex; justify-content:center; gap:10px; font-size:34px; margin:6px 0 12px; }
-  .reel{ width:52px; height:52px; display:flex; align-items:center; justify-content:center; background:var(--panel2); border:1px solid var(--border); border-radius:6px; }
-  .betrow{ display:flex; gap:8px; align-items:center; justify-content:center; margin-bottom:10px; }
-  .betrow input{ width:90px; text-align:center; font-family:var(--font); font-weight:700; background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:6px; border-radius:4px; }
-  .betrow button{ font-family:var(--font); font-weight:700; font-size:12px; border-radius:4px; border:1px solid var(--gold); color:var(--gold); background:transparent; padding:8px 10px; cursor:pointer; }
-  .casino-result{ text-align:center; font-size:12.5px; min-height:18px; margin-bottom:6px; }
-
-  .market-price{ text-align:center; margin:4px 0 10px; }
-  .market-price .p{ font-size:26px; font-weight:800; }
-  .market-price .p.up{ color:var(--accent); } .market-price .p.down{ color:var(--red); }
-  .market-price .chg{ font-size:12px; color:var(--muted); }
-  .spark{ display:flex; align-items:flex-end; gap:2px; height:36px; justify-content:center; margin:8px 0; }
-  .spark div{ width:5px; background:var(--accent); border-radius:1px; opacity:.85; }
-  .marketrow{ display:flex; gap:8px; justify-content:center; margin-top:8px;}
-  .marketrow button{ font-family:var(--font); font-weight:700; font-size:12px; border-radius:4px; padding:8px 12px; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text); }
-  .marketrow button.buy{ border-color:var(--accent); color:var(--accent); }
-  .marketrow button.sell{ border-color:var(--red); color:var(--red); }
-  .holding{ text-align:center; font-size:12px; color:var(--muted); margin-top:6px; }
-
-  .sectionTitle{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin:14px 0 4px; border-top:1px dashed var(--border); padding-top:10px; }
-  .p2pform{ display:flex; gap:6px; margin:8px 0; }
-  .p2pform input{ flex:1; min-width:0; font-family:var(--font); font-weight:700; background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:7px; border-radius:4px; font-size:12px; }
-  .p2pform button{ font-family:var(--font); font-weight:700; font-size:11px; border-radius:4px; border:1px solid var(--purple); color:var(--purple); background:transparent; padding:7px 10px; cursor:pointer; white-space:nowrap; }
-  .offlineNote{ font-size:12px; color:var(--muted); text-align:center; padding:18px 8px; line-height:1.5; }
-
-  .chatlog{ height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:4px 2px; margin-bottom:8px; }
-  .chatmsg{ font-size:12.5px; line-height:1.4; }
-  .chatmsg .nm{ font-weight:700; color:var(--accent); margin-right:4px; }
-  .chatmsg .tm{ font-size:10px; color:var(--muted); margin-left:4px; }
-  .chatform{ display:flex; gap:6px; }
-  .chatform input{ flex:1; min-width:0; font-family:var(--font); background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:4px; font-size:12.5px; }
-  .chatform button{ font-family:var(--font); font-weight:700; font-size:12px; border-radius:4px; border:1px solid var(--blue); color:var(--blue); background:transparent; padding:8px 12px; cursor:pointer; }
-
-  .ratingrow{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); font-size:12.5px; }
-  .ratingrow .rk{ color:var(--muted); width:22px; }
-  .ratingrow .nm{ flex:1; }
-  .ratingrow .bal{ color:var(--accent); font-weight:700; }
-  .refreshBtn{ display:block; margin:0 auto 8px; font-family:var(--font); font-weight:700; font-size:11px; border:1px solid var(--border); background:transparent; color:var(--muted); border-radius:4px; padding:6px 12px; cursor:pointer; }
-
-  .logbox{ margin-top:12px; background:var(--panel2); border:1px solid var(--border); border-radius:6px; padding:8px 10px; font-size:11px; color:var(--muted); height:84px; overflow-y:auto; display:flex; flex-direction:column-reverse; gap:4px; }
-  .logbox .entry span.t{ color:var(--accent); margin-right:5px; }
-  .footer-note{ text-align:center; font-size:10px; color:var(--muted); margin-top:12px; opacity:.7; }
-
-  .toast{ position:fixed; bottom:calc(18px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%) translateY(10px); background:var(--panel2); border:1px solid var(--accent); color:var(--text); padding:8px 14px; border-radius:6px; font-size:12px; font-weight:600; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; max-width:90vw; text-align:center; z-index:50; }
-  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+}
 </style>
 </head>
+
 <body>
-<div class="app">
 
-  <div class="titlebar">
-    <span class="path">~/life<span class="cursor"></span></span>
-    <span class="right">
-      <span class="onlineDot off" id="onlineDot">● офлайн</span>
-      <button class="musicBtn" id="musicBtn">🔇 музика</button>
-      <span class="dots"><span></span><span></span><span></span></span>
-    </span>
-  </div>
+<div class="phone">
 
-  <div class="panel">
-    <div class="statrow">
-      <span class="label">гравець</span>
-      <span class="val" id="nameDisplay" style="cursor:pointer;" title="натисни щоб змінити ім'я">Гравець ✎</span>
+    <div class="status-bar">
+        <span id="clock">15:50</span>
+
+        <div class="status-right">
+            <span>▮▮▮</span>
+            <span>Wi-Fi</span>
+            <span>🔋</span>
+        </div>
     </div>
-    <div class="statrow">
-      <span class="label">баланс</span>
-      <span class="val money" id="balanceVal">$0</span>
+
+    <main id="screen" class="screen"></main>
+
+    <div class="bottom-bar">
+        <button class="nav-button active" onclick="openApp('home')">
+            <span class="nav-icon">⌂</span>
+            Главная
+        </button>
+
+        <button class="nav-button" onclick="openApp('market')">
+            <span class="nav-icon">🚗</span>
+            Рынок
+        </button>
+
+        <button class="nav-button" onclick="openApp('bank')">
+            <span class="nav-icon">₽</span>
+            Банк
+        </button>
     </div>
-    <div class="statrow" style="flex-direction:column; align-items:stretch;">
-      <div style="display:flex; justify-content:space-between;">
-        <span class="label">енергія</span>
-        <span class="val" id="energyVal">0/100</span>
-      </div>
-      <div class="energybar"><div id="energyFill" style="width:0%"></div></div>
-      <div class="perk" id="perkNote" style="display:none;">🚗 є машина — робота коштує -4⚡ замість -5⚡</div>
+
+    <div id="toast" class="toast"></div>
+
+    <div id="modal" class="modal">
+        <div class="modal-box">
+            <h2 id="modalTitle">Подтверждение</h2>
+            <p id="modalText"></p>
+
+            <div class="modal-buttons">
+                <button class="cancel" onclick="closeModal()">Отмена</button>
+                <button class="confirm" id="modalConfirm">Подтвердить</button>
+            </div>
+        </div>
     </div>
-    <div class="statrow">
-      <span class="label">бізнес-дохід</span>
-      <span class="val income" id="incomeVal">+$0/сек</span>
-    </div>
-  </div>
 
-  <div class="actions">
-    <button class="btn primary" id="workBtn">
-      <span>💼 Працювати</span>
-      <span class="hint" id="workHint">+$25 · -5⚡</span>
-    </button>
-    <button class="btn gold" id="rechargeBtn">
-      <span>📺 Відновити енергію</span>
-      <span class="hint" id="rechargeHint">готово</span>
-    </button>
-  </div>
-
-  <div class="tabs">
-    <div class="tab active" data-tab="business">БІЗНЕС</div>
-    <div class="tab" data-tab="casino">КАЗИНО</div>
-    <div class="tab" data-tab="garage">ГАРАЖ</div>
-    <div class="tab" data-tab="market">РИНОК</div>
-    <div class="tab" data-tab="chat">ЧАТ</div>
-    <div class="tab" data-tab="rating">РЕЙТИНГ</div>
-  </div>
-
-  <div class="tabpanel" id="tab-business"></div>
-  <div class="tabpanel" id="tab-casino" style="display:none;"></div>
-  <div class="tabpanel" id="tab-garage" style="display:none;"></div>
-  <div class="tabpanel" id="tab-market" style="display:none;"></div>
-  <div class="tabpanel" id="tab-chat" style="display:none;"></div>
-  <div class="tabpanel" id="tab-rating" style="display:none;"></div>
-
-  <div class="logbox" id="logbox"></div>
-  <div class="footer-note">life.exe · онлайн-функції (чат/рейтинг/P2P) працюють, коли гра відкрита через посилання Claude в межах однієї організації · прогрес зберігається локально</div>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
-(function(){
-  "use strict";
 
-  var SAVE_KEY = "life_exe_save_v2";
-  var ANON_KEY = "life_exe_anon_id";
+/* =====================================================
+   AUTO SELLER
+   ОСНОВНАЯ ЛОГИКА ИГРЫ
+===================================================== */
 
-  var BUSINESSES = [
-    { id:"stall",  name:"Ларьок",         emoji:"🛒", baseCost:50,     baseIncome:0.5 },
-    { id:"kiosk",  name:"Кіоск",          emoji:"🏪", baseCost:150,    baseIncome:1.5 },
-    { id:"cafe",   name:"Кав'ярня",       emoji:"☕", baseCost:600,    baseIncome:6 },
-    { id:"wash",   name:"Автомийка",      emoji:"🚿", baseCost:3000,   baseIncome:25 },
-    { id:"shop",   name:"Магазин",        emoji:"🏬", baseCost:14000,  baseIncome:110 },
-    { id:"mall",   name:"Торговий центр", emoji:"🏢", baseCost:55000,  baseIncome:420 },
-    { id:"resto",  name:"Ресторан",       emoji:"🍽️", baseCost:150000, baseIncome:1100 },
-    { id:"plant",  name:"Завод",          emoji:"🏭", baseCost:500000, baseIncome:3500 }
-  ];
+/* ---------- СОХРАНЕНИЕ ---------- */
 
-  // Cars no longer generate income — owning at least one lowers the energy
-  // cost of "Працювати" from 5 to 4 (you commute to work instead of walking).
-  var CARS = [
-    { id:"niva",  name:"Lada Niva",        emoji:"🚗", price:800 },
-    { id:"ford",  name:"Старий Ford",       emoji:"🚙", price:1500 },
-    { id:"bmw",   name:"BMW e34",           emoji:"🚘", price:8000 },
-    { id:"audi",  name:"Audi A6",           emoji:"🚗", price:15000 },
-    { id:"benz",  name:"Mercedes G-Class",  emoji:"🚙", price:45000 },
-    { id:"porsche", name:"Porsche 911",     emoji:"🏎️", price:120000 },
-    { id:"lambo", name:"Lamborghini",       emoji:"🏎️", price:250000 },
-    { id:"bugatti", name:"Bugatti Chiron",  emoji:"🚀", price:900000 }
-  ];
+const defaultGame = {
+    money: 500000,
 
-  var SLOT_SYMBOLS = ["🍒","🍋","⭐","💎","7️⃣"];
-  var SLOT_PAYOUT = { "7️⃣":10, "💎":6, "⭐":4, "🍋":2.5, "🍒":2 };
-  var RECHARGE_COOLDOWN = 45;
+    currentCity: "Томск",
 
-  function defaultState(){
-    var b = {}; BUSINESSES.forEach(function(x){ b[x.id]=0; });
-    var c = {}; CARS.forEach(function(x){ c[x.id]=false; });
-    return {
-      name:"Гравець", balance:500, energy:100, maxEnergy:100,
-      businesses:b, cars:c,
-      market:{ price:100, history:[100], qty:0, avgCost:0 },
-      rechargeUntil:0, log:[], tickCounter:0
-    };
-  }
+    carsBought: 0,
+    carsSold: 0,
+    totalProfit: 0,
 
-  var state = load();
+    garage: [],
 
-  function load(){
-    try {
-      var raw = localStorage.getItem(SAVE_KEY);
-      if (!raw) return defaultState();
-      var parsed = JSON.parse(raw);
-      var fresh = defaultState();
-      for (var k in fresh) { if (parsed[k]===undefined) parsed[k]=fresh[k]; }
-      BUSINESSES.forEach(function(x){ if (parsed.businesses[x.id]===undefined) parsed.businesses[x.id]=0; });
-      CARS.forEach(function(x){ if (parsed.cars[x.id]===undefined) parsed.cars[x.id]=false; });
-      if (!parsed.market || typeof parsed.market.price !== "number") parsed.market = fresh.market;
-      return parsed;
-    } catch (e) { return defaultState(); }
-  }
-  function save(){
-    try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch(e){}
-  }
-  function getAnonId(){
-    try {
-      var id = localStorage.getItem(ANON_KEY);
-      if (!id) {
-        id = "anon_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
-        localStorage.setItem(ANON_KEY, id);
-      }
-      return id;
-    } catch(e) { return "anon_" + Math.random().toString(36).slice(2); }
-  }
+    deposit: {
+        amount: 0,
+        rate: 0.08
+    },
 
-  function formatMoney(n){
-    var neg = n < 0; n = Math.floor(Math.abs(n));
-    var s = "$" + n.toLocaleString("en-US");
-    return neg ? "-" + s : s;
-  }
-  function hasAnyCar(){ return CARS.some(function(c){ return state.cars[c.id]; }); }
-  function workEnergyCost(){ return hasAnyCar() ? 4 : 5; }
+    credit: {
+        amount: 0,
+        rate: 0.15
+    }
+};
 
-  function totalIncomePerSec(){
-    var total = 0;
-    BUSINESSES.forEach(function(b){ total += (state.businesses[b.id]||0) * b.baseIncome; });
-    return total;
-  }
-  function businessCost(b){
-    var owned = state.businesses[b.id] || 0;
-    return Math.floor(b.baseCost * Math.pow(1.15, owned));
-  }
+let game = JSON.parse(localStorage.getItem("autoSellerSave"));
 
-  function addLog(text){
-    state.log.unshift({ t: nowLabel(), text: text });
-    if (state.log.length > 40) state.log.length = 40;
-    renderLog();
-  }
-  function nowLabel(){
-    var d = new Date();
-    function p(n){ return (n<10?"0":"")+n; }
-    return p(d.getHours())+":"+p(d.getMinutes());
-  }
+if (!game) {
+    game = structuredClone(defaultGame);
+    saveGame();
+}
 
-  var toastTimer = null;
-  function toast(msg){
-    var el = document.getElementById("toast");
-    el.textContent = msg; el.classList.add("show");
-    if (toastTimer) clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 1800);
-  }
+function saveGame() {
+    localStorage.setItem("autoSellerSave", JSON.stringify(game));
+}
 
-  // ===================== ONLINE (db / user capabilities) =====================
-  var online = { db:null, user:null, myId:null, ready:false };
-  var chatMessages = [];
-  var currentTab = "business";
 
-  function setOnlineIndicator(on){
-    var el = document.getElementById("onlineDot");
-    el.textContent = on ? "● онлайн" : "● офлайн";
-    el.className = "onlineDot " + (on ? "on" : "off");
-  }
+/* ---------- АВТОМОБИЛИ ---------- */
 
-  function initOnline(){
-    if (!window.claude || typeof window.claude.use !== "function") { setOnlineIndicator(false); return; }
-    Promise.all([window.claude.use("db"), window.claude.use("user")]).then(function(res){
-      online.db = res[0]; online.user = res[1];
-      if (!online.db) { setOnlineIndicator(false); return; }
-      var idPromise = online.user ? online.user.id() : Promise.resolve(null);
-      idPromise.then(function(uid){
-        online.myId = uid || getAnonId();
-        online.ready = true;
-        setOnlineIndicator(true);
-        subscribeChat();
-        subscribeMySettlement();
-        syncPlayerDoc();
-        if (currentTab === "rating") loadRating();
-        if (currentTab === "market") renderMarket();
-      });
-    }).catch(function(){ setOnlineIndicator(false); });
-  }
+/*
+    Пока только 3 машины.
+    Позже добавим 20+.
+*/
 
-  function syncPlayerDoc(){
-    if (!online.ready) return;
-    online.db.doc("players/" + online.myId).get().then(function(snap){
-      var data = (snap && snap.exists) ? snap.data() : null;
-      online.db.doc("players/" + online.myId).set({
-        name: state.name,
-        balance: Math.floor(state.balance),
-        pendingCredit: data ? (data.pendingCredit || 0) : 0,
-        updated: Date.now()
-      }).catch(function(){});
-    }).catch(function(){});
-  }
-  var syncTimer = null;
-  function scheduleSync(){
-    if (!online.ready) return;
-    if (syncTimer) clearTimeout(syncTimer);
-    syncTimer = setTimeout(syncPlayerDoc, 4000);
-  }
+const cars = [
 
-  function subscribeMySettlement(){
-    if (!online.ready) return;
-    online.db.doc("players/" + online.myId).onSnapshot(function(snap){
-      if (!snap || !snap.exists) return;
-      var data = snap.data();
-      var credit = data.pendingCredit || 0;
-      if (credit > 0) {
-        state.balance += credit;
-        addLog("отримано " + formatMoney(credit) + " з P2P продажу");
-        toast("Зараховано " + formatMoney(credit) + " з продажу!");
-        render(); save();
-        online.db.doc("players/" + online.myId).update({ pendingCredit: 0 }).catch(function(){});
-      }
-    }, function(){ /* subscription error: settlement will retry on next sync */ });
-  }
+    {
+        id: 1,
+        name: "Lada Priora",
+        year: 2012,
+        mileage: 164000,
+        power: 98,
+        condition: "Хорошее",
+        city: "Томск",
+        price: 185000,
+        emoji: "🚘"
+    },
 
-  function subscribeChat(){
-    if (!online.ready) return;
-    online.db.doc("chat/room").onSnapshot(function(snap){
-      var data = (snap && snap.exists) ? snap.data() : null;
-      chatMessages = (data && data.messages) ? data.messages : [];
-      if (currentTab === "chat") renderChat();
-    }, function(){ /* chat unavailable right now */ });
-  }
+    {
+        id: 2,
+        name: "VAZ 2114",
+        year: 2010,
+        mileage: 198000,
+        power: 81,
+        condition: "Среднее",
+        city: "Москва",
+        price: 145000,
+        emoji: "🚗"
+    },
 
-  function sendChat(text){
-    text = String(text || "").trim().slice(0, 200);
-    if (!text || !online.ready) return;
-    var msg = { name: state.name.slice(0,20), text: text, ts: Date.now() };
-    var updated = chatMessages.concat([msg]);
-    if (updated.length > 60) updated = updated.slice(updated.length - 60);
-    online.db.doc("chat/room").set({ messages: updated }).catch(function(){ toast("Повідомлення не надіслано"); });
-  }
+    {
+        id: 3,
+        name: "Lada Granta",
+        year: 2017,
+        mileage: 97000,
+        power: 106,
+        condition: "Отличное",
+        city: "Санкт-Петербург",
+        price: 395000,
+        emoji: "🚙"
+    }
 
-  function loadRating(){
-    var wrap = document.getElementById("tab-rating");
-    if (!online.ready) { renderRating([]); return; }
-    wrap.innerHTML = '<div class="offlineNote">завантаження…</div>';
-    online.db.collection("players").orderBy("balance","desc").limit(20).get().then(function(qs){
-      var list = [];
-      qs.forEach(function(doc){ list.push(doc.data()); });
-      renderRating(list);
-    }).catch(function(){ renderRating(null); });
-  }
+];
 
-  function postOffer(qty, price){
-    if (!online.ready) { toast("P2P недоступний офлайн"); return; }
-    qty = Math.floor(Number(qty)); price = Number(price);
-    if (!qty || qty <= 0 || !price || price <= 0) { toast("Вкажи коректну кількість і ціну"); return; }
-    if (state.market.qty < qty) { toast("У тебе немає стільки WRD"); return; }
-    state.market.qty -= qty; // escrow locally
-    save(); render();
-    online.db.collection("offers").add({
-      sellerId: online.myId, sellerName: state.name.slice(0,20),
-      qty: qty, price: price, ts: Date.now()
-    }).then(function(){ addLog("виставлено " + qty + " WRD по " + formatMoney(price)); renderMarket(); })
-      .catch(function(){ state.market.qty += qty; save(); render(); toast("Не вдалося виставити офер"); });
-  }
 
-  function cancelOffer(offerId, qty){
-    if (!online.ready) return;
-    online.db.doc("offers/" + offerId).delete().then(function(){
-      state.market.qty += qty; save(); render();
-      addLog("офер скасовано, WRD повернуто");
-      loadOffers();
-    }).catch(function(){ toast("Не вдалося скасувати"); });
-  }
+/* ---------- УТИЛИТЫ ---------- */
 
-  function buyOffer(offerId, sellerId, qty, price){
-    if (!online.ready) return;
-    var cost = qty * price;
-    if (state.balance < cost) { toast("Недостатньо коштів"); return; }
-    online.db.doc("offers/" + offerId).delete().then(function(){
-      state.balance -= cost;
-      var totalCost = state.market.avgCost * state.market.qty + cost;
-      state.market.qty += qty;
-      state.market.avgCost = state.market.qty > 0 ? totalCost / state.market.qty : 0;
-      addLog("куплено " + qty + " WRD у гравця за " + formatMoney(cost));
-      save(); render();
-      online.db.doc("players/" + sellerId).get().then(function(snap){
-        var cur = (snap && snap.exists) ? (snap.data().pendingCredit || 0) : 0;
-        if (snap && snap.exists) {
-          online.db.doc("players/" + sellerId).update({ pendingCredit: cur + cost }).catch(function(){});
-        } else {
-          online.db.doc("players/" + sellerId).set({ name:"", balance:0, pendingCredit: cost, updated: Date.now() }).catch(function(){});
+function money(value) {
+    return Math.floor(value).toLocaleString("ru-RU") + " ₽";
+}
+
+function showToast(text) {
+
+    const toast = document.getElementById("toast");
+
+    toast.textContent = text;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2200);
+}
+
+
+/* ---------- ЧАСЫ ---------- */
+
+function updateClock() {
+
+    const now = new Date();
+
+    let h = String(now.getHours()).padStart(2, "0");
+    let m = String(now.getMinutes()).padStart(2, "0");
+
+    document.getElementById("clock").textContent = h + ":" + m;
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+
+/* ---------- ЭКРАН ---------- */
+
+function openApp(app) {
+
+    const screen = document.getElementById("screen");
+
+    if (app === "home") {
+        renderHome();
+    }
+
+    if (app === "market") {
+        renderMarket();
+    }
+
+    if (app === "bank") {
+        renderBank();
+    }
+
+    if (app === "stats") {
+        renderStats();
+    }
+
+    if (app === "cities") {
+        renderCities();
+    }
+
+    if (app === "settings") {
+        renderSettings();
+    }
+
+    document.querySelectorAll(".nav-button").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    if (app === "home") {
+        document.querySelectorAll(".nav-button")[0].classList.add("active");
+    }
+
+    if (app === "market") {
+        document.querySelectorAll(".nav-button")[1].classList.add("active");
+    }
+
+    if (app === "bank") {
+        document.querySelectorAll(".nav-button")[2].classList.add("active");
+    }
+
+    screen.scrollTop = 0;
+}
+
+
+/* =====================================================
+   ГЛАВНЫЙ ЭКРАН
+===================================================== */
+
+function renderHome() {
+
+    document.getElementById("screen").innerHTML = `
+
+        <div class="home">
+
+            <div class="welcome">
+
+                <small>AUTO SELLER</small>
+
+                <h2>Добро пожаловать 👋</h2>
+
+                <div class="balance">
+                    ${money(game.money)}
+                </div>
+
+                <div class="balance-label">
+                    Доступные деньги
+                </div>
+
+            </div>
+
+            <div class="apps">
+
+                <button class="app-icon" onclick="openApp('market')">
+                    <div class="app-emoji">🚗</div>
+                    <div class="app-name">Авторынок</div>
+                </button>
+
+                <button class="app-icon" onclick="openApp('bank')">
+                    <div class="app-emoji">🏦</div>
+                    <div class="app-name">Банк</div>
+                </button>
+
+                <button class="app-icon" onclick="openApp('stats')">
+                    <div class="app-emoji">📊</div>
+                    <div class="app-name">Статистика</div>
+                </button>
+
+                <button class="app-icon" onclick="openApp('cities')">
+                    <div class="app-emoji">🗺️</div>
+                    <div class="app-name">Города</div>
+                </button>
+
+                <button class="app-icon" onclick="showGarage()">
+                    <div class="app-emoji">🔧</div>
+                    <div class="app-name">Гараж</div>
+                </button>
+
+                <button class="app-icon" onclick="openApp('settings')">
+                    <div class="app-emoji">⚙️</div>
+                    <div class="app-name">Настройки</div>
+                </button>
+
+            </div>
+
+        </div>
+    `;
+}
+
+
+/* =====================================================
+   АВТОРЫНОК
+===================================================== */
+
+function renderMarket() {
+
+    let html = `
+
+        <div class="app-header">
+            <div>
+                <h1>Авторынок</h1>
+                <span>Объявления автомобилей</span>
+            </div>
+        </div>
+
+        <div class="market-list">
+    `;
+
+    cars.forEach(car => {
+
+        html += `
+
+            <div class="car-card">
+
+                <div class="car-photo">
+                    ${car.emoji}
+                </div>
+
+                <div class="car-info">
+
+                    <div class="car-title">
+                        ${car.name}
+                    </div>
+
+                    <div class="car-city">
+                        📍 ${car.city}
+                    </div>
+
+                    <div class="car-specs">
+
+                        <div class="spec">
+                            📅 ${car.year} год
+                        </div>
+
+                        <div class="spec">
+                            🛣️ ${car.mileage.toLocaleString("ru-RU")} км
+                        </div>
+
+                        <div class="spec">
+                            ⚡ ${car.power} л.с.
+                        </div>
+
+                        <div class="spec">
+                            🔧 ${car.condition}
+                        </div>
+
+                    </div>
+
+                    <div class="car-price">
+                        ${money(car.price)}
+                    </div>
+
+                    <button class="buy-button"
+                        onclick="buyCar(${car.id})">
+                        Купить
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+    });
+
+    html += `
+        </div>
+    `;
+
+    document.getElementById("screen").innerHTML = html;
+}
+
+
+/* =====================================================
+   ПОКУПКА
+===================================================== */
+
+function buyCar(id) {
+
+    const car = cars.find(c => c.id === id);
+
+    if (!car) return;
+
+    if (game.currentCity !== car.city) {
+
+        showToast(
+            `Машина находится в городе ${car.city}`
+        );
+
+        return;
+    }
+
+    if (game.money < car.price) {
+
+        showToast("Недостаточно денег");
+
+        return;
+    }
+
+    showModal(
+        "Покупка автомобиля",
+        `Купить ${car.name} за ${money(car.price)}?`,
+        () => {
+
+            if (game.money < car.price) {
+                showToast("Недостаточно денег");
+                return;
+            }
+
+            game.money -= car.price;
+
+            game.carsBought++;
+
+            game.garage.push({
+                ...car,
+                purchasePrice: car.price
+            });
+
+            saveGame();
+
+            closeModal();
+
+            showToast(`${car.name} куплена!`);
+
+            setTimeout(() => {
+                renderMarket();
+            }, 500);
+
         }
-      }).catch(function(){});
-      loadOffers();
-    }).catch(function(){ toast("Цей офер вже хтось купив"); loadOffers(); });
-  }
+    );
+}
 
-  var lastOffers = null;
-  function loadOffers(){
-    if (!online.ready) { lastOffers = null; renderMarket(); return; }
-    online.db.collection("offers").orderBy("ts","desc").limit(25).get().then(function(qs){
-      var list = [];
-      qs.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
-      lastOffers = list;
-      renderMarket();
-    }).catch(function(){ lastOffers = []; renderMarket(); });
-  }
 
-  // ===================== rendering =====================
+/* =====================================================
+   БАНК
+===================================================== */
 
-  function render(){
-    document.getElementById("nameDisplay").textContent = state.name + " ✎";
-    document.getElementById("balanceVal").textContent = formatMoney(state.balance);
-    document.getElementById("energyVal").textContent = Math.floor(state.energy) + "/" + state.maxEnergy;
-    document.getElementById("energyFill").style.width = (state.energy / state.maxEnergy * 100) + "%";
-    document.getElementById("incomeVal").textContent = "+" + formatMoney(totalIncomePerSec()) + "/сек";
+function renderBank() {
 
-    var cost = workEnergyCost();
-    document.getElementById("workHint").textContent = "+$25 · -" + cost + "⚡";
-    document.getElementById("perkNote").style.display = hasAnyCar() ? "block" : "none";
+    document.getElementById("screen").innerHTML = `
 
-    var workBtn = document.getElementById("workBtn");
-    workBtn.disabled = state.energy < cost;
+        <div class="app-header">
 
-    var rechargeBtn = document.getElementById("rechargeBtn");
-    var remain = Math.ceil((state.rechargeUntil - Date.now()) / 1000);
-    if (remain > 0 && state.energy < state.maxEnergy) {
-      rechargeBtn.disabled = true; document.getElementById("rechargeHint").textContent = remain + "с";
-    } else if (state.energy >= state.maxEnergy) {
-      rechargeBtn.disabled = true; document.getElementById("rechargeHint").textContent = "енергія повна";
-    } else {
-      rechargeBtn.disabled = false; document.getElementById("rechargeHint").textContent = "готово";
+            <div>
+                <h1>Банк</h1>
+                <span>AutoBank</span>
+            </div>
+
+        </div>
+
+        <div class="bank-card">
+
+            <small>Текущий баланс</small>
+
+            <div class="bank-money">
+                ${money(game.money)}
+            </div>
+
+        </div>
+
+        <div class="bank-actions">
+
+            <button class="bank-action"
+                onclick="depositMoney()">
+
+                <strong>💰 Депозит</strong>
+
+                <span>
+                    На депозите:
+                    ${money(game.deposit.amount)}
+                </span>
+
+            </button>
+
+            <button class="bank-action"
+                onclick="takeCredit()">
+
+                <strong>💳 Кредит</strong>
+
+                <span>
+                    Долг:
+                    ${money(game.credit.amount)}
+                </span>
+
+            </button>
+
+            <button class="bank-action"
+                onclick="repayCredit()">
+
+                <strong>↩️ Погасить</strong>
+
+                <span>
+                    Кредит:
+                    ${money(game.credit.amount)}
+                </span>
+
+            </button>
+
+            <button class="bank-action"
+                onclick="withdrawDeposit()">
+
+                <strong>💵 Снять</strong>
+
+                <span>
+                    Депозит:
+                    ${money(game.deposit.amount)}
+                </span>
+
+            </button>
+
+        </div>
+    `;
+}
+
+
+/* ---------- ДЕПОЗИТ ---------- */
+
+function depositMoney() {
+
+    const amount = Number(
+        prompt("Введите сумму для депозита:")
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+        return;
     }
 
-    renderBusiness();
-    renderGarage();
-    renderMarket();
-  }
+    if (amount > game.money) {
 
-  function renderBusiness(){
-    var wrap = document.getElementById("tab-business");
-    wrap.innerHTML = "";
-    BUSINESSES.forEach(function(b){
-      var owned = state.businesses[b.id] || 0;
-      var cost = businessCost(b);
-      var row = document.createElement("div");
-      row.className = "row";
-      row.innerHTML = '<div class="who">' + b.emoji + ' ' + b.name +
-        '<span class="sub">є: ' + owned + ' · +' + formatMoney(b.baseIncome) + '/сек кожен</span></div>' +
-        '<button data-id="' + b.id + '" ' + (state.balance < cost ? "disabled" : "") + '>' + formatMoney(cost) + '</button>';
-      row.querySelector("button").addEventListener("click", function(){ buyBusiness(b.id); });
-      wrap.appendChild(row);
+        showToast("Недостаточно денег");
+
+        return;
+    }
+
+    game.money -= amount;
+
+    game.deposit.amount += amount;
+
+    saveGame();
+
+    showToast(
+        `На депозит внесено ${money(amount)}`
+    );
+
+    renderBank();
+}
+
+
+/* ---------- СНЯТИЕ ДЕПОЗИТА ---------- */
+
+function withdrawDeposit() {
+
+    if (game.deposit.amount <= 0) {
+
+        showToast("Депозит пуст");
+
+        return;
+    }
+
+    const amount = Number(
+        prompt(
+            `Доступно: ${money(game.deposit.amount)}\n\nСколько снять?`
+        )
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+        return;
+    }
+
+    if (amount > game.deposit.amount) {
+
+        showToast("На депозите недостаточно денег");
+
+        return;
+    }
+
+    game.deposit.amount -= amount;
+
+    game.money += amount;
+
+    saveGame();
+
+    showToast(`Снято ${money(amount)}`);
+
+    renderBank();
+}
+
+
+/* ---------- КРЕДИТ ---------- */
+
+function takeCredit() {
+
+    if (game.credit.amount > 0) {
+
+        showToast(
+            "Сначала погасите текущий кредит"
+        );
+
+        return;
+    }
+
+    const amount = Number(
+        prompt("Введите сумму кредита:")
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+        return;
+    }
+
+    const MAX_CREDIT = 1000000;
+
+    if (amount > MAX_CREDIT) {
+
+        showToast(
+            `Максимальный кредит: ${money(MAX_CREDIT)}`
+        );
+
+        return;
+    }
+
+    game.credit.amount = amount;
+
+    game.money += amount;
+
+    saveGame();
+
+    showToast(
+        `Вы получили кредит ${money(amount)}`
+    );
+
+    renderBank();
+}
+
+
+/* ---------- ПОГАШЕНИЕ ---------- */
+
+function repayCredit() {
+
+    if (game.credit.amount <= 0) {
+
+        showToast("У вас нет кредита");
+
+        return;
+    }
+
+    const amount = Number(
+        prompt(
+            `Долг: ${money(game.credit.amount)}\n\nСколько погасить?`
+        )
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+        return;
+    }
+
+    if (amount > game.money) {
+
+        showToast("Недостаточно денег");
+
+        return;
+    }
+
+    if (amount > game.credit.amount) {
+
+        showToast(
+            "Нельзя погасить больше суммы долга"
+        );
+
+        return;
+    }
+
+    game.money -= amount;
+
+    game.credit.amount -= amount;
+
+    saveGame();
+
+    showToast(
+        `Погашено ${money(amount)}`
+    );
+
+    renderBank();
+}
+
+
+/* =====================================================
+   СТАТИСТИКА
+===================================================== */
+
+function renderStats() {
+
+    document.getElementById("screen").innerHTML = `
+
+        <div class="app-header">
+
+            <div>
+                <h1>Статистика</h1>
+                <span>Ваш бизнес</span>
+            </div>
+
+        </div>
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <small>Деньги</small>
+                <strong>${money(game.money)}</strong>
+            </div>
+
+            <div class="stat-card">
+                <small>Куплено машин</small>
+                <strong>${game.carsBought}</strong>
+            </div>
+
+            <div class="stat-card">
+                <small>Продано машин</small>
+                <strong>${game.carsSold}</strong>
+            </div>
+
+            <div class="stat-card">
+                <small>Прибыль</small>
+                <strong>${money(game.totalProfit)}</strong>
+            </div>
+
+            <div class="stat-card">
+                <small>В гараже</small>
+                <strong>${game.garage.length}</strong>
+            </div>
+
+            <div class="stat-card">
+                <small>Город</small>
+                <strong>${game.currentCity}</strong>
+            </div>
+
+        </div>
+    `;
+}
+
+
+/* =====================================================
+   ГОРОДА
+===================================================== */
+
+const cities = [
+    {
+        name: "Томск",
+        travel: 0
+    },
+
+    {
+        name: "Москва",
+        travel: 15000
+    },
+
+    {
+        name: "Санкт-Петербург",
+        travel: 18000
+    },
+
+    {
+        name: "Новосибирск",
+        travel: 7000
+    }
+];
+
+
+function renderCities() {
+
+    let html = `
+
+        <div class="app-header">
+
+            <div>
+                <h1>Города</h1>
+                <span>
+                    Сейчас вы в: ${game.currentCity}
+                </span>
+            </div>
+
+        </div>
+
+        <div class="city-list">
+    `;
+
+    cities.forEach(city => {
+
+        const isCurrent =
+            city.name === game.currentCity;
+
+        html += `
+
+            <div class="city-card">
+
+                <div>
+
+                    <h3>
+                        ${city.name}
+                        ${isCurrent ? " 📍" : ""}
+                    </h3>
+
+                    <p>
+                        ${isCurrent
+                            ? "Текущее местоположение"
+                            : "Стоимость поездки: " +
+                              money(city.travel)}
+                    </p>
+
+                </div>
+
+                ${
+                    isCurrent
+                    ? `<button
+                        class="city-button"
+                        disabled>
+                        Здесь
+                      </button>`
+                    : `<button
+                        class="city-button"
+                        onclick="travelTo('${city.name}', ${city.travel})">
+                        Поехать
+                      </button>`
+                }
+
+            </div>
+        `;
     });
-  }
 
-  function renderGarage(){
-    var wrap = document.getElementById("tab-garage");
-    wrap.innerHTML = '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;">машина не дає доходу, зате знижує витрату енергії на роботі з 5⚡ до 4⚡</div>';
-    CARS.forEach(function(c){
-      var owned = state.cars[c.id];
-      var row = document.createElement("div");
-      row.className = "row";
-      row.innerHTML = '<div class="who">' + c.emoji + ' ' + c.name +
-        '<span class="sub">' + (owned ? "у власності" : formatMoney(c.price)) + '</span></div>';
-      var btn = document.createElement("button");
-      if (owned) {
-        btn.textContent = "продати за " + formatMoney(Math.floor(c.price * 0.8));
-        btn.className = "sell";
-        btn.addEventListener("click", function(){ sellCar(c.id); });
-      } else {
-        btn.textContent = "купити";
-        btn.disabled = state.balance < c.price;
-        btn.addEventListener("click", function(){ buyCar(c.id); });
-      }
-      row.appendChild(btn);
-      wrap.appendChild(row);
-    });
-  }
+    html += `</div>`;
 
-  function renderMarket(){
-    var wrap = document.getElementById("tab-market");
-    var m = state.market;
-    var hist = m.history.slice(-20);
-    var prevPrice = hist.length > 1 ? hist[hist.length-2] : m.price;
-    var dir = m.price >= prevPrice ? "up" : "down";
-    var pct = prevPrice ? ((m.price - prevPrice) / prevPrice * 100).toFixed(2) : "0.00";
-    var max = Math.max.apply(null, hist), min = Math.min.apply(null, hist);
-    var range = Math.max(max - min, 1);
-    var bars = hist.map(function(v){ var h = 6 + ((v-min)/range)*30; return '<div style="height:'+h.toFixed(1)+'px;"></div>'; }).join("");
-    var pl = m.qty > 0 ? (m.price - m.avgCost) * m.qty : 0;
+    document.getElementById("screen").innerHTML = html;
+}
 
-    var html =
-      '<div class="market-price"><div class="p ' + dir + '">$' + m.price.toFixed(2) + '</div>' +
-      '<div class="chg">WRD (бот) · ' + (dir==="up"?"▲":"▼") + ' ' + pct + '%</div></div>' +
-      '<div class="spark">' + bars + '</div>' +
-      '<div class="marketrow">' +
-        '<button class="buy" id="mBuy">купити 1</button>' +
-        '<button class="buy" id="mBuy10">купити 10</button>' +
-        '<button class="sell" id="mSellAll">продати все</button>' +
-      '</div>' +
-      '<div class="holding">у портфелі: ' + m.qty + ' WRD' + (m.qty>0 ? " · " + (pl>=0?"+":"") + formatMoney(pl) : "") + '</div>';
 
-    html += '<div class="sectionTitle">P2P — трейди з іншими гравцями</div>';
-    if (!online.ready) {
-      html += '<div class="offlineNote">P2P-трейди доступні тільки в онлайн-режимі (коли гра відкрита через Claude в межах твоєї організації).</div>';
+/* ---------- ПОЕЗДКА ---------- */
+
+function travelTo(city, price) {
+
+    if (game.money < price) {
+
+        showToast(
+            "Недостаточно денег на поездку"
+        );
+
+        return;
+    }
+
+    showModal(
+        "Поездка",
+        `Поехать в ${city} за ${money(price)}?`,
+        () => {
+
+            game.money -= price;
+
+            game.currentCity = city;
+
+            saveGame();
+
+            closeModal();
+
+            showToast(
+                `Вы приехали в ${city}!`
+            );
+
+            renderCities();
+        }
+    );
+}
+
+
+/* =====================================================
+   ГАРАЖ
+===================================================== */
+
+function showGarage() {
+
+    let html = `
+
+        <div class="app-header">
+
+            <div>
+                <h1>Гараж</h1>
+                <span>
+                    Автомобили в собственности
+                </span>
+            </div>
+
+        </div>
+
+        <div class="market-list">
+    `;
+
+    if (game.garage.length === 0) {
+
+        html += `
+
+            <div style="
+                text-align:center;
+                color:#94a3b8;
+                padding:50px 20px;
+            ">
+
+                🚗
+
+                <br><br>
+
+                В гараже пока пусто.
+
+                <br>
+
+                Купите первую машину
+                на авторынке.
+
+            </div>
+
+        `;
+
     } else {
-      html += '<div class="p2pform"><input id="p2pQty" type="number" min="1" placeholder="к-сть WRD">' +
-              '<input id="p2pPrice" type="number" min="0.01" step="0.01" placeholder="ціна за од.">' +
-              '<button id="p2pPost">виставити</button></div>';
-      if (lastOffers === null) {
-        html += '<div class="offlineNote">завантаження офферів…</div>';
-      } else if (lastOffers.length === 0) {
-        html += '<div class="offlineNote">поки немає активних офферів. Виставь свій!</div>';
-      } else {
-        lastOffers.forEach(function(o){
-          var mine = o.sellerId === online.myId;
-          html += '<div class="row"><div class="who">' + (o.sellerName || "Гравець") +
-            '<span class="sub">' + o.qty + ' WRD · ' + formatMoney(o.price) + '/од · разом ' + formatMoney(o.qty*o.price) + '</span></div>' +
-            '<button data-offer="' + o._id + '" data-mine="' + (mine?1:0) + '" data-qty="' + o.qty + '" data-price="' + o.price + '" data-seller="' + o.sellerId + '" class="' + (mine?"sell":"") + '">' +
-            (mine ? "скасувати" : "купити") + '</button></div>';
+
+        game.garage.forEach((car, index) => {
+
+            html += `
+
+                <div class="car-card">
+
+                    <div class="car-photo">
+                        ${car.emoji}
+                    </div>
+
+                    <div class="car-info">
+
+                        <div class="car-title">
+                            ${car.name}
+                        </div>
+
+                        <div class="car-city">
+                            📍 Куплена в ${car.city}
+                        </div>
+
+                        <div class="car-price">
+                            ${money(car.purchasePrice)}
+                        </div>
+
+                        <button
+                            class="buy-button"
+                            onclick="sellCar(${index})">
+
+                            Продать
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
         });
-      }
-      html += '<button class="refreshBtn" id="offersRefresh">↻ оновити офери</button>';
     }
-    wrap.innerHTML = html;
 
-    document.getElementById("mBuy").disabled = state.balance < m.price;
-    document.getElementById("mBuy10").disabled = state.balance < m.price * 10;
-    document.getElementById("mSellAll").disabled = m.qty <= 0;
-    document.getElementById("mBuy").addEventListener("click", function(){ buyMarket(1); });
-    document.getElementById("mBuy10").addEventListener("click", function(){ buyMarket(10); });
-    document.getElementById("mSellAll").addEventListener("click", function(){ sellMarket(m.qty); });
+    html += `</div>`;
 
-    if (online.ready) {
-      var postBtn = document.getElementById("p2pPost");
-      if (postBtn) postBtn.addEventListener("click", function(){
-        postOffer(document.getElementById("p2pQty").value, document.getElementById("p2pPrice").value);
-      });
-      var refreshBtn = document.getElementById("offersRefresh");
-      if (refreshBtn) refreshBtn.addEventListener("click", loadOffers);
-      wrap.querySelectorAll("button[data-offer]").forEach(function(btn){
-        btn.addEventListener("click", function(){
-          var mine = btn.getAttribute("data-mine") === "1";
-          var qty = Number(btn.getAttribute("data-qty"));
-          var price = Number(btn.getAttribute("data-price"));
-          if (mine) cancelOffer(btn.getAttribute("data-offer"), qty);
-          else buyOffer(btn.getAttribute("data-offer"), btn.getAttribute("data-seller"), qty, price);
-        });
-      });
-    }
-  }
+    document.getElementById("screen").innerHTML = html;
+}
 
-  function renderChat(){
-    var wrap = document.getElementById("tab-chat");
-    if (!online.ready) {
-      wrap.innerHTML = '<div class="offlineNote">Загальний чат доступний, коли гра відкрита через посилання Claude в межах твоєї організації — тоді всі гравці бачать одні повідомлення.</div>';
-      return;
-    }
-    var log = chatMessages.map(function(m){
-      var d = new Date(m.ts || Date.now());
-      function p(n){ return (n<10?"0":"")+n; }
-      return '<div class="chatmsg"><span class="nm"></span><span class="tx"></span><span class="tm">' + p(d.getHours())+":"+p(d.getMinutes()) + '</span></div>';
-    });
-    wrap.innerHTML = '<div class="chatlog" id="chatlog"></div>' +
-      '<div class="chatform"><input id="chatInput" type="text" maxlength="200" placeholder="написати в чат..."><button id="chatSend">➤</button></div>';
-    var logEl = document.getElementById("chatlog");
-    chatMessages.forEach(function(m){
-      var d = new Date(m.ts || Date.now());
-      function p(n){ return (n<10?"0":"")+n; }
-      var row = document.createElement("div");
-      row.className = "chatmsg";
-      var nm = document.createElement("span"); nm.className = "nm"; nm.textContent = (m.name || "Гравець") + ":";
-      var tx = document.createElement("span"); tx.textContent = m.text || "";
-      var tm = document.createElement("span"); tm.className = "tm"; tm.textContent = p(d.getHours())+":"+p(d.getMinutes());
-      row.appendChild(nm); row.appendChild(tx); row.appendChild(tm);
-      logEl.appendChild(row);
-    });
-    logEl.scrollTop = logEl.scrollHeight;
-    document.getElementById("chatSend").addEventListener("click", sendChatFromInput);
-    document.getElementById("chatInput").addEventListener("keydown", function(e){ if (e.key === "Enter") sendChatFromInput(); });
-  }
-  function sendChatFromInput(){
-    var input = document.getElementById("chatInput");
-    if (!input || !input.value.trim()) return;
-    sendChat(input.value);
-    input.value = "";
-  }
 
-  function renderRating(list){
-    var wrap = document.getElementById("tab-rating");
-    if (!online.ready) {
-      wrap.innerHTML = '<div class="offlineNote">Загальний рейтинг гравців доступний в онлайн-режимі (через посилання Claude в межах твоєї організації).</div>';
-      return;
-    }
-    var html = '<button class="refreshBtn" id="ratingRefresh">↻ оновити рейтинг</button>';
-    if (list === null) {
-      html += '<div class="offlineNote">не вдалося завантажити рейтинг</div>';
-    } else if (list.length === 0) {
-      html += '<div class="offlineNote">рейтинг порожній — будь першим!</div>';
-    } else {
-      list.forEach(function(p, i){
-        html += '<div class="ratingrow"><span class="rk">#' + (i+1) + '</span><span class="nm"></span><span class="bal">' + formatMoney(p.balance||0) + '</span></div>';
-      });
-    }
-    wrap.innerHTML = html;
-    if (list && list.length) {
-      var rows = wrap.querySelectorAll(".ratingrow .nm");
-      list.forEach(function(p, i){ rows[i].textContent = p.name || "Гравець"; });
-    }
-    var rb = document.getElementById("ratingRefresh");
-    if (rb) rb.addEventListener("click", loadRating);
-  }
+/* ---------- ПРОДАЖА ---------- */
 
-  function renderLog(){
-    var box = document.getElementById("logbox");
-    box.innerHTML = state.log.map(function(e){ return '<div class="entry"><span class="t">'+e.t+'</span>'+e.text+'</div>'; }).join("");
-  }
+function sellCar(index) {
 
-  // ===================== actions =====================
+    const car = game.garage[index];
 
-  function work(){
-    var cost = workEnergyCost();
-    if (state.energy < cost) { toast("Замало енергії"); return; }
-    state.energy -= cost; state.balance += 25;
-    addLog("+$25 зарплата" + (hasAnyCar() ? " (доїхав на машині)" : ""));
-    render(); save(); scheduleSync();
-  }
-  function recharge(){
-    var remain = Math.ceil((state.rechargeUntil - Date.now())/1000);
-    if (remain > 0 || state.energy >= state.maxEnergy) return;
-    state.energy = state.maxEnergy;
-    state.rechargeUntil = Date.now() + RECHARGE_COOLDOWN*1000;
-    addLog("енергію відновлено"); toast("Енергію відновлено!");
-    render(); save();
-  }
-  function buyBusiness(id){
-    var b = BUSINESSES.filter(function(x){ return x.id===id; })[0];
-    if (!b) return;
-    var cost = businessCost(b);
-    if (state.balance < cost) { toast("Недостатньо коштів"); return; }
-    state.balance -= cost; state.businesses[id] = (state.businesses[id]||0) + 1;
-    addLog("куплено: " + b.name);
-    render(); save(); scheduleSync();
-  }
-  function buyCar(id){
-    var c = CARS.filter(function(x){ return x.id===id; })[0];
-    if (!c || state.cars[id]) return;
-    if (state.balance < c.price) { toast("Недостатньо коштів"); return; }
-    state.balance -= c.price; state.cars[id] = true;
-    addLog("нова тачка: " + c.name);
-    render(); save(); scheduleSync();
-  }
-  function sellCar(id){
-    var c = CARS.filter(function(x){ return x.id===id; })[0];
-    if (!c || !state.cars[id]) return;
-    var refund = Math.floor(c.price*0.8);
-    state.balance += refund; state.cars[id] = false;
-    addLog("продано: " + c.name + " (" + formatMoney(refund) + ")");
-    render(); save(); scheduleSync();
-  }
-  function buyMarket(qty){
-    var m = state.market; var cost = m.price * qty;
-    if (state.balance < cost) { toast("Недостатньо коштів"); return; }
-    state.balance -= cost;
-    var totalCost = m.avgCost*m.qty + cost;
-    m.qty += qty; m.avgCost = totalCost/m.qty;
-    addLog("куплено " + qty + " WRD за " + formatMoney(cost));
-    render(); save(); scheduleSync();
-  }
-  function sellMarket(qty){
-    var m = state.market;
-    if (qty <= 0 || m.qty < qty) return;
-    var proceeds = m.price*qty;
-    state.balance += proceeds; m.qty -= qty;
-    if (m.qty === 0) m.avgCost = 0;
-    addLog("продано " + qty + " WRD за " + formatMoney(proceeds));
-    render(); save(); scheduleSync();
-  }
+    if (!car) return;
 
-  // ===================== casino =====================
+    /*
+        Пока продажная цена равна
+        покупной.
+        
+        Позже сделаем:
+        - торг
+        - рынок
+        - спрос
+        - состояние
+        - случайную цену
+        - прибыль/убыток
+    */
 
-  function renderCasino(resultHtml){
-    var wrap = document.getElementById("tab-casino");
-    var betVal = wrap.querySelector && wrap.querySelector("#betInput") ? wrap.querySelector("#betInput").value : 100;
-    wrap.innerHTML =
-      '<div class="casino-reels" id="reels"><div class="reel">🍒</div><div class="reel">🍋</div><div class="reel">⭐</div></div>' +
-      '<div class="casino-result" id="casinoResult">' + (resultHtml || "зроби ставку і натисни SPIN") + '</div>' +
-      '<div class="betrow"><input id="betInput" type="number" min="10" step="10" value="' + (betVal||100) + '"><button id="spinBtn">🎰 SPIN</button></div>' +
-      '<div class="holding">3 однакові = виграш · 7️⃣ x10 · 💎 x6 · ⭐ x4 · 🍋 x2.5 · 🍒 x2</div>';
-    document.getElementById("spinBtn").addEventListener("click", spinCasino);
-  }
-  var spinning = false;
-  function spinCasino(){
-    if (spinning) return;
-    var betInput = document.getElementById("betInput");
-    var bet = Math.floor(Number(betInput.value)) || 0;
-    if (bet < 10) { toast("Мінімальна ставка $10"); return; }
-    if (bet > state.balance) { toast("Недостатньо коштів"); return; }
-    spinning = true; state.balance -= bet; render();
-    var reels = document.querySelectorAll("#reels .reel");
-    var spins = 12, i = 0;
-    var interval = setInterval(function(){
-      reels.forEach(function(r){ r.textContent = SLOT_SYMBOLS[Math.floor(Math.random()*SLOT_SYMBOLS.length)]; });
-      i++;
-      if (i >= spins) { clearInterval(interval); finishSpin(reels, bet, betInput.value); }
-    }, 80);
-  }
-  function finishSpin(reels, bet, betInputValue){
-    var final = [0,1,2].map(function(){ return SLOT_SYMBOLS[Math.floor(Math.random()*SLOT_SYMBOLS.length)]; });
-    reels.forEach(function(r, idx){ r.textContent = final[idx]; });
-    var win = 0, msg = "";
-    if (final[0]===final[1] && final[1]===final[2]) {
-      var mult = SLOT_PAYOUT[final[0]] || 2;
-      win = Math.floor(bet*mult); state.balance += win;
-      msg = "🎉 3 в ряд! Виграш " + formatMoney(win) + " (x" + mult + ")";
-      addLog("казино: виграно " + formatMoney(win)); toast("Виграш " + formatMoney(win) + "!");
-    } else if (final[0]===final[1] || final[1]===final[2] || final[0]===final[2]) {
-      win = Math.floor(bet*0.5); state.balance += win;
-      msg = "2 в ряд — половину ставки повернуто: " + formatMoney(win);
-      addLog("казино: повернуто " + formatMoney(win));
-    } else {
-      msg = "Не сьогодні. Втрачено " + formatMoney(bet);
-      addLog("казино: втрачено " + formatMoney(bet));
-    }
-    spinning = false; save(); render(); scheduleSync();
-    renderCasino(msg);
-    document.getElementById("betInput").value = betInputValue;
-  }
+    const salePrice = Math.floor(
+        car.purchasePrice * 1.10
+    );
 
-  // ===================== tabs / name =====================
+    showModal(
+        "Продажа автомобиля",
+        `Продать ${car.name} за ${money(salePrice)}?`,
+        () => {
 
-  function setActiveTab(name){
-    currentTab = name;
-    document.querySelectorAll(".tab").forEach(function(t){ t.classList.toggle("active", t.dataset.tab===name); });
-    ["business","casino","garage","market","chat","rating"].forEach(function(t){
-      document.getElementById("tab-"+t).style.display = (t===name) ? "block" : "none";
-    });
-    if (name === "casino") renderCasino();
-    if (name === "market") loadOffers();
-    if (name === "chat") renderChat();
-    if (name === "rating") loadRating();
-  }
-  function editName(){
-    var input = prompt("Введи ім'я гравця:", state.name);
-    if (input && input.trim()) {
-      state.name = input.trim().slice(0,20);
-      addLog("ім'я змінено на " + state.name);
-      render(); save(); scheduleSync();
-    }
-  }
+            game.money += salePrice;
 
-  // ===================== background music (procedural, no files) =====================
+            game.carsSold++;
 
-  var audioCtx = null, masterGain = null, musicTimer = null, musicOn = false;
-  var SCALE = [261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25]; // C major pentatonic-ish, 2 octaves
-  var LEAD_PATTERN = [0,2,4,2,5,4,2,1,0,3,4,5];
-  var BASS_PATTERN = [0,3,5,3];
-  var NOTE_DUR = 0.24;
+            game.totalProfit +=
+                salePrice - car.purchasePrice;
 
-  function ensureAudio(){
-    if (!audioCtx) {
-      var Ctx = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new Ctx();
-      masterGain = audioCtx.createGain();
-      masterGain.gain.value = 0.18;
-      masterGain.connect(audioCtx.destination);
-    }
-  }
-  function playNote(freq, time, dur, type, vol){
-    var osc = audioCtx.createOscillator();
-    var gain = audioCtx.createGain();
-    osc.type = type; osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0, time);
-    gain.gain.linearRampToValueAtTime(vol, time + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
-    osc.connect(gain); gain.connect(masterGain);
-    osc.start(time); osc.stop(time + dur + 0.05);
-  }
-  function scheduleLoop(){
-    if (!musicOn) return;
-    var start = audioCtx.currentTime + 0.05;
-    LEAD_PATTERN.forEach(function(idx, i){
-      playNote(SCALE[idx], start + i*NOTE_DUR, NOTE_DUR*0.85, "triangle", 0.05);
-      if (i % 3 === 0) playNote(SCALE[idx]*2, start + i*NOTE_DUR, NOTE_DUR*0.5, "sine", 0.02);
-    });
-    BASS_PATTERN.forEach(function(idx, i){
-      playNote(SCALE[idx]/2, start + i*(NOTE_DUR*3), NOTE_DUR*2.6, "sine", 0.07);
-    });
-    var loopDur = LEAD_PATTERN.length * NOTE_DUR;
-    musicTimer = setTimeout(scheduleLoop, loopDur * 1000);
-  }
-  function toggleMusic(){
-    ensureAudio();
-    if (audioCtx.state === "suspended") audioCtx.resume();
-    musicOn = !musicOn;
-    var btn = document.getElementById("musicBtn");
-    if (musicOn) {
-      btn.textContent = "🎵 музика"; btn.classList.add("on");
-      scheduleLoop();
-    } else {
-      btn.textContent = "🔇 музика"; btn.classList.remove("on");
-      if (musicTimer) clearTimeout(musicTimer);
-    }
-  }
+            game.garage.splice(index, 1);
 
-  // ===================== game loop =====================
+            saveGame();
 
-  function tick(){
-    state.tickCounter++;
-    var income = totalIncomePerSec();
-    if (income > 0) state.balance += income;
-    if (state.tickCounter % 5 === 0 && state.energy < state.maxEnergy) {
-      state.energy = Math.min(state.maxEnergy, state.energy + 1);
-    }
-    if (state.tickCounter % 4 === 0) {
-      var m = state.market;
-      var changePct = (Math.random()*10 - 4.5) / 100;
-      var newPrice = Math.max(1, m.price * (1 + changePct));
-      m.price = Math.round(newPrice*100)/100;
-      m.history.push(m.price);
-      if (m.history.length > 60) m.history.shift();
-      if (currentTab === "market") renderMarket();
-    }
-    render();
-    if (state.tickCounter % 5 === 0) save();
-    if (state.tickCounter % 20 === 0) scheduleSync();
-  }
+            closeModal();
 
-  // ===================== init =====================
+            showToast(
+                `Машина продана за ${money(salePrice)}`
+            );
 
-  function init(){
-    document.getElementById("workBtn").addEventListener("click", work);
-    document.getElementById("rechargeBtn").addEventListener("click", recharge);
-    document.getElementById("nameDisplay").addEventListener("click", editName);
-    document.getElementById("musicBtn").addEventListener("click", toggleMusic);
-    document.querySelectorAll(".tab").forEach(function(t){ t.addEventListener("click", function(){ setActiveTab(t.dataset.tab); }); });
+            showGarage();
+        }
+    );
+}
 
-    if (state.log.length === 0) addLog("вітаємо в life.exe — час будувати імперію");
 
-    render();
-    renderCasino();
-    setInterval(tick, 1000);
-    window.addEventListener("beforeunload", save);
+/* =====================================================
+   НАСТРОЙКИ
+===================================================== */
 
-    initOnline();
-  }
+function renderSettings() {
 
-  init();
-})();
+    document.getElementById("screen").innerHTML = `
+
+        <div class="app-header">
+
+            <div>
+                <h1>Настройки</h1>
+                <span>Auto Seller</span>
+            </div>
+
+        </div>
+
+        <div class="settings">
+
+            <div class="setting">
+
+                <div>
+                    <strong>Версия</strong>
+                    <br>
+                    <span>Auto Seller 0.1</span>
+                </div>
+
+                <span>✓</span>
+
+            </div>
+
+            <div class="setting">
+
+                <div>
+                    <strong>Сохранение</strong>
+                    <br>
+                    <span>Автоматически</span>
+                </div>
+
+                <span>💾</span>
+
+            </div>
+
+            <div class="setting danger"
+                 onclick="resetGame()">
+
+                <div>
+                    <strong>Сбросить игру</strong>
+                    <br>
+                    <span>Удалить весь прогресс</span>
+                </div>
+
+                <span>🗑️</span>
+
+            </div>
+
+        </div>
+    `;
+}
+
+
+/* =====================================================
+   МОДАЛЬНОЕ ОКНО
+===================================================== */
+
+let modalAction = null;
+
+function showModal(title, text, action) {
+
+    document.getElementById("modalTitle").textContent = title;
+
+    document.getElementById("modalText").textContent = text;
+
+    modalAction = action;
+
+    document.getElementById("modalConfirm").onclick = () => {
+
+        if (modalAction) {
+            modalAction();
+        }
+    };
+
+    document.getElementById("modal").classList.add("show");
+}
+
+
+function closeModal() {
+
+    document.getElementById("modal").classList.remove("show");
+
+    modalAction = null;
+}
+
+
+/* =====================================================
+   СБРОС
+===================================================== */
+
+function resetGame() {
+
+    showModal(
+        "Сброс игры",
+        "Весь прогресс будет удалён. Продолжить?",
+        () => {
+
+            game = structuredClone(defaultGame);
+
+            saveGame();
+
+            closeModal();
+
+            showToast("Игра сброшена");
+
+            renderHome();
+        }
+    );
+}
+
+
+/* =====================================================
+   ЗАПУСК
+===================================================== */
+
+renderHome();
+
 </script>
+
 </body>
 </html>
+```
