@@ -68,11 +68,11 @@ main{max-width:1200px;margin:auto;padding:14px 14px calc(120px + env(safe-area-i
 .th{display:flex;gap:8px;margin-top:10px;overflow-x:auto}.th img{width:64px;height:64px;object-fit:cover;border-radius:12px;border:2px solid transparent;cursor:pointer;flex:none}.th img.on{border-color:var(--c)}
 .chat{display:flex;flex-direction:column;height:calc(100dvh - 250px);min-height:340px}
 .ms{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:6px 2px}
-.m{max-width:80%;padding:9px 13px;border-radius:18px;background:#ffffff14;align-self:flex-start;overflow-wrap:anywhere;white-space:pre-wrap}
+.m{max-width:80%;padding:9px 13px;border-radius:18px;background:#ffffff14;align-self:flex-start;overflow-wrap:anywhere;white-space:pre-wrap;position:relative}
 .m.me{align-self:flex-end;background:linear-gradient(135deg,#3b82ff,#ff8a1f);color:#000;font-weight:600}
-.m.sf{border:1px solid var(--c)}.m img{display:block;max-width:240px;width:100%;border-radius:12px;margin-bottom:4px}.m small{display:block;opacity:.65;font-size:11px;margin-top:2px}
+.m.sf{border:1px solid var(--c)}.m img{display:block;max-width:240px;width:100%;border-radius:12px;margin-bottom:4px}.m small{display:flex;justify-content:flex-end;align-items:center;gap:3px;opacity:.65;font-size:11px;margin-top:2px}
 .bg{display:inline-block;background:var(--c);color:#000;font:800 10px var(--f);padding:2px 8px;border-radius:99px;margin-right:6px}
-.cf{display:flex;gap:8px;margin-top:10px;align-items:center}.ib{width:44px;height:44px;padding:0;border-radius:99px;flex:none}
+.cf{display:flex;gap:8px;margin-top:8px;align-items:center}.ib{width:44px;height:44px;padding:0;border-radius:99px;flex:none}
 .row{display:flex;gap:12px}.row>*{flex:1}
 .mo{position:fixed;inset:0;z-index:60;background:#000b;display:none;align-items:flex-end;justify-content:center;padding-top:env(safe-area-inset-top,0px)}.mo.o{display:flex}
 .sheet{width:min(560px,100%);max-height:94dvh;overflow:auto;background:#0d0f14;border:1px solid var(--line);border-radius:28px 28px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px))}.sheet h3{font:500 18px var(--d);margin:0 0 4px}
@@ -98,6 +98,8 @@ nav button.on{color:var(--c)}nav button.sl{flex:none;width:58px;height:58px;marg
 .chat{height:calc(100dvh - 340px);min-height:280px}
 .bnr{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:14px 0 0;padding:12px 14px;border-radius:20px;border:2px solid transparent;background:linear-gradient(#0a0c10,#0a0c10) padding-box,conic-gradient(from var(--ang),var(--a),var(--b),var(--c),var(--a)) border-box;animation:sp 6s linear infinite;font-weight:700}
 .bnr .ib{width:34px;height:34px}
+.q-reply{display:flex;gap:6px;overflow-x:auto;padding:6px 0;scrollbar-width:none}
+.q-reply button{white-space:nowrap;font-size:12px;padding:6px 12px;border-radius:99px;flex:none}
 </style></head><body>
 <div class="au a"></div><div class="au b"></div><div class="au c"></div><div class="gr"></div>
 <header><div class="mk" id="lgo">N</div><div class="br" id="lgb">NOIR MARKET</div>
@@ -121,10 +123,11 @@ nav button.on{color:var(--c)}nav button.sl{flex:none;width:58px;height:58px;marg
 const T={
 sell:["Продать","Sell","Продати"],catalog:["Каталог","Browse","Каталог"],mine:["Мои товары","My items","Мої товари"],chats:["Чаты","Chats","Чати"],support:["Поддержка","Support","Підтримка"],
 search:["Поиск: голда, скин, аккаунт","Search: gold, skin, account","Пошук: голда, скін, акаунт"],all:["Все","All","Усі"],fav:["Избранное","Saved","Обране"],
+recent:["Недавно просмотренные","Recently viewed","Недавно переглянуті"],
 hero:["Площадка игровых ценностей. Находи товар, пиши продавцу и договаривайся напрямую.","Marketplace for game items. Find an item, message the seller and agree on the deal directly.","Майданчик ігрових цінностей. Знаходь товар, пиши продавцю та домовляйся напряму."],
 stA:["Объявлений","Listings","Оголошень"],stS:["Продавцов","Sellers","Продавців"],stP:["Premium","Premium","Premium"],
 fresh:["Свежие объявления","Fresh listings","Свіжі оголошення"],shelf:["Premium витрина","Premium shelf","Premium вітрина"],
-sNew:["Сначала новые","Newest first","Спочатку нові"],sAsc:["Сначала дешёвые","Cheapest first","Спочатку дешеві"],sDesc:["Сначала дорогие","Priciest first","Спочатку дорогі"],
+sNew:["Сначала новые","Newest first","Спочатку нові"],sAsc:["Сначала дешёвые","Cheapest first","Спочатку дешёвые"],sDesc:["Сначала дорогие","Priciest first","Спочатку дорогі"],
 empty:["Пока пусто. Выставь первый товар кнопкой «Продать».","Nothing here yet. Post the first item with the Sell button.","Поки порожньо. Вистав перший товар кнопкою «Продати»."],
 login:["Авторизация не требуется или используется автономный режим.","Authorization not required or using offline fallback.","Авторизація не потрібна або використовується автономний режим."],
 back:["Назад","Back","Назад"],write:["Написать продавцу","Message seller","Написати продавцю"],report:["Пожаловаться","Report","Поскаржитись"],
@@ -159,7 +162,7 @@ ban:["Заблокировать","Ban","Заблокувати"],unban:["Раз
 banned:["Твой аккаунт заблокирован: нельзя выставлять товары и писать в чатах. Можно обратиться в поддержку.","Your account is banned: you can’t post items or send chat messages. You can still contact support.","Твій акаунт заблоковано: не можна виставляти товари й писати в чатах. Можна звернутися до підтримки."],
 bannedL:["Блокировки","Bans","Блокування"],noBans:["Блокировок нет","No bans","Блокувань немає"],isBanned:["Заблокирован","Banned","Заблокований"],
 rep:["Пожаловаться","Report","Поскаржитись"],repT:["Жалоба","Report","Скарга"],rp1:["Мошенничество","Scam","Шахрайство"],rp2:["Не передал товар","Didn’t deliver","Не передав товар"],rp3:["Оскорбления","Abuse","Образи"],rp4:["Другое","Other","Інше"],
-repPh:["Опиши, что случилось","Describe what happened","Опиши, що сталося"],repSent:["Жалоба отправлена","Report sent","Скаргу надіслано"],reps:["Жалобы","Reports","Скарги"],noRep:["Жалоб нет","No reports","Скарг немає"],rDone:["Решено","Resolved","Вирішено"],newS:["Новая","New","Нова"],
+repPh:["Опиши, что случилось","Describe what happened","Опиши що сталося"],repSent:["Жалоба отправлена","Report sent","Скаргу надіслано"],reps:["Жалобы","Reports","Скарги"],noRep:["Жалоб нет","No reports","Скарг немає"],rDone:["Решено","Resolved","Вирішено"],newS:["Новая","New","Нова"],
 ntf:["Новое сообщение","New message","Нове повідомлення"],ticketsT:["Обращения","Tickets","Звернення"],settings:["Настройки","Settings","Налаштування"],ownerOnly:["Доступно только владельцу","Owner only","Лише для власника"],
 bump:["Поднять","Bump","Підняти"],renew:["Продлить","Renew","Продовжити"],expired:["Истекло","Expired","Закінчилось"],bumped:["Объявление поднято","Listing bumped","Оголошення піднято"],bumpIn:["Поднять можно через","You can bump in","Підняти можна через"],hr:["ч","h","г"],
 filters:["Фильтры","Filters","Фільтри"],pMin:["Цена от","Price from","Ціна від"],pMax:["до","to","до"],onlyPh:["Только с фото","With photos only","Лише з фото"],onlyTr:["Только надёжные продавцы","Trusted sellers only","Лише надійні продавці"],sRate:["По рейтингу продавца","By seller rating","За рейтингом продавця"],reset:["Сбросить","Reset","Скинути"],
@@ -184,8 +187,23 @@ let LI=+(LS("noirlang")??(/^uk/.test(navigator.language)?2:/^en/.test(navigator.
 const LN=["ru","en","uk"];
 const t=k=>(T[k]||[k,k,k])[LI]??k,cn=c=>CN[c]?CN[c][LI]:c,ci=c=>CI[c]||"📦";
 let FAV=[];try{FAV=JSON.parse(LS("noirfav")||"[]")}catch(x){}
+let RECENT=[];try{RECENT=JSON.parse(LS("noirrecent")||"[]")}catch(x){}
 
-// Fallback / Local Storage Mock Database for standalone running
+// Audio Notification System (Web Audio API - no external assets)
+function playBeep(freq=600, dur=0.08){
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.frequency.value = freq;
+    osc.type = "sine";
+    g.gain.setValueAtTime(0.1, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + dur);
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + dur);
+  } catch(e){}
+}
+
 function createLocalDB() {
   const store = (k, val) => val !== undefined ? LS('db_' + k, JSON.stringify(val)) : JSON.parse(LS('db_' + k) || '[]');
   const listenMap = {};
@@ -260,7 +278,7 @@ const isStaffId = i => STAFF[i] !== undefined;
 const uidn = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const dt = ts => new Date(ts).toLocaleString(["ru-RU", "en-GB", "uk-UA"][LI], { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 
-function toast(m) { const x = $("#ty"); x.textContent = m; x.classList.add("o"); clearTimeout(toast.t); toast.t = setTimeout(() => x.classList.remove("o"), 2600); }
+function toast(m) { const x = $("#ty"); x.textContent = m; x.classList.add("o"); clearTimeout(toast.t); toast.t = setTimeout(() => x.classList.remove("o"), 2600); playBeep(800, 0.05); }
 async function need(ids) { const m = [...new Set(ids)].filter(i => i && names[i] === undefined); if(!m.length) return; m.forEach(i => names[i] = i === uid ? t("you") : "Игрок " + i.slice(-4)); render(); }
 
 let prev = null;
@@ -298,7 +316,10 @@ async function boot() {
   const mine = () => d => {
     d.docs.forEach(x => {
       const o = TH[x.id], n = { id: x.id, ...x.data() };
-      if(o && n.ts > o.ts && n.by && n.by !== uid && !(view.t === "chat" && view.tid === n.id)) toast("💬 " + t("ntf") + ": " + n.title);
+      if(o && n.ts > o.ts && n.by && n.by !== uid && !(view.t === "chat" && view.tid === n.id)) {
+        toast("💬 " + t("ntf") + ": " + n.title);
+        playBeep(900, 0.12);
+      }
       TH[x.id] = n;
     });
     need(Object.values(TH).flatMap(h => [h.buyer, h.seller])); applyStatic(); if(view.t === "inbox") render();
@@ -313,7 +334,7 @@ async function boot() {
   db.collection("reviews").onSnapshot(s => { R = s.docs.map(d => ({ id: d.id, ...d.data() })); need(R.map(r => r.buyer)); if(["profile", "home", "item", "chat"].includes(view.t)) { if(view.t === "chat") dealBar(); else render(); } });
   
   db.collection("staff").onSnapshot(s => {
-    STAFF = {}; s.docs.forEach(d => STAFF[d.id] = d.data().name || "");
+    STAFF = {}; s.docs.forEach(d => STAFF[d.id] = d.data().name || "";
     const s2 = isS();
     if(s2 !== lastS) {
       lastS = s2; if(uT) uT();
@@ -350,11 +371,14 @@ function home(a) {
   r = r.filter(x => (!F.min || x.price >= +F.min) && (!F.max || x.price <= +F.max) && (!F.ph || (x.photos || []).some(img)) && (!F.tr || (() => { const z = stats(x.seller); return z.n && z.avg >= 4.5; })()));
   r.sort((x, y) => pm(y) - pm(x) || (srt === "asc" ? x.price - y.price : srt === "desc" ? y.price - x.price : srt === "rate" ? stats(y.seller).avg - stats(x.seller).avg : key(y) - key(x)));
   const sh = cat === "all" && !q ? act.filter(pm) : [];
+  const recItems = RECENT.map(id => act.find(x => x.id === id)).filter(Boolean);
   const tk = CATS.map(c => `<span>${c[1]} ${e(c[2][LI])}</span>`).join("");
+  
   a.innerHTML = `${(BNR && BNR.on && BNR.text && !bnrHide) ? `<div class="bnr"><span>📣 ${e(BNR.text)}</span><button class="gh ib" id="bx" aria-label="x">✕</button></div>` : ""}<section class="hero"><h1 class="ti">NOIR MARKET</h1><p class="su">${t("hero")}</p>
  <div class="sts"><div class="st"><b>${act.length}</b><span>${t("stA")}</span></div><div class="st"><b>${new Set(act.map(x => x.seller)).size}</b><span>${t("stS")}</span></div><div class="st"><b>${act.filter(pm).length}</b><span>${t("stP")}</span></div></div>
  <div class="tk"><div class="tr">${tk + tk}</div></div></section>
  ${sh.length ? `<div class="bar"><h2>✦ ${t("shelf")}</h2></div><div class="shelf">${sh.map(card).join("")}</div>` : ""}
+ ${recItems.length && cat==="all" && !q ? `<div class="bar"><h2>🕒 ${t("recent")}</h2></div><div class="shelf">${recItems.map(card).join("")}</div>` : ""}
  <div class="chips">${[["all", "✦", t("all")], ["fav", "❤️", t("fav")], ...CATS.map(c => [c[0], c[1], c[2][LI]])].map(([c, i, l]) => `<button class="gh ${cat === c ? "on" : ""}" data-c="${c}">${i} ${e(l)}</button>`).join("")}</div>
  <div class="bar" style="margin:0 0 12px"><button class="gh sm ${fo ? "on" : ""}" id="ft2">⚙ ${t("filters")}</button></div>
  ${fo ? `<div class="pan"><div class="row"><input id="fmin" type="number" min="0" placeholder="${t("pMin")}" value="${e(F.min)}"><input id="fmax" type="number" min="0" placeholder="${t("pMax")}" value="${e(F.max)}"></div>
@@ -371,6 +395,11 @@ function home(a) {
 
 function item(a) {
   const x = L.find(y => y.id === view.id); if(!x) { a.innerHTML = `<div class="emp">—<br><br><button id="bk">${t("back")}</button></div>`; $("#bk").onclick = () => go("home"); return; }
+  
+  // Track recently viewed
+  RECENT = [x.id, ...RECENT.filter(i => i !== x.id)].slice(0, 10);
+  LS("noirrecent", JSON.stringify(RECENT));
+
   const ps = (x.photos || []).map(img).filter(Boolean), k = view.k || 0, my = x.seller === uid;
   a.innerHTML = `<button class="gh sm" id="bk">← ${t("back")}</button><div class="det" style="margin-top:14px"><div><div class="ga">${ps[k] ? `<img src="${ps[k]}" alt="">` : ci(x.cat)}</div>${ps.length > 1 ? `<div class="th">${ps.map((p, i) => `<img src="${p}" class="${i === k ? "on" : ""}" data-k="${i}" alt="">`).join("")}</div>` : ""}</div>
  <div><span class="ct">${ci(x.cat)} ${e(cn(x.cat))}</span>${pm(x) ? ' <span class="pill g">PREMIUM</span>' : ""}${x.sold ? ` <span class="pill o">${t("stSold")}</span>` : ""}
@@ -404,18 +433,36 @@ function mineV(a) {
 
 function chat(a) {
   const v = view, peer = uid === v.buyer ? v.seller : v.buyer; need([peer]);
+  const qReplies = ["Привет! Ещё продаёшь?", "Готов купить", "Сделай скидку?", "Жду передачи"];
+  
   a.innerHTML = `<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><button class="gh sm" id="bk">←</button><div style="min-width:0;cursor:pointer" id="pn"><b>${e(nm(peer))}</b><div class="mu" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e(v.title)}</div></div><button class="gh sm" style="margin-left:auto" id="rpc">⚠</button><button class="gh sm" id="ov">${t("item")}</button></div>
  <div id="db"></div><div class="pan chat" style="padding:12px"><div class="ms" id="ms"><div class="mu" style="text-align:center">${t("first")}</div></div>
+ <div class="q-reply">${qReplies.map(qr => `<button class="gh sm" data-qr="${e(qr)}">${e(qr)}</button>`).join("")}</div>
  <form class="cf" id="cf"><label class="bt gh ib" for="cp" aria-label="photo">📎</label><input class="vh" type="file" id="cp" accept="image/*"><input id="mt" placeholder="${t("msgPh")}" maxlength="1000" autocomplete="off"><button class="ib" aria-label="${t("send")}">➤</button></form></div>`;
+  
   $("#bk").onclick = () => go("inbox"); $("#ov").onclick = () => go("item", { id: v.lid });
+  
   unsub = db.collection("msgs").where("tid", "==", v.tid).onSnapshot(s => {
     seen(v.tid); applyStatic(); const m = s.docs.map(d => d.data()).sort((x, y) => x.ts - y.ts), b = $("#ms"); if(!b) return;
-    if(m.length) b.innerHTML = m.map(x => x.k ? `<div class="m sy">${t(x.k)}<small>${dt(x.ts)}</small></div>` : `<div class="m ${x.from === uid ? "me" : ""}">${img(x.img) ? `<img src="${img(x.img)}" alt="">` : ""}${e(x.text)}<small>${dt(x.ts)}</small></div>`).join("");
+    if(m.length) b.innerHTML = m.map(x => x.k ? `<div class="m sy">${t(x.k)}<small>${dt(x.ts)}</small></div>` : `<div class="m ${x.from === uid ? "me" : ""}">${img(x.img) ? `<img src="${img(x.img)}" alt="">` : ""}${e(x.text)}<small>${dt(x.ts)} ${x.from === uid ? '<span style="color:var(--c)">✓✓</span>' : ''}</small></div>`).join("");
     b.scrollTop = b.scrollHeight;
   });
-  const send = async (text, im) => { const n = Date.now(); await db.collection("msgs").doc(uidn()).set({ tid: v.tid, from: uid, text, img: im || "", ts: n }); await db.collection("threads").doc(v.tid).set({ lid: v.lid, title: v.title, buyer: v.buyer, seller: v.seller, last: text || "📷", by: uid, ts: n }); };
+  
+  const send = async (text, im) => { 
+    const n = Date.now(); 
+    await db.collection("msgs").doc(uidn()).set({ tid: v.tid, from: uid, text, img: im || "", ts: n }); 
+    await db.collection("threads").doc(v.tid).set({ lid: v.lid, title: v.title, buyer: v.buyer, seller: v.seller, last: text || "📷", by: uid, ts: n }); 
+    playBeep(700, 0.08);
+  };
+  
   $("#cf").onsubmit = async ev => { ev.preventDefault(); const i = $("#mt"), x = i.value.trim(); if(!x) return; if(isBan()) { toast(t("banned")); return; } i.value = ""; try { await send(x); } catch(z) { toast(t("nsent")); } };
   $("#cp").onchange = async ev => { const f = ev.target.files[0]; if(!f) return; try { const u = await upl(f); await send("", u); } catch(z) { toast(t("pFail")); } ev.target.value = ""; };
+  
+  a.querySelectorAll("[data-qr]").forEach(b => b.onclick = () => {
+    if(isBan()) { toast(t("banned")); return; }
+    send(b.dataset.qr);
+  });
+
   dealBar(); $("#pn").onclick = () => go("profile", { id: peer }); $("#rpc").onclick = () => reportSheet({ target: peer, lid: v.lid, tid: v.tid, title: v.title });
 }
 
@@ -454,7 +501,7 @@ function support(a) {
   const sg = $("#sg"); if(sg) sg.onclick = staffGate;
   const lv = $("#lv"); if(lv) lv.onclick = async () => { await db.collection("staff").doc(uid).delete(); go("support"); };
   a.querySelectorAll("[data-pt]").forEach(b => b.onclick = () => go("support", { pan: 1, pt: b.dataset.pt }));
-  a.querySelectorAll("[data-k]").forEach(b => b.onclick = () => go("ticket", { id: b.dataset.k, pan }));
+  a.querySelectorAll("[data-k]").forEach(b => b.onclick = () => go("ticket", { id: b.dataset.k, pan });
   a.querySelectorAll("[data-up]").forEach(b => b.onclick = () => go("profile", { id: b.dataset.up }));
   a.querySelectorAll("[data-bn]").forEach(b => b.onclick = () => banToggle(b.dataset.bn));
   a.querySelectorAll("[data-ub]").forEach(b => b.onclick = () => banToggle(b.dataset.ub));
