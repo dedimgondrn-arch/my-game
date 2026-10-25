@@ -100,12 +100,36 @@ nav button.on{color:var(--c)}nav button.sl{flex:none;width:58px;height:58px;marg
 .bnr .ib{width:34px;height:34px}
 .q-reply{display:flex;gap:6px;overflow-x:auto;padding:6px 0;scrollbar-width:none}
 .q-reply button{white-space:nowrap;font-size:12px;padding:6px 12px;border-radius:99px;flex:none}
+.auth-tabs{display:flex;gap:8px;margin:14px 0}
+.auth-tabs button{flex:1;padding:8px;font-size:13px}
 </style></head><body>
 <div class="au a"></div><div class="au b"></div><div class="au c"></div><div class="gr"></div>
 <header><div class="mk" id="lgo">N</div><div class="br" id="lgb">NOIR MARKET</div>
 <div class="sr"><input id="q" type="search" data-p="search" autocomplete="off"></div>
+<button class="gh sm" id="authBtn">👤 Войти</button>
 <div class="lg"><button class="gh" id="lb"></button><div class="lp" id="lp"></div></div></header>
 <main id="app"></main><nav id="nv"></nav>
+
+<!-- Модальное окно авторизации -->
+<div class="mo" id="authMo"><div class="sheet">
+<h3>Вход / Регистрация</h3>
+<div class="auth-tabs">
+ <button class="gh on" id="atTg">Telegram</button>
+ <button class="gh" id="atPh">Телефон</button>
+ <button class="gh" id="atEm">E-mail</button>
+</div>
+<form id="authFm">
+ <div id="authBox">
+  <label class="l">Telegram Username</label>
+  <input id="auTg" placeholder="@username" required>
+ </div>
+ <label class="l">Имя профиля</label>
+ <input id="auName" placeholder="Например: Alexander" required maxlength="30">
+ <button class="w" style="margin-top:18px">Войти</button>
+</form>
+<button class="gh w" id="authClose" style="margin-top:10px">Отмена</button>
+</div></div>
+
 <div class="mo" id="mo"><form class="sheet" id="fm" autocomplete="off">
 <h3 data-tx="newAd"></h3>
 <label class="l" data-tx="fPh"></label><div class="up" id="up"></div>
@@ -122,6 +146,7 @@ nav button.on{color:var(--c)}nav button.sl{flex:none;width:58px;height:58px;marg
 <script>
 const T={
 sell:["Продать","Sell","Продати"],catalog:["Каталог","Browse","Каталог"],mine:["Мои товары","My items","Мої товари"],chats:["Чаты","Chats","Чати"],support:["Поддержка","Support","Підтримка"],
+sellers:["Продавцы","Sellers","Продавці"],
 search:["Поиск: голда, скин, аккаунт","Search: gold, skin, account","Пошук: голда, скін, акаунт"],all:["Все","All","Усі"],fav:["Избранное","Saved","Обране"],
 recent:["Недавно просмотренные","Recently viewed","Недавно переглянуті"],
 hero:["Площадка игровых ценностей. Находи товар, пиши продавцу и договаривайся напрямую.","Marketplace for game items. Find an item, message the seller and agree on the deal directly.","Майданчик ігрових цінностей. Знаходь товар, пиши продавцю та домовляйся напряму."],
@@ -144,11 +169,11 @@ fPrem:["Premium · 10 ₽ (в топе, неоновая рамка)","Premium �
 payC:["Оплата на карту","Card payment","Оплата на картку"],soon:["Скоро","Coming soon","Скоро"],
 payN:["Реквизиты появятся здесь. Premium включится после подтверждения оплаты.","Card details will appear here. Premium turns on after payment is confirmed.","Реквізити з’являться тут. Premium увімкнеться після підтвердження оплати."],
 payT:["Оплата Premium","Premium payment","Оплата Premium"],ok:["Понятно","Got it","Зрозуміло"],
-h1:["Через обмен или маркет","Trade or market","Через обмін або маркет"],h2:["Передача аккаунта","Account transfer","Передача акаунта"],h3:["Код или ключ","Code or key","Код або ключ"],h4:["Договоримся в чате","We’ll agree in chat","Домовимось у чаті"],
+h1:["Через обмен или маркет","Trade or market","Через обмін або маркет"],h2:["Передача аккаунта","Account transfer","Передача акаунта"],h3:["Код или ключ","Code or key","Код або ключ"],h4:["Договариримся в чате","We’ll agree in chat","Домовимось у чаті"],
 cancel:["Отмена","Cancel","Скасувати"],publish:["Опубликовать","Publish","Опублікувати"],done:["Объявление опубликовано","Listing published","Оголошення опубліковано"],
 pFail:["Фото не загрузилось. Выбери другой файл.","Photo failed to load. Pick another file.","Фото не завантажилось. Обери інший файл."],pBig:["Слишком много фото для этого режима","Too many photos for this mode","Забагато фото для цього режиму"],
 msgPh:["Сообщение","Message","Повідомлення"],noDlg:["Диалогов пока нет. Открой товар и нажми «Написать продавцу».","No chats yet. Open an item and tap Message seller.","Діалогів поки немає. Відкрий товар і натисни «Написати продавцю»."],
-first:["Напиши первым: уточни наличие и способ передачи.","Write first: ask about availability and delivery.","Напиши першим: уточни наявність і способ передачі."],item:["Товар","Item","Товар"],nsent:["Не отправлено","Not sent","Не надіслано"],
+first:["Напиши первым: уточни наличие и способ передачи.","Write first: ask about availability and delivery.","Напиши першим: уточни наявність і спосіб передачі."],item:["Товар","Item","Товар"],nsent:["Не отправлено","Not sent","Не надіслано"],
 supHint:["Спор по сделке, жалоба, оплата Premium или вопрос по площадке. Отвечает только команда поддержки.","Deal dispute, report, Premium payment or a question. Only the support team replies.","Спір щодо угоди, скарга, оплата Premium або питання. Відповідає лише команда підтримки."],
 supPh:["Опиши ситуацию","Describe the issue","Опиши ситуацію"],send:["Отправить","Send","Надіслати"],mySup:["Мои обращения","My tickets","Мої звернення"],panel:["Панель поддержки","Support panel","Панель підтримки"],
 team:["Команда поддержки","Support team","Команда підтримки"],findU:["Найти пользователя по имени","Find user by name","Знайти користувача за ім’ям"],rem:["Убрать","Remove","Прибрати"],
@@ -159,13 +184,13 @@ stAct:["В продаже","Active","У продажу"],stSold:["Продано
 you:["Вы","You","Ви"],user:["Пользователь","User","Користувач"],conf:["Удалить объявление?","Delete this listing?","Видалити оголошення?"],views:["Всего","Total","Усього"],
 repl:["Ответить игроку","Reply to player","Відповісти гравцю"],sent:["Отправлено","Sent","Надіслано"],ticket:["Обращение","Ticket","Звернення"],
 ban:["Заблокировать","Ban","Заблокувати"],unban:["Разблокировать","Unban","Розблокувати"],banR:["Причина блокировки","Ban reason","Причина блокування"],
-banned:["Tвой аккаунт заблокирован: нельзя выставлять товары и писать в чатах. Можно обратиться в поддержку.","Your account is banned: you can’t post items or send chat messages. You can still contact support.","Твій акаунт заблоковано: не можна виставляти товари й писати в чатах. Можна звернутися до підтримки."],
+banned:["Твой аккаунт заблокирован: нельзя выставлять товары и писать в чатах. Можно обратиться в поддержку.","Your account is banned: you can’t post items or send chat messages. You can still contact support.","Твій акаунт заблоковано: не можна виставляти товари й писати в чатах. Можна звернутися до підтримки."],
 bannedL:["Блокировки","Bans","Блокування"],noBans:["Блокировок нет","No bans","Блокувань немає"],isBanned:["Заблокирован","Banned","Заблокований"],
 rep:["Пожаловаться","Report","Поскаржитись"],repT:["Жалоба","Report","Скарга"],rp1:["Мошенничество","Scam","Шахрайство"],rp2:["Не передал товар","Didn’t deliver","Не передав товар"],rp3:["Оскорбления","Abuse","Образи"],rp4:["Другое","Other","Інше"],
 repPh:["Опиши, что случилось","Describe what happened","Опиши що сталося"],repSent:["Жалоба отправлена","Report sent","Скаргу надіслано"],reps:["Жалобы","Reports","Скарги"],noRep:["Жалоб нет","No reports","Скарг немає"],rDone:["Решено","Resolved","Вирішено"],newS:["Новая","New","Нова"],
 ntf:["Новое сообщение","New message","Нове повідомлення"],ticketsT:["Обращения","Tickets","Звернення"],settings:["Настройки","Settings","Налаштування"],ownerOnly:["Доступно только владельцу","Owner only","Лише для власника"],
 bump:["Поднять","Bump","Підняти"],renew:["Продлить","Renew","Продовжити"],expired:["Истекло","Expired","Закінчилось"],bumped:["Объявление поднято","Listing bumped","Оголошення піднято"],bumpIn:["Поднять можно через","You can bump in","Підняти можна через"],hr:["ч","h","г"],
-filters:["Фильтры","Filters","Фільтри"],pMin:["Цена от","Price from","Ціна від"],pMax:["до","to","до"],onlyPh:["Только с фото","With photos only","Лише з фото"],onlyTr:["Только надёжные продавцы","Trusted sellers only","Лише надійні продавці"],sRate:["По рейтингу продавца","By seller rating","За рейтингом продавца"],reset:["Сбросить","Reset","Скинути"],
+filters:["Фильтры","Filters","Фільтри"],pMin:["Цена от","Price from","Ціна від"],pMax:["до","to","до"],onlyPh:["Только с фото","With photos only","Лише з фото"],onlyTr:["Только надёжные продавцы","Trusted sellers only","Лише надійні продавці"],sRate:["По рейтингу продавца","By seller rating","За рейтингом продавця"],reset:["Сбросить","Reset","Скинути"],
 hist:["Мои сделки","My deals","Мої угоди"],buys:["Покупки","Purchases","Покупки"],sells:["Продажи","Sales","Продажі"],noDeals:["Сделок пока нет","No deals yet","Угод поки немає"],
 ds_open:["Оформлена","Started","Оформлена"],ds_sent:["Передано","Handed over","Передано"],ds_confirmed:["Завершена","Completed","Завершена"],ds_cancelled:["Отменена","Cancelled","Скасована"],ds_dispute:["Спор","Dispute","Спір"],toChat:["Чат","Chat","Чат"],
 bnr:["Баннер на главной","Home banner","Банер на головній"],bnrPh:["Текст объявления для всех","Announcement text for everyone","Текст оголошення для всіх"],bnrOn:["Показывать","Show","Показувати"],save:["Сохранить","Save","Зберегти"],saved:["Сохранено","Saved","Збережено"],
@@ -180,7 +205,7 @@ s_open:["Сделка","Deal","Угода"],s_sent:["Передано","Handed o
 m_open:["🤝 Сделка оформлена","🤝 Deal started","🤝 Угоду оформлено"],m_sent:["📦 Продавец передал товар","📦 Seller handed over the item","📦 Продавець передав товар"],m_got:["✅ Покупатель подтвердил получение","✅ Buyer confirmed receipt","✅ Покупець підтвердив отримання"],m_cancel:["Сделка отменена","Deal cancelled","Угоду скасовано"],m_disp:["⚠ Открыт спор","⚠ Dispute opened","⚠ Відкрито спір"],
 rvT:["Отзыв о продавце","Review the seller","Відгук про продавця"],rvPh:["Как прошла сделка?","How did the deal go?","Як минула угода?"],rvSend:["Отправить отзыв","Submit review","Надіслати відгук"]};
 
-const CATS=[["so2","🔫",["Standoff 2","Standoff 2","Standoff 2"]],["bs","⭐",["Brawl Stars","Brawl Stars","Brawl Stars"]],["rb","🧱",["Roblox","Roblox","Roblox"]],["mc","⛏️",["Minecraft","Minecraft","Minecraft"]],["gi","🌌",["Genshin Impact","Genshin Impact","Genshin Impact"]],["cur","💰",["Валюта","Currency","Валюта"]],["skin","🎨",["Скины","Skins","Sкіни"]],["acc","👤",["Аккаунты","Accounts","Акаунти"]],["boost","🚀",["Буст и услуги","Boost & services","Буст і послуги"]],["oth","📦",["Прочее","Other","Інше"]]];
+const CATS=[["so2","🔫",["Standoff 2","Standoff 2","Standoff 2"]],["bs","⭐",["Brawl Stars","Brawl Stars","Brawl Stars"]],["rb","🧱",["Roblox","Roblox","Roblox"]],["mc","⛏️",["Minecraft","Minecraft","Minecraft"]],["gi","🌌",["Genshin Impact","Genshin Impact","Genshin Impact"]],["cur","💰",["Валюта","Currency","Валюта"]],["skin","🎨",["Скины","Skins","Скіни"]],["acc","👤",["Аккаунты","Accounts","Акаунти"]],["boost","🚀",["Буст и услуги","Boost & services","Буст і послуги"]],["oth","📦",["Прочее","Other","Інше"]]];
 const CI=Object.fromEntries(CATS.map(c=>[c[0],c[1]])),CN=Object.fromEntries(CATS.map(c=>[c[0],c[2]]));
 const LS=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(x){return null}};
 let LI=+(LS("noirlang")??(/^uk/.test(navigator.language)?2:/^en/.test(navigator.language)?1:0));
@@ -257,6 +282,7 @@ function createLocalDB() {
 
 let db, usr, as, uid = LS("noir_uid") || ("usr_" + Date.now().toString(36)), owner = true, L = [], TH = {}, STAFF = {}, names = {}, TK = [], view = { t: "home" }, cat = "all", q = "", srt = "new", ph = [], unsub = null, uT = null, lastS = null, draft = "";
 let DEALS = {}, R = [], BAN = {}, REP = [], SEEN = {}, F = { min: "", max: "", ph: 0, tr: 0 }, BNR = null, fo = 0, bnrHide = 0;
+let userAuth = null; try { userAuth = JSON.parse(LS("noir_user") || "null"); } catch(e){}
 
 try { SEEN = JSON.parse(LS("noirseen") || "{}"); } catch(x) {}
 const seen = id => { SEEN[id] = Date.now(); LS("noirseen", JSON.stringify(SEEN)); };
@@ -271,14 +297,14 @@ const stars = n => "★".repeat(Math.round(n)) + "☆".repeat(5 - Math.round(n))
 const $ = s => document.querySelector(s), e = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const img = u => typeof u === "string" && (u.startsWith("/_blob/") || u.startsWith("data:image/")) ? u : "";
 const rub = n => new Intl.NumberFormat(["ru-RU", "en-US", "uk-UA"][LI]).format(n) + " ₽";
-const nm = id => names[id] || (id === uid ? t("you") : t("user"));
+const nm = id => names[id] || (id === uid ? (userAuth ? userAuth.name : t("you")) : t("user"));
 const isS = () => STAFF[uid] !== undefined || owner;
 const isStaffId = i => STAFF[i] !== undefined;
 const uidn = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const dt = ts => new Date(ts).toLocaleString(["ru-RU", "en-GB", "uk-UA"][LI], { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 
 function toast(m) { const x = $("#ty"); x.textContent = m; x.classList.add("o"); clearTimeout(toast.t); toast.t = setTimeout(() => x.classList.remove("o"), 2600); playBeep(800, 0.05); }
-async function need(ids) { const m = [...new Set(ids)].filter(i => i && names[i] === undefined); if(!m.length) return; m.forEach(i => names[i] = i === uid ? t("you") : "Игрок " + i.slice(-4)); render(); }
+async function need(ids) { const m = [...new Set(ids)].filter(i => i && names[i] === undefined); if(!m.length) return; m.forEach(i => names[i] = i === uid ? (userAuth ? userAuth.name : t("you")) : "Игрок " + i.slice(-4)); render(); }
 
 let prev = null;
 function go(v, o = {}) { if(unsub) { unsub(); unsub = null; } prev = view; view = { t: v, ...o }; scrollTo(0, 0); render(); }
@@ -288,11 +314,22 @@ function applyStatic() {
   document.querySelectorAll("[data-tx]").forEach(n => n.textContent = t(n.dataset.tx));
   document.querySelectorAll("[data-p]").forEach(n => n.placeholder = t(n.dataset.p));
   $("#lb").textContent = "🌐 " + LN[LI].toUpperCase();
+  
+  const ab = $("#authBtn");
+  if(ab) {
+    if(userAuth) {
+      ab.textContent = "👤 " + userAuth.name;
+    } else {
+      ab.textContent = "👤 Войти";
+    }
+  }
+
   $("#lp").innerHTML = LN.map((l, i) => `<button class="gh ${i === LI ? "on" : ""}" data-l="${i}">${["Русский", "English", "Українська"][i]}</button>`).join("");
   document.querySelectorAll("[data-l]").forEach(b => b.onclick = () => { LI = +b.dataset.l; LS("noirlang", LI); $("#lp").classList.remove("o"); fillSel(); applyStatic(); render(); });
+  
   const n = unreadChats(), sb = supBadge(), v = view.t, G = (k, i, l, x) => `<button data-g="${k}" class="${x || ""} ${v === k || (k === "home" && v === "item") || (k === "support" && v === "ticket") || (k === "inbox" && v === "chat") ? "on" : ""}"><i>${i}</i>${l}${k === "inbox" && n ? `<span class="nb">${n}</span>` : k === "support" && sb ? `<span class="nb">${sb}</span>` : ""}</button>`;
   document.title = (n + sb ? "(" + (n + sb) + ") " : "") + "NOIR MARKET";
-  $("#nv").innerHTML = G("home", "🏠", t("catalog")) + G("mine", "📦", t("mine")) + `<button class="sl" data-g="sell" aria-label="${t("sell")}">＋</button>` + G("inbox", "💬", t("chats")) + G("support", "🛟", t("support"));
+  $("#nv").innerHTML = G("home", "🏠", t("catalog")) + G("sellers", "👥", t("sellers")) + `<button class="sl" data-g="sell" aria-label="${t("sell")}">＋</button>` + G("inbox", "💬", t("chats")) + G("support", "🛟", t("support"));
   $("#nv").querySelectorAll("[data-g]").forEach(b => b.onclick = () => b.dataset.g === "sell" ? openForm() : go(b.dataset.g));
 }
 
@@ -310,7 +347,7 @@ async function boot() {
   if(!db) db = createLocalDB();
   if(usr) { try { uid = await usr.id(); owner = usr.isOwner(); } catch(x) {} }
   
-  db.collection("listings").onSnapshot(s => { L = s.docs.map(d => ({ id: d.id, ...d.data() })); need(L.map(x => x.seller)); if(["home", "item", "mine"].includes(view.t)) render(); }, () => toast("!"));
+  db.collection("listings").onSnapshot(s => { L = s.docs.map(d => ({ id: d.id, ...d.data() })); need(L.map(x => x.seller)); if(["home", "item", "mine", "sellers"].includes(view.t)) render(); }, () => toast("!"));
   
   const mine = () => d => {
     d.docs.forEach(x => {
@@ -326,11 +363,11 @@ async function boot() {
   
   db.collection("threads").where("buyer", "==", uid).onSnapshot(mine());
   db.collection("threads").where("seller", "==", uid).onSnapshot(mine());
-  db.collection("bans").onSnapshot(s => { BAN = {}; s.docs.forEach(d => BAN[d.id] = d.data()); need(Object.keys(BAN)); if(["home", "item", "profile", "support", "chat", "mine"].includes(view.t) && view.t !== "chat") render(); else applyStatic(); });
+  db.collection("bans").onSnapshot(s => { BAN = {}; s.docs.forEach(d => BAN[d.id] = d.data()); need(Object.keys(BAN)); if(["home", "item", "profile", "support", "chat", "mine", "sellers"].includes(view.t) && view.t !== "chat") render(); else applyStatic(); });
   db.collection("reports").onSnapshot(s => { REP = s.docs.map(d => ({ id: d.id, ...d.data() })); if(view.t === "support") render(); else applyStatic(); });
   db.collection("settings").doc("banner").onSnapshot(d => { BNR = d.exists ? d.data() : null; if(view.t === "home") render(); });
-  db.collection("deals").onSnapshot(s => { DEALS = {}; s.docs.forEach(d => DEALS[d.id] = { id: d.id, ...d.data() }); if(view.t === "chat") dealBar(); else if(["profile", "home", "item", "deals"].includes(view.t)) render(); });
-  db.collection("reviews").onSnapshot(s => { R = s.docs.map(d => ({ id: d.id, ...d.data() })); need(R.map(r => r.buyer)); if(["profile", "home", "item", "chat"].includes(view.t)) { if(view.t === "chat") dealBar(); else render(); } });
+  db.collection("deals").onSnapshot(s => { DEALS = {}; s.docs.forEach(d => DEALS[d.id] = { id: d.id, ...d.data() }); if(view.t === "chat") dealBar(); else if(["profile", "home", "item", "deals", "sellers"].includes(view.t)) render(); });
+  db.collection("reviews").onSnapshot(s => { R = s.docs.map(d => ({ id: d.id, ...d.data() })); need(R.map(r => r.buyer)); if(["profile", "home", "item", "chat", "sellers"].includes(view.t)) { if(view.t === "chat") dealBar(); else render(); } });
   
   db.collection("staff").onSnapshot(s => {
     STAFF = {}; s.docs.forEach(d => STAFF[d.id] = d.data().name || "");
@@ -349,7 +386,7 @@ async function boot() {
 function render() {
   const a = $("#app"); applyStatic();
   if(!db || !uid) { a.innerHTML = `<div class="hero"><h1 class="ti">NOIR MARKET</h1><p class="su">${t("login")}</p></div>`; return; }
-  ({ home, item, mine: mineV, chat, inbox, support, ticket, profile, deals: dealsV }[view.t] || home)(a);
+  ({ home, item, mine: mineV, chat, inbox, support, ticket, profile, deals: dealsV, sellers }[view.t] || home)(a);
   if(isBan()) a.insertAdjacentHTML("afterbegin", `<div class="tip" style="margin:0 0 14px;border-color:var(--dg);color:var(--dg)">⛔ ${t("banned")}${BAN[uid].reason ? " — " + e(BAN[uid].reason) : ""}</div>`);
 }
 
@@ -362,6 +399,37 @@ function card(x) {
 function bindCards(a) {
   a.querySelectorAll("[data-i]").forEach(b => b.onclick = () => go("item", { id: b.dataset.i }));
   a.querySelectorAll("[data-f]").forEach(b => b.onclick = ev => { ev.stopPropagation(); const i = b.dataset.f; FAV = FAV.includes(i) ? FAV.filter(z => z !== i) : [...FAV, i]; LS("noirfav", JSON.stringify(FAV)); render(); });
+}
+
+function sellers(a) {
+  const allSellers = [...new Set(L.map(x => x.seller))];
+  need(allSellers);
+  
+  a.innerHTML = `<div class="bar"><h2>👥 Продавцы площадки</h2></div>
+  <div class="sr" style="margin-bottom:14px"><input id="sq" placeholder="Поиск продавца по имени..." autocomplete="off"></div>
+  <div id="slList"></div>`;
+  
+  const draw = (filterText = "") => {
+    const filtered = allSellers.filter(sId => nm(sId).toLowerCase().includes(filterText.toLowerCase()));
+    $("#slList").innerHTML = filtered.map(sId => {
+      const z = stats(sId);
+      const bd = z.deals >= 5 && z.avg >= 4.5 ? t("trusted") : z.deals >= 1 ? t("verified") : t("newbie");
+      return `<div class="pan pf" style="cursor:pointer" data-sp="${e(sId)}">
+        <div class="av">${e((nm(sId)[0] || "?").toUpperCase())}</div>
+        <div style="flex:1;min-width:0">
+          <h2>${e(nm(sId))}</h2>
+          <div>${z.n ? `<span style="color:var(--b)">${stars(z.avg)}</span> ${z.avg.toFixed(1)}` : '<span class="mu">Нет отзывов</span>'}</div>
+          <span class="pill ${z.deals >= 1 ? "g" : ""}">${bd}</span>
+        </div>
+        <button class="gh sm">Товары →</button>
+      </div>`;
+    }).join("") || `<div class="emp">Продавцы не найдены</div>`;
+    
+    a.querySelectorAll("[data-sp]").forEach(b => b.onclick = () => go("profile", { id: b.dataset.sp }));
+  };
+  
+  draw();
+  $("#sq").oninput = ev => draw(ev.target.value.trim());
 }
 
 function home(a) {
@@ -622,11 +690,13 @@ function profile(a) {
   need([id, ...rv.map(r => r.buyer)]); const since = mn.length ? new Date(Math.min(...mn)).toLocaleDateString(["ru-RU", "en-GB", "uk-UA"][LI], { month: "short", year: "numeric" }) : "—";
   const bd = z.deals >= 5 && z.avg >= 4.5 ? t("trusted") : z.deals >= 1 ? t("verified") : t("newbie");
   a.innerHTML = `<button class="gh sm" id="bk">← ${t("back")}</button>
- <div class="pan pf" style="margin-top:14px"><div class="av">${e((nm(id)[0] || "?").toUpperCase())}</div><div style="min-width:0"><h2>${e(nm(id))}${id === uid ? " (" + t("you") + ")" : ""}</h2><div>${z.n ? `<span style="color:var(--b)">${stars(z.avg)}</span> ${z.avg.toFixed(1)}` : ""}</div><span class="pill ${z.deals >= 1 ? "g" : ""}">${bd}</span>${BAN[id] ? ` <span class="pill o">${t("isBanned")}</span>` : ""}</div></div><div style="display:flex;gap:8px;margin-bottom:14px">${id === uid ? "" : isS() ? `<button class="${BAN[id] ? "gh" : "dg"} sm" id="bnb">${BAN[id] ? t("unban") : t("ban")}</button>` : `<button class="gh sm" id="rpb">⚠ ${t("rep")}</button>`}</div>
+ <div class="pan pf" style="margin-top:14px"><div class="av">${e((nm(id)[0] || "?").toUpperCase())}</div><div style="min-width:0"><h2>${e(nm(id))}${id === uid ? " (" + t("you") + ")" : ""}</h2><div>${z.n ? `<span style="color:var(--b)">${stars(z.avg)}</span> ${z.avg.toFixed(1)}` : ""}</div><span class="pill ${z.deals >= 1 ? "g" : ""}">${bd}</span>${BAN[id] ? ` <span class="pill o">${t("isBanned")}</span>` : ""}</div></div>
+ <div style="display:flex;gap:8px;margin-bottom:14px">${id === uid ? (userAuth ? `<button class="dg sm" id="logoutBtn">Выйти из аккаунта</button>` : "") : isS() ? `<button class="${BAN[id] ? "gh" : "dg"} sm" id="bnb">${BAN[id] ? t("unban") : t("ban")}</button>` : `<button class="gh sm" id="rpb">⚠ ${t("rep")}</button>`}</div>
  <div class="sts" style="margin-bottom:18px"><div class="st"><b>${z.n ? z.avg.toFixed(1) : "—"}</b><span>${t("rating")}</span></div><div class="st"><b>${z.n}</b><span>${t("rvs")}</span></div><div class="st"><b>${z.deals}</b><span>${t("deals")}</span></div><div class="st"><b style="font-size:17px">${since}</b><span>${t("since")}</span></div></div>
  <div class="bar"><h2>${t("sellerItems")}</h2></div>${its.length ? `<div class="grid">${its.map(card).join("")}</div>` : `<div class="emp">${t("noItems")}</div>`}
  <div class="bar" style="margin-top:26px"><h2>${t("rvs")}</h2></div>${rv.map(r => `<div class="pan"><span style="color:var(--b)">${stars(r.rating)}</span> <b>${e(nm(r.buyer))}</b> <span class="mu">· ${dt(r.ts)}</span><div class="mu">${e(r.title)}</div>${r.text ? `<div style="margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere">${e(r.text)}</div>` : ""}</div>`).join("") || `<div class="emp">${t("noRv")}</div>`}`;
   $("#bk").onclick = () => prev && prev.t && prev.t !== "profile" ? go(prev.t, prev) : go("home"); bindCards(a); const bnb = $("#bnb"); if(bnb) bnb.onclick = () => banToggle(id); const rpb = $("#rpb"); if(rpb) rpb.onclick = () => reportSheet({ target: id });
+  const lo = $("#logoutBtn"); if(lo) lo.onclick = () => { LS("noir_user", ""); userAuth = null; render(); toast("Вы вышли из системы"); };
 }
 
 const CODE_H = "e700cd1d4d864992e889c7e6d0176842a53b158c2a1bd5685eb4e7a4c8a6b5ee";
@@ -692,6 +762,43 @@ $("#fm").onsubmit = async ev => {
     $("#mo").classList.remove("o"); toast(t("done")); go("mine");
   } catch(x) { toast("!"); }
   b.disabled = false;
+};
+
+/* Авторизация события */
+let authMode = "tg";
+$("#authBtn").onclick = () => {
+  if(userAuth) {
+    go("profile", { id: uid });
+  } else {
+    $("#authMo").classList.add("o");
+  }
+};
+$("#authClose").onclick = () => $("#authMo").classList.remove("o");
+
+const setAuthTab = (mode, label, ph) => {
+  authMode = mode;
+  $("#atTg").className = mode === "tg" ? "gh on" : "gh";
+  $("#atPh").className = mode === "ph" ? "gh on" : "gh";
+  $("#atEm").className = mode === "em" ? "gh on" : "gh";
+  $("#authBox").innerHTML = `<label class="l">${label}</label><input id="auInput" placeholder="${ph}" required>`;
+};
+
+$("#atTg").onclick = (e) => { e.preventDefault(); setAuthTab("tg", "Telegram Username", "@username"); };
+$("#atPh").onclick = (e) => { e.preventDefault(); setAuthTab("ph", "Номер телефона", "+7 900 000 00-00"); };
+$("#atEm").onclick = (e) => { e.preventDefault(); setAuthTab("em", "E-mail адрес", "example@mail.ru"); };
+
+$("#authFm").onsubmit = (ev) => {
+  ev.preventDefault();
+  const val = ($("#auInput") || $("#auTg")).value.trim();
+  const name = $("#auName").value.trim();
+  if(!val || !name) return;
+  
+  userAuth = { type: authMode, value: val, name: name };
+  LS("noir_user", JSON.stringify(userAuth));
+  names[uid] = name;
+  $("#authMo").classList.remove("o");
+  toast("Добро пожаловать, " + name + "!");
+  render();
 };
 
 $("#q").oninput = x => { q = x.target.value; if(view.t !== "home") go("home"); else render(); };
