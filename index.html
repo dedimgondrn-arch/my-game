@@ -30,13 +30,13 @@ input:focus,textarea:focus,select:focus{border-color:var(--b);box-shadow:0 0 0 4
 select option{background:#101216}textarea{resize:vertical}
 label.l{display:block;color:var(--mu);font-size:14px;font-weight:600;margin:14px 0 6px}
 .vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
-header{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:30;margin:8px auto 0;width:min(1200px,calc(100% - 20px));display:flex;align-items:center;gap:10px;padding:9px 10px 9px 12px;border-radius:24px;background:rgba(14,16,22,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line)}
+header{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:30;margin:8px auto 0;width:min(1200px,calc(100% - 20px));display:flex;align-items:center;gap:8px;padding:9px 10px 9px 12px;border-radius:24px;background:rgba(14,16,22,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line)}
 .mk{width:42px;height:42px;flex:none;border-radius:14px;display:grid;place-items:center;font:600 18px var(--d);color:#000;background:conic-gradient(from var(--ang),var(--a),var(--b),var(--c),var(--a));animation:sp 6s linear infinite;cursor:pointer}
 .br{font:500 13px var(--d);cursor:pointer;white-space:nowrap;background:linear-gradient(100deg,#fff,#777,var(--c),#fff);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 6s linear infinite}
 @keyframes sh{to{background-position:-250% 0}}
 .sr{flex:1;min-width:0}.sr input{border-radius:999px;padding:10px 16px}
-.lg{position:relative;flex:none}.lg>button{padding:9px 14px;border-radius:99px}
-.lp{position:absolute;right:0;top:calc(100% + 10px);background:#0d0f14;border:1px solid var(--line);border-radius:18px;padding:8px;display:none;min-width:160px;box-shadow:0 20px 50px -20px var(--b)}.lp.o{display:block}
+.lg,.ntf-box{position:relative;flex:none}.lg>button,.ntf-box>button{padding:9px 12px;border-radius:99px}
+.lp,.ntf-pop{position:absolute;right:0;top:calc(100% + 10px);background:#0d0f14;border:1px solid var(--line);border-radius:18px;padding:10px;display:none;min-width:240px;box-shadow:0 20px 50px -20px var(--b);z-index:40}.lp.o,.ntf-pop.o{display:block}
 .lp button{width:100%;margin:3px 0;justify-content:flex-start}
 main{max-width:1200px;margin:auto;padding:14px 14px calc(120px + env(safe-area-inset-bottom,0px))}
 .hero{padding:30px 0 6px}
@@ -57,7 +57,9 @@ main{max-width:1200px;margin:auto;padding:14px 14px calc(120px + env(safe-area-i
 .im{aspect-ratio:1;border-radius:17px;background:linear-gradient(135deg,#ffffff12,#ffffff05);display:grid;place-items:center;font-size:50px;overflow:hidden}.im img{width:100%;height:100%;object-fit:cover;transition:transform .6s}.card:hover .im img{transform:scale(1.07)}
 .cb{padding:12px 8px 6px;display:flex;flex-direction:column;gap:3px}
 .ct{font-size:12px;color:var(--c);font-weight:700}.nm{font-weight:700;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.pr{font:600 19px var(--d)}.mu{color:var(--mu);font-size:13px}
+.pr{font:600 19px var(--d);display:flex;align-items:center;gap:8px;flex-wrap:wrap}.old-pr{font-size:14px;color:var(--mu);text-decoration:line-through;font-family:var(--f)}
+.disc-badge{background:var(--b);color:#000;font:800 10px var(--f);padding:2px 6px;border-radius:6px}
+.mu{color:var(--mu);font-size:13px}
 .tg{position:absolute;top:16px;left:16px;z-index:2;background:linear-gradient(90deg,var(--b),var(--c));color:#000;font:800 11px var(--f);padding:4px 10px;border-radius:99px}
 .hr{position:absolute;top:14px;right:14px;z-index:2;width:36px;height:36px;padding:0;border-radius:99px;background:#000a!important;border:0;animation:none!important;box-shadow:none;backdrop-filter:blur(6px);font-size:17px}
 .emp{text-align:center;color:var(--mu);padding:46px 10px;border:1px dashed var(--line);border-radius:24px}
@@ -87,7 +89,7 @@ main{max-width:1200px;margin:auto;padding:14px 14px calc(120px + env(safe-area-i
 nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:40;width:min(560px,calc(100% - 20px));display:flex;align-items:center;justify-content:space-around;padding:8px;border-radius:28px;background:rgba(14,16,22,.8);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--line);box-shadow:0 20px 50px -20px #000}
 nav button{position:relative;flex:1;flex-direction:column;gap:0;padding:6px 2px;font-size:11px;border:0;border-radius:16px;background:none;animation:none;box-shadow:none;color:var(--mu)}nav button i{font-style:normal;font-size:20px}
 nav button.on{color:var(--c)}nav button.sl{flex:none;width:58px;height:58px;margin:-24px 4px 0;border-radius:99px;font-size:28px;color:#000;background:conic-gradient(from var(--ang),var(--a),var(--b),var(--c),var(--a));animation:sp 5s linear infinite;box-shadow:0 0 30px -4px var(--b)}
-.nb{position:absolute;top:0;right:22%;min-width:18px;height:18px;border-radius:99px;background:var(--c);color:#000;font:800 10px var(--f);display:grid;place-items:center;padding:0 4px}
+.nb{position:absolute;top:0;right:18%;min-width:18px;height:18px;border-radius:99px;background:var(--c);color:#000;font:800 10px var(--f);display:grid;place-items:center;padding:0 4px}
 .li{display:flex;gap:12px;align-items:center;padding:10px}.li .t{width:64px;height:64px;border-radius:14px;overflow:hidden;background:#ffffff0d;display:grid;place-items:center;font-size:26px;flex:none}.li .t img{width:100%;height:100%;object-fit:cover}.li>div:nth-child(2){flex:1;min-width:0}
 .pill{display:inline-block;font:700 11px var(--f);padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mu);margin-right:4px}.pill.g{color:var(--c);border-color:var(--c)}.pill.o{color:var(--b);border-color:var(--b)}
 .m.sy{align-self:center;background:none;color:var(--mu);font-size:13px;text-align:center;max-width:100%}
@@ -102,17 +104,30 @@ nav button.on{color:var(--c)}nav button.sl{flex:none;width:58px;height:58px;marg
 .q-reply button{white-space:nowrap;font-size:12px;padding:6px 12px;border-radius:99px;flex:none}
 .auth-tabs{display:flex;gap:8px;margin:14px 0}
 .auth-tabs button{flex:1;padding:8px;font-size:13px}
+.ntf-item{padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}.ntf-item:last-child{border-bottom:0}
 </style></head><body>
 <div class="au a"></div><div class="au b"></div><div class="au c"></div><div class="gr"></div>
 <header><div class="mk" id="lgo">N</div><div class="br" id="lgb">NOIR MARKET</div>
 <div class="sr"><input id="q" type="search" data-p="search" autocomplete="off"></div>
+
+<div class="ntf-box">
+  <button class="gh sm" id="bellBtn">🔔 <span id="bellBadge" class="nb" style="display:none;position:static;display:inline-flex">0</span></button>
+  <div class="ntf-pop" id="ntfPop">
+    <div style="font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between">
+      <span>Уведомления</span>
+      <button class="gh sm" id="clrNtf" style="padding:2px 8px;font-size:11px">Очистить</button>
+    </div>
+    <div id="ntfList" style="max-height:260px;overflow-y:auto"><div class="mu" style="font-size:12px;text-align:center;padding:10px">Нет новых уведомлений</div></div>
+  </div>
+</div>
+
 <button class="gh sm" id="authBtn">👤 Войти</button>
 <div class="lg"><button class="gh" id="lb"></button><div class="lp" id="lp"></div></div></header>
 <main id="app"></main><nav id="nv"></nav>
 
-<!-- Модальное окно авторизации -->
+<!-- Реальная авторизация и регистрация -->
 <div class="mo" id="authMo"><div class="sheet">
-<h3>Вход / Регистрация</h3>
+<h3 id="authTitle">Вход в аккаунт</h3>
 <div class="auth-tabs">
  <button class="gh on" id="atTg">Telegram</button>
  <button class="gh" id="atPh">Телефон</button>
@@ -121,12 +136,17 @@ nav button.on{color:var(--c)}nav button.sl{flex:none;width:58px;height:58px;marg
 <form id="authFm">
  <div id="authBox">
   <label class="l">Telegram Username</label>
-  <input id="auTg" placeholder="@username" required>
+  <input id="auVal" placeholder="@username" required>
  </div>
- <label class="l">Имя профиля</label>
- <input id="auName" placeholder="Например: Alexander" required maxlength="30">
- <button class="w" style="margin-top:18px">Войти</button>
+ <label class="l">Пароль / PIN</label>
+ <input type="password" id="auPass" placeholder="Пароль" required>
+ <label class="l" id="auNameLbl" style="display:none">Имя пользователя (для регистрации)</label>
+ <input id="auName" placeholder="Ваш никнейм" style="display:none">
+ <button class="w" style="margin-top:18px" id="authSubmitBtn">Войти</button>
 </form>
+<div style="text-align:center;margin-top:12px">
+ <button class="gh sm" id="toggleRegBtn">Создать новый аккаунт</button>
+</div>
 <button class="gh w" id="authClose" style="margin-top:10px">Отмена</button>
 </div></div>
 
@@ -135,7 +155,13 @@ nav button.on{color:var(--c)}nav button.sl{flex:none;width:58px;height:58px;marg
 <label class="l" data-tx="fPh"></label><div class="up" id="up"></div>
 <input class="vh" id="fl" type="file" accept="image/*" multiple>
 <label class="l" for="ft" data-tx="fT"></label><input id="ft" required maxlength="90" data-p="fTp">
-<div class="row"><div><label class="l" for="fc" data-tx="fC"></label><select id="fc"></select></div><div><label class="l" for="fp" data-tx="fP"></label><input id="fp" type="number" min="1" step="1" required placeholder="500"></div></div>
+<div class="row">
+ <div><label class="l" for="fc" data-tx="fC"></label><select id="fc"></select></div>
+ <div><label class="l" for="fp" data-tx="fP"></label><input id="fp" type="number" min="1" step="1" required placeholder="500"></div>
+</div>
+<label class="l" for="fOldP">Старая цена, ₽ (для скидки, опционально)</label>
+<input id="fOldP" type="number" min="1" step="1" placeholder="650">
+
 <label class="l" for="fh" data-tx="fH"></label><select id="fh"></select>
 <label class="l" for="fs" data-tx="fD"></label><textarea id="fs" rows="4" maxlength="1000" data-p="fDp"></textarea>
 <label style="display:flex;gap:10px;align-items:center;margin-top:16px"><input type="checkbox" id="fpm" style="width:20px;height:20px"><span data-tx="fPrem"></span></label>
@@ -169,7 +195,7 @@ fPrem:["Premium · 10 ₽ (в топе, неоновая рамка)","Premium �
 payC:["Оплата на карту","Card payment","Оплата на картку"],soon:["Скоро","Coming soon","Скоро"],
 payN:["Реквизиты появятся здесь. Premium включится после подтверждения оплаты.","Card details will appear here. Premium turns on after payment is confirmed.","Реквізити з’являться тут. Premium увімкнеться після підтвердження оплати."],
 payT:["Оплата Premium","Premium payment","Оплата Premium"],ok:["Понятно","Got it","Зрозуміло"],
-h1:["Через обмен или маркет","Trade or market","Через обмін або маркет"],h2:["Передача аккаунта","Account transfer","Передача акаунта"],h3:["Код или ключ","Code or key","Код або ключ"],h4:["Договариримся в чате","We’ll agree in chat","Домовимось у чаті"],
+h1:["Через обмен или маркет","Trade or market","Через обмін або маркет"],h2:["Передача аккаунта","Account transfer","Передача акаунта"],h3:["Код или ключ","Code or key","Код або ключ"],h4:["Договоримся в чате","We’ll agree in chat","Домовимось у чаті"],
 cancel:["Отмена","Cancel","Скасувати"],publish:["Опубликовать","Publish","Опублікувати"],done:["Объявление опубликовано","Listing published","Оголошення опубліковано"],
 pFail:["Фото не загрузилось. Выбери другой файл.","Photo failed to load. Pick another file.","Фото не завантажилось. Обери інший файл."],pBig:["Слишком много фото для этого режима","Too many photos for this mode","Забагато фото для цього режиму"],
 msgPh:["Сообщение","Message","Повідомлення"],noDlg:["Диалогов пока нет. Открой товар и нажми «Написать продавцу».","No chats yet. Open an item and tap Message seller.","Діалогів поки немає. Відкрий товар і натисни «Написати продавцю»."],
@@ -213,6 +239,7 @@ const LN=["ru","en","uk"];
 const t=k=>(T[k]||[k,k,k])[LI]??k,cn=c=>CN[c]?CN[c][LI]:c,ci=c=>CI[c]||"📦";
 let FAV=[];try{FAV=JSON.parse(LS("noirfav")||"[]")}catch(x){}
 let RECENT=[];try{RECENT=JSON.parse(LS("noirrecent")||"[]")}catch(x){}
+let NOTIFICATIONS=[];try{NOTIFICATIONS=JSON.parse(LS("noir_ntfs")||"[]")}catch(x){}
 
 function playBeep(freq=600, dur=0.08){
   try {
@@ -226,6 +253,27 @@ function playBeep(freq=600, dur=0.08){
     osc.connect(g); g.connect(ctx.destination);
     osc.start(); osc.stop(ctx.currentTime + dur);
   } catch(e){}
+}
+
+function pushNtf(msg) {
+  NOTIFICATIONS.unshift({ text: msg, ts: Date.now() });
+  if(NOTIFICATIONS.length > 20) NOTIFICATIONS.pop();
+  LS("noir_ntfs", JSON.stringify(NOTIFICATIONS));
+  renderNtfs();
+  toast(msg);
+  playBeep(900, 0.12);
+}
+
+function renderNtfs() {
+  const b = $("#bellBadge"), l = $("#ntfList");
+  if(!b || !l) return;
+  if(NOTIFICATIONS.length) {
+    b.style.display = "inline-flex"; b.textContent = NOTIFICATIONS.length;
+    l.innerHTML = NOTIFICATIONS.map(n => `<div class="ntf-item"><div>${e(n.text)}</div><small class="mu">${dt(n.ts)}</small></div>`).join("");
+  } else {
+    b.style.display = "none";
+    l.innerHTML = `<div class="mu" style="font-size:12px;text-align:center;padding:10px">Нет новых уведомлений</div>`;
+  }
 }
 
 function createLocalDB() {
@@ -280,9 +328,9 @@ function createLocalDB() {
   };
 }
 
-let db, usr, as, uid = LS("noir_uid") || ("usr_" + Date.now().toString(36)), owner = true, L = [], TH = {}, STAFF = {}, names = {}, TK = [], view = { t: "home" }, cat = "all", q = "", srt = "new", ph = [], unsub = null, uT = null, lastS = null, draft = "";
-let DEALS = {}, R = [], BAN = {}, REP = [], SEEN = {}, F = { min: "", max: "", ph: 0, tr: 0 }, BNR = null, fo = 0, bnrHide = 0;
 let userAuth = null; try { userAuth = JSON.parse(LS("noir_user") || "null"); } catch(e){}
+let db, usr, as, uid = userAuth ? userAuth.uid : (LS("noir_uid") || ("usr_" + Date.now().toString(36))), owner = true, L = [], TH = {}, STAFF = {}, names = {}, TK = [], view = { t: "home" }, cat = "all", q = "", srt = "new", ph = [], unsub = null, uT = null, lastS = null, draft = "";
+let DEALS = {}, R = [], BAN = {}, REP = [], SEEN = {}, F = { min: "", max: "", ph: 0, tr: 0 }, BNR = null, fo = 0, bnrHide = 0;
 
 try { SEEN = JSON.parse(LS("noirseen") || "{}"); } catch(x) {}
 const seen = id => { SEEN[id] = Date.now(); LS("noirseen", JSON.stringify(SEEN)); };
@@ -316,13 +364,7 @@ function applyStatic() {
   $("#lb").textContent = "🌐 " + LN[LI].toUpperCase();
   
   const ab = $("#authBtn");
-  if(ab) {
-    if(userAuth) {
-      ab.textContent = "👤 " + userAuth.name;
-    } else {
-      ab.textContent = "👤 Войти";
-    }
-  }
+  if(ab) ab.textContent = userAuth ? "👤 " + userAuth.name : "👤 Войти";
 
   $("#lp").innerHTML = LN.map((l, i) => `<button class="gh ${i === LI ? "on" : ""}" data-l="${i}">${["Русский", "English", "Українська"][i]}</button>`).join("");
   document.querySelectorAll("[data-l]").forEach(b => b.onclick = () => { LI = +b.dataset.l; LS("noirlang", LI); $("#lp").classList.remove("o"); fillSel(); applyStatic(); render(); });
@@ -331,6 +373,7 @@ function applyStatic() {
   document.title = (n + sb ? "(" + (n + sb) + ") " : "") + "NOIR MARKET";
   $("#nv").innerHTML = G("home", "🏠", t("catalog")) + G("sellers", "👥", t("sellers")) + `<button class="sl" data-g="sell" aria-label="${t("sell")}">＋</button>` + G("inbox", "💬", t("chats")) + G("support", "🛟", t("support"));
   $("#nv").querySelectorAll("[data-g]").forEach(b => b.onclick = () => b.dataset.g === "sell" ? openForm() : go(b.dataset.g));
+  renderNtfs();
 }
 
 function fillSel() {
@@ -345,7 +388,7 @@ async function boot() {
   const g = n => window.claude ? claude.use(n).catch(() => null) : Promise.resolve(null);
   [db, usr, as] = await Promise.all([g("db"), g("user"), g("assets")]);
   if(!db) db = createLocalDB();
-  if(usr) { try { uid = await usr.id(); owner = usr.isOwner(); } catch(x) {} }
+  if(usr) { try { uid = userAuth ? userAuth.uid : await usr.id(); owner = usr.isOwner(); } catch(x) {} }
   
   db.collection("listings").onSnapshot(s => { L = s.docs.map(d => ({ id: d.id, ...d.data() })); need(L.map(x => x.seller)); if(["home", "item", "mine", "sellers"].includes(view.t)) render(); }, () => toast("!"));
   
@@ -353,8 +396,7 @@ async function boot() {
     d.docs.forEach(x => {
       const o = TH[x.id], n = { id: x.id, ...x.data() };
       if(o && n.ts > o.ts && n.by && n.by !== uid && !(view.t === "chat" && view.tid === n.id)) {
-        toast("💬 " + t("ntf") + ": " + n.title);
-        playBeep(900, 0.12);
+        pushNtf("💬 " + t("ntf") + ": " + n.title);
       }
       TH[x.id] = n;
     });
@@ -393,7 +435,10 @@ function render() {
 const pm = x => x.premium === "on";
 function card(x) {
   const p = img((x.photos || [])[0]), f = FAV.includes(x.id);
-  return `<div class="card ${pm(x) ? "pm" : ""}" data-i="${e(x.id)}">${pm(x) ? '<span class="tg">PREMIUM</span>' : ""}<button class="hr" data-f="${e(x.id)}" aria-label="${t("fav")}">${f ? "❤️" : "🤍"}</button><div class="im">${p ? `<img src="${p}" alt="" loading="lazy">` : ci(x.cat)}</div><div class="cb"><span class="ct">${ci(x.cat)} ${e(cn(x.cat))}</span><span class="nm">${e(x.title)}</span><span class="pr">${rub(x.price)}</span><span class="mu">${e(nm(x.seller))} · ${rate(x.seller)}</span></div></div>`;
+  const oldP = x.oldPrice && x.oldPrice > x.price ? x.oldPrice : 0;
+  const disc = oldP ? Math.round((1 - x.price / oldP) * 100) : 0;
+  
+  return `<div class="card ${pm(x) ? "pm" : ""}" data-i="${e(x.id)}">${pm(x) ? '<span class="tg">PREMIUM</span>' : ""}<button class="hr" data-f="${e(x.id)}" aria-label="${t("fav")}">${f ? "❤️" : "🤍"}</button><div class="im">${p ? `<img src="${p}" alt="" loading="lazy">` : ci(x.cat)}</div><div class="cb"><span class="ct">${ci(x.cat)} ${e(cn(x.cat))}</span><span class="nm">${e(x.title)}</span><div class="pr"><span>${rub(x.price)}</span>${oldP ? `<span class="old-pr">${rub(oldP)}</span><span class="disc-badge">-${disc}%</span>` : ""}</div><span class="mu">${e(nm(x.seller))} · ${rate(x.seller)}</span></div></div>`;
 }
 
 function bindCards(a) {
@@ -467,9 +512,13 @@ function item(a) {
   LS("noirrecent", JSON.stringify(RECENT));
 
   const ps = (x.photos || []).map(img).filter(Boolean), k = view.k || 0, my = x.seller === uid;
+  const oldP = x.oldPrice && x.oldPrice > x.price ? x.oldPrice : 0;
+  const disc = oldP ? Math.round((1 - x.price / oldP) * 100) : 0;
+
   a.innerHTML = `<button class="gh sm" id="bk">← ${t("back")}</button><div class="det" style="margin-top:14px"><div><div class="ga">${ps[k] ? `<img src="${ps[k]}" alt="">` : ci(x.cat)}</div>${ps.length > 1 ? `<div class="th">${ps.map((p, i) => `<img src="${p}" class="${i === k ? "on" : ""}" data-k="${i}" alt="">`).join("")}</div>` : ""}</div>
  <div><span class="ct">${ci(x.cat)} ${e(cn(x.cat))}</span>${pm(x) ? ' <span class="pill g">PREMIUM</span>' : ""}${x.sold ? ` <span class="pill o">${t("stSold")}</span>` : ""}
- <h1 style="font:600 24px/1.2 var(--d);margin:6px 0 10px;overflow-wrap:anywhere">${e(x.title)}</h1><div class="pr" style="font-size:30px">${rub(x.price)}</div>
+ <h1 style="font:600 24px/1.2 var(--d);margin:6px 0 10px;overflow-wrap:anywhere">${e(x.title)}</h1>
+ <div class="pr" style="font-size:30px"><span>${rub(x.price)}</span>${oldP ? `<span class="old-pr" style="font-size:20px">${rub(oldP)}</span><span class="disc-badge" style="font-size:14px">Скидка ${disc}%</span>` : ""}</div>
  <div class="pan" style="margin-top:16px"><div class="mu">${t("seller")}</div><div id="sp" style="cursor:pointer;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b>${e(nm(x.seller))}</b>${rate(x.seller)}<span class="pill g">${t("profile")} →</span></div><div class="mu" style="margin-top:10px">${t("how")}</div>${e(t(x.how))}</div>
  <div class="pan"><div class="mu">${t("desc")}</div><div style="white-space:pre-wrap;overflow-wrap:anywhere">${e(x.desc || t("noDesc"))}</div></div>
  ${my ? `<div class="tip">${t("own")}${x.premium === "req" ? " " + t("premWait") : ""}</div>` : `<button class="w" id="wr" style="padding:15px">💬 ${t("write")}</button>`}
@@ -633,7 +682,10 @@ function rate(id) { const z = stats(id); return z.n ? `<span style="color:var(--
 function sheet(h) { $("#gb").innerHTML = h; $("#gm").classList.add("o"); }
 function unsheet() { $("#gm").classList.remove("o"); }
 $("#gm").onclick = ev => { if(ev.target.id === "gm") unsheet(); };
-document.addEventListener("click", ev => { if(!ev.target.closest(".lg")) $("#lp").classList.remove("o"); });
+document.addEventListener("click", ev => { 
+  if(!ev.target.closest(".lg")) $("#lp").classList.remove("o"); 
+  if(!ev.target.closest(".ntf-box")) $("#ntfPop").classList.remove("o");
+});
 
 function ask(m, ok) { return new Promise(res => { sheet(`<p style="font-size:18px;margin:6px 0 18px">${e(m)}</p><div class="row"><button class="gh" id="gn">${t("cancel")}</button><button class="dg" id="gy">${e(ok || t("yes"))}</button></div>`); $("#gy").onclick = () => { unsheet(); res(true); }; $("#gn").onclick = () => { unsheet(); res(false); }; }); }
 
@@ -657,6 +709,7 @@ async function setDeal(st, k) {
   await db.collection("deals").doc(v.tid).set({ ...(d || { lid: v.lid, title: v.title, buyer: v.buyer, seller: v.seller, price: p1 ? p1.price : 0, ts: n }), ...base, status: st, upd: n });
   await db.collection("msgs").doc(uidn()).set({ tid: v.tid, from: uid, text: "", k, ts: n });
   await db.collection("threads").doc(v.tid).set({ lid: v.lid, title: v.title, buyer: v.buyer, seller: v.seller, last: t(k), by: uid, ts: n });
+  pushNtf("Сделка по «" + v.title + "»: " + t("ds_" + st));
 }
 
 async function act(k) {
@@ -696,7 +749,7 @@ function profile(a) {
  <div class="bar"><h2>${t("sellerItems")}</h2></div>${its.length ? `<div class="grid">${its.map(card).join("")}</div>` : `<div class="emp">${t("noItems")}</div>`}
  <div class="bar" style="margin-top:26px"><h2>${t("rvs")}</h2></div>${rv.map(r => `<div class="pan"><span style="color:var(--b)">${stars(r.rating)}</span> <b>${e(nm(r.buyer))}</b> <span class="mu">· ${dt(r.ts)}</span><div class="mu">${e(r.title)}</div>${r.text ? `<div style="margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere">${e(r.text)}</div>` : ""}</div>`).join("") || `<div class="emp">${t("noRv")}</div>`}`;
   $("#bk").onclick = () => prev && prev.t && prev.t !== "profile" ? go(prev.t, prev) : go("home"); bindCards(a); const bnb = $("#bnb"); if(bnb) bnb.onclick = () => banToggle(id); const rpb = $("#rpb"); if(rpb) rpb.onclick = () => reportSheet({ target: id });
-  const lo = $("#logoutBtn"); if(lo) lo.onclick = () => { LS("noir_user", ""); userAuth = null; render(); toast("Вы вышли из системы"); };
+  const lo = $("#logoutBtn"); if(lo) lo.onclick = () => { LS("noir_user", ""); userAuth = null; uid = "usr_" + Date.now().toString(36); LS("noir_uid", uid); render(); toast("Вы вышли из системы"); };
 }
 
 const CODE_H = "e700cd1d4d864992e889c7e6d0176842a53b158c2a1bd5685eb4e7a4c8a6b5ee";
@@ -757,15 +810,18 @@ $("#mpx").onclick = () => $("#mp").classList.remove("o"); $("#mp").onclick = ev 
 
 $("#fm").onsubmit = async ev => {
   ev.preventDefault(); const b = $("#fg"); b.disabled = true;
+  const oldPriceVal = +$("#fOldP").value;
   try {
-    await db.collection("listings").doc(uidn()).set({ title: $("#ft").value.trim(), cat: $("#fc").value, price: +$("#fp").value, desc: $("#fs").value.trim(), how: $("#fh").value, photos: ph, seller: uid, premium: $("#fpm").checked ? "req" : "", sold: false, ts: Date.now() });
+    await db.collection("listings").doc(uidn()).set({ title: $("#ft").value.trim(), cat: $("#fc").value, price: +$("#fp").value, oldPrice: oldPriceVal > 0 ? oldPriceVal : 0, desc: $("#fs").value.trim(), how: $("#fh").value, photos: ph, seller: uid, premium: $("#fpm").checked ? "req" : "", sold: false, ts: Date.now() });
     $("#mo").classList.remove("o"); toast(t("done")); go("mine");
   } catch(x) { toast("!"); }
   b.disabled = false;
 };
 
-/* Авторизация события */
-let authMode = "tg";
+/* Настоящая регистрация / авторизация */
+let isRegMode = false;
+let authMethod = "tg";
+
 $("#authBtn").onclick = () => {
   if(userAuth) {
     go("profile", { id: uid });
@@ -775,31 +831,76 @@ $("#authBtn").onclick = () => {
 };
 $("#authClose").onclick = () => $("#authMo").classList.remove("o");
 
-const setAuthTab = (mode, label, ph) => {
-  authMode = mode;
-  $("#atTg").className = mode === "tg" ? "gh on" : "gh";
-  $("#atPh").className = mode === "ph" ? "gh on" : "gh";
-  $("#atEm").className = mode === "em" ? "gh on" : "gh";
-  $("#authBox").innerHTML = `<label class="l">${label}</label><input id="auInput" placeholder="${ph}" required>`;
+const setAuthTab = (m, label, placeholder) => {
+  authMethod = m;
+  $("#atTg").className = m === "tg" ? "gh on" : "gh";
+  $("#atPh").className = m === "ph" ? "gh on" : "gh";
+  $("#atEm").className = m === "em" ? "gh on" : "gh";
+  $("#authBox").innerHTML = `<label class="l">${label}</label><input id="auVal" placeholder="${placeholder}" required>`;
 };
 
-$("#atTg").onclick = (e) => { e.preventDefault(); setAuthTab("tg", "Telegram Username", "@username"); };
-$("#atPh").onclick = (e) => { e.preventDefault(); setAuthTab("ph", "Номер телефона", "+7 900 000 00-00"); };
-$("#atEm").onclick = (e) => { e.preventDefault(); setAuthTab("em", "E-mail адрес", "example@mail.ru"); };
+$("#atTg").onclick = (ev) => { ev.preventDefault(); setAuthTab("tg", "Telegram Username", "@username"); };
+$("#atPh").onclick = (ev) => { ev.preventDefault(); setAuthTab("ph", "Номер телефона", "+7 900 000 00-00"); };
+$("#atEm").onclick = (ev) => { ev.preventDefault(); setAuthTab("em", "E-mail адрес", "example@mail.ru"); };
 
-$("#authFm").onsubmit = (ev) => {
+$("#toggleRegBtn").onclick = (ev) => {
   ev.preventDefault();
-  const val = ($("#auInput") || $("#auTg")).value.trim();
-  const name = $("#auName").value.trim();
-  if(!val || !name) return;
-  
-  userAuth = { type: authMode, value: val, name: name };
-  LS("noir_user", JSON.stringify(userAuth));
-  names[uid] = name;
-  $("#authMo").classList.remove("o");
-  toast("Добро пожаловать, " + name + "!");
-  render();
+  isRegMode = !isRegMode;
+  $("#authTitle").textContent = isRegMode ? "Регистрация нового аккаунта" : "Вход в аккаунт";
+  $("#authSubmitBtn").textContent = isRegMode ? "Зарегистрироваться" : "Войти";
+  $("#toggleRegBtn").textContent = isRegMode ? "Уже есть аккаунт? Войти" : "Создать новый аккаунт";
+  $("#auNameLbl").style.display = isRegMode ? "block" : "none";
+  $("#auName").style.display = isRegMode ? "block" : "none";
+  if(isRegMode) $("#auName").required = true; else $("#auName").required = false;
 };
+
+$("#authFm").onsubmit = async (ev) => {
+  ev.preventDefault();
+  const val = $("#auVal").value.trim().toLowerCase();
+  const pass = $("#auPass").value.trim();
+  const name = $("#auName").value.trim();
+  
+  if(!val || !pass) return;
+
+  const users = (await new Promise(resolve => {
+    db.collection("users").onSnapshot(s => resolve(s.docs.map(d => ({ id: d.id, ...d.data() }))));
+  })) || [];
+
+  if(isRegMode) {
+    const exists = users.find(u => u.login === val);
+    if(exists) { toast("Пользователь с таким контактом уже существует!"); return; }
+    
+    const newUid = "usr_" + Date.now().toString(36);
+    const newUser = { uid: newUid, login: val, pass, name: name || "Игрок " + newUid.slice(-4), method: authMethod, ts: Date.now() };
+    await db.collection("users").doc(newUid).set(newUser);
+    
+    userAuth = newUser;
+    uid = newUid;
+    LS("noir_user", JSON.stringify(userAuth));
+    LS("noir_uid", uid);
+    names[uid] = newUser.name;
+    
+    $("#authMo").classList.remove("o");
+    toast("Регистрация успешна! Добро пожаловать!");
+    render();
+  } else {
+    const found = users.find(u => u.login === val && u.pass === pass);
+    if(!found) { toast("Неверный логин или пароль!"); return; }
+    
+    userAuth = found;
+    uid = found.uid;
+    LS("noir_user", JSON.stringify(userAuth));
+    LS("noir_uid", uid);
+    names[uid] = found.name;
+    
+    $("#authMo").classList.remove("o");
+    toast("С возвращением, " + found.name + "!");
+    render();
+  }
+};
+
+$("#bellBtn").onclick = () => $("#ntfPop").classList.toggle("o");
+$("#clrNtf").onclick = () => { NOTIFICATIONS = []; LS("noir_ntfs", "[]"); renderNtfs(); };
 
 $("#q").oninput = x => { q = x.target.value; if(view.t !== "home") go("home"); else render(); };
 $("#lb").onclick = () => $("#lp").classList.toggle("o"); $("#lgo").onclick = $("#lgb").onclick = () => go("home");
