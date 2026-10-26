@@ -156,7 +156,7 @@ nav button{color:#aaa7a3}
 nav button.on{color:#ffb21a}
 nav button.sl{color:#150a00;background:linear-gradient(135deg,#ffbe1e,#ff6b00);animation:none;box-shadow:0 0 26px #ff8b2b70}
 .home-categories{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:10px 0 16px}
-.home-cat{min-width:0;min-height:92px;padding:12px 7px;border:1px solid #343438;border-radius:16px;background:linear-gradient(160deg,#151517,#0d0d0f);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;cursor:pointer;transition:.2s}
+.home-cat{min-width:0;min-height:92px;padding:12px 7px;border:1px solid #343438;border-radius:16px;background:linear-gradient(160deg,#151517,#0d0d0f);color:#f4f1eb;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;cursor:pointer;transition:.2s}
 .home-cat:hover,.home-cat.on{border-color:#ffad16;background:linear-gradient(160deg,#241807,#11100d);color:#ffb21a;transform:translateY(-2px)}
 .home-cat i{font-style:normal;font-size:24px;line-height:1}
 .home-cat span{font-size:12px;font-weight:700;line-height:1.2}
@@ -178,6 +178,19 @@ nav button.sl{color:#150a00;background:linear-gradient(135deg,#ffbe1e,#ff6b00);a
 .trust-item span{display:block;color:#aaa7a3;font-size:9px;line-height:1.3;margin-top:2px}
 @media(max-width:760px){.det{grid-template-columns:1fr}.br{display:block;font-size:12px}.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.card{min-width:0}.home-categories{gap:7px}.home-cat{min-height:82px;padding:9px 4px}.home-cat i{font-size:21px}.home-cat span{font-size:10px}.promo-banner{min-height:156px;padding:18px}.promo-art{width:78px;height:78px;margin-right:2%}.promo-art span{font-size:48px}.trust-strip{gap:4px;padding:11px 5px}.trust-item{gap:5px}.trust-item i{font-size:16px}.trust-item b{font-size:10px}.trust-item span{font-size:8px}}
 @media(max-width:420px){header{gap:6px;padding:8px}.br{display:none}.sr input{padding:9px 12px;font-size:14px}.ntf-box>button{padding:8px 9px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-categories{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.home-cat{min-height:76px;border-radius:13px}.home-cat span{font-size:9px}.promo-banner{padding:15px;min-height:146px}.promo-art{width:64px;height:64px}.promo-art span{font-size:38px}.trust-item{align-items:flex-start;flex-direction:column;gap:4px}.trust-item span{display:none}}
+:root{--user-accent:#ffae16}
+nav button.on,.gh.on,.home-cat.on,.st b,.ct,.pr,.promo-copy .eyebrow,.promo-copy h2 em,.trust-item i{color:var(--user-accent)}
+.gh.on,.home-cat:hover,.home-cat.on{border-color:var(--user-accent)!important}
+.ad-slot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 16px;padding:14px 16px;border:1px dashed #76531b;border-radius:16px;background:linear-gradient(110deg,#191208,#101012)}
+.ad-slot b{display:block;color:#ffbd45;font-size:14px}.ad-slot span{display:block;color:#aaa7a3;font-size:12px}
+.ad-slot button{flex:none}
+.bnr{display:flex;align-items:center;gap:10px}.bnr>span{flex:1}.bnr a{color:#ffbd45;font-weight:800;white-space:nowrap}
+.published{font-size:10px;opacity:.82}.video-thumb{position:relative}.video-thumb video{width:100%;height:100%;object-fit:cover}.video-thumb:after{content:"▶";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:28px;text-shadow:0 2px 10px #000;background:#0003}
+.video-player{width:100%;max-height:460px;border-radius:18px;background:#000;margin:8px 0;object-fit:contain}
+.video-upload{display:flex;align-items:center;gap:10px;margin:6px 0 12px}.video-preview{display:flex;align-items:center;gap:10px;max-width:100%}.video-preview video{width:110px;height:64px;border-radius:10px;object-fit:cover;background:#000}.video-preview button{padding:5px 10px}
+.theme-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.theme-choice{min-height:72px;flex-direction:column;border:1px solid #39393d!important;background:#111113!important;animation:none!important;box-shadow:none!important}.theme-choice.on{border-color:var(--user-accent)!important}.theme-dot{width:22px;height:22px;border-radius:50%;display:block}
+.disclaimer{border:1px solid #76531b;background:#191208;border-radius:16px;padding:14px;color:#f2d7a4;font-size:13px;line-height:1.5}
+@media(max-width:420px){.ad-slot{align-items:flex-start;padding:12px}.ad-slot button{padding:8px 10px}.bnr{flex-wrap:wrap}.published{font-size:9px}.theme-choice{font-size:12px}}
 </style></head><body>
 <div class="au a"></div><div class="au b"></div><div class="au c"></div><div class="gr"></div>
 <header><div class="mk" id="lgo">N</div><div class="br" id="lgb">NOIR MARKET</div>
@@ -227,6 +240,10 @@ nav button.sl{color:#150a00;background:linear-gradient(135deg,#ffbe1e,#ff6b00);a
 <h3 data-tx="newAd"></h3>
 <label class="l" data-tx="fPh"></label><div class="up" id="up"></div>
 <input class="vh" id="fl" type="file" accept="image/*" multiple>
+<label class="l" data-tx="videoField"></label>
+<div class="video-upload"><label class="add" for="videoFile" aria-label="Add video">▶</label><span class="mu" data-tx="videoHint"></span></div>
+<input class="vh" id="videoFile" type="file" accept="video/mp4,video/webm,video/quicktime">
+<div class="video-preview" id="videoPreview"></div>
 <label class="l" for="ft" data-tx="fT"></label><input id="ft" required maxlength="90" data-p="fTp">
 <div class="row">
  <div><label class="l" for="fc" data-tx="fC"></label><select id="fc"></select></div>
@@ -316,7 +333,21 @@ dGot:["Подтвердить получение","Confirm receipt","Підтв�
 dDone:["Сделка завершена","Deal completed","Угоду завершено"],dRev:["Оставить отзыв","Leave a review","Залишити відгук"],dDispo:["Спор открыт, поддержка скоро подключится","Dispute opened, support will join soon","Спір відкрито, підтримка скоро підключиться"],dCanc:["Сделка отменена","Deal cancelled","Угоду скасовано"],
 s_open:["Сделка","Deal","Угода"],s_sent:["Передано","Handed over","Передано"],s_got:["Получено","Received","Отримано"],s_rev:["Отзыв","Review","Відгук"],
 m_open:["🤝 Сделка оформлена","🤝 Deal started","🤝 Угоду оформлено"],m_sent:["📦 Продавец передал товар","📦 Seller handed over the item","📦 Продавець передав товар"],m_got:["✅ Покупатель подтвердил получение","✅ Buyer confirmed receipt","✅ Покупець підтвердив отримання"],m_cancel:["Сделка отменена","Deal cancelled","Угоду скасовано"],m_disp:["⚠ Открыт спор","⚠ Dispute opened","⚠ Відкрито спір"],
-rvT:["Отзыв о продавце","Review the seller","Відгук про продавця"],rvPh:["Как прошла сделка?","How did the deal go?","Як минула угода?"],rvSend:["Отправить отзыв","Submit review","Надіслати відгук"]};
+ rvT:["Отзыв о продавце","Review the seller","Відгук про продавця"],rvPh:["Как прошла сделка?","How did the deal go?","Як минула угода?"],rvSend:["Отправить отзыв","Submit review","Надіслати відгук"],
+ menu:["Меню","Menu","Меню"],buy:["Купить","Buy","Купити"],buyMessage:["Здравствуйте! Хочу купить товар","Hello! I’d like to buy this item","Вітаю! Хочу купити товар"],
+ posted:["Опубликовано","Posted","Опубліковано"],categories:["Категории товаров","Product categories","Категорії товарів"],
+ videoField:["Видео к объявлению (необязательно)","Listing video (optional)","Відео до оголошення (необов’язково)"],
+ videoHint:["Одно видео MP4 / WebM / MOV, до 20 МБ","One MP4 / WebM / MOV video, up to 20 MB","Одне відео MP4 / WebM / MOV, до 20 МБ"],
+ videoStorage:["Загрузка видео доступна после подключения хранилища файлов.","Video uploads need file storage to be connected.","Завантаження відео доступне після підключення файлового сховища."],
+ videoError:["Не удалось загрузить видео. Проверь формат и размер (до 20 МБ).","Video upload failed. Check the format and size (up to 20 MB).","Не вдалося завантажити відео. Перевір формат і розмір (до 20 МБ)."],
+ themeColor:["Цвет интерфейса","Interface color","Колір інтерфейсу"],themeOrange:["Оранжевый","Orange","Помаранчевий"],themeBlue:["Синий","Blue","Синій"],themePurple:["Фиолетовый","Purple","Фіолетовий"],
+ settingsIntro:["Настрой внешний вид и обратись в поддержку.","Set your appearance and contact support.","Налаштуй вигляд і звернись до підтримки."],disclaimerTitle:["Важно о сделках","Important about transactions","Важливо про угоди"],
+ disclaimer:["Площадка только помогает пользователям находить друг друга и не является стороной сделки. Проверяйте продавца, не сообщайте пароли и коды подтверждения, не переходите по подозрительным ссылкам. Администрация не отвечает за действия пользователей и результат сделки.","This marketplace only helps users find each other and is not a party to transactions. Check sellers, never share passwords or verification codes, and avoid suspicious links. The marketplace is not responsible for users’ actions or transaction outcomes.","Майданчик лише допомагає користувачам знаходити одне одного й не є стороною угоди. Перевіряйте продавця, не повідомляйте паролі та коди підтвердження, не переходьте за підозрілими посиланнями. Адміністрація не відповідає за дії користувачів і результат угоди."],
+ adSlot:["Рекламное место","Advertising space","Рекламне місце"],adPrompt:["Хотите разместить рекламу? Напишите в поддержку.","Want to advertise here? Contact support.","Бажаєте розмістити рекламу? Напишіть у підтримку."],
+ adContact:["Разместить рекламу","Advertise here","Розмістити рекламу"],adLink:["Ссылка для рекламного баннера (необязательно)","Ad banner link (optional)","Посилання для рекламного банера (необов’язково)"],adOpen:["Открыть","Open","Відкрити"],
+ requestType:["Тип обращения","Request type","Тип звернення"],kind_bug:["Сообщить об ошибке","Report a bug","Повідомити про помилку"],kind_idea:["Предложить идею","Suggest an idea","Запропонувати ідею"],kind_other:["Другое","Other","Інше"],
+ supportTitle:["Поддержка","Support","Підтримка"],goSupport:["Написать в поддержку","Contact support","Написати в підтримку"],
+ settingsTitle:["Настройки","Settings","Налаштування"],buySent:["Сообщение продавцу отправлено","Message sent to seller","Повідомлення продавцю надіслано"]};
 
 const CATS=[["so2","🔫",["Standoff 2","Standoff 2","Standoff 2"]],["bs","⭐",["Brawl Stars","Brawl Stars","Brawl Stars"]],["rb","🧱",["Roblox","Roblox","Roblox"]],["mc","⛏️",["Minecraft","Minecraft","Minecraft"]],["gi","🌌",["Genshin Impact","Genshin Impact","Genshin Impact"]],["cur","💰",["Валюта","Currency","Валюта"]],["skin","🎨",["Скины","Skins","Скіни"]],["acc","👤",["Аккаунты","Accounts","Акаунти"]],["boost","🚀",["Буст и услуги","Boost & services","Буст і послуги"]],["oth","📦",["Прочее","Other","Інше"]]];
 const HOME_CATS=["so2","bs","rb","mc","boost"];
@@ -325,6 +356,10 @@ const LS=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.s
 let LI=+(LS("noirlang")??(/^uk/.test(navigator.language)?2:/^en/.test(navigator.language)?1:0));
 const LN=["ru","en","uk"];
 const t=k=>(T[k]||[k,k,k])[LI]??k,cn=c=>CN[c]?CN[c][LI]:c,ci=c=>CI[c]||"📦";
+const PALETTES={orange:["#ff6b00","#ffae16","#ffd166"],blue:["#2477ff","#36b8ff","#a6e6ff"],purple:["#8151e8","#bd62ff","#edb5ff"]};
+let themeName=LS("noirtheme")||"orange";
+function applyTheme(name=themeName){themeName=PALETTES[name]?name:"orange";const p=PALETTES[themeName];["--a","--b","--c"].forEach((k,i)=>document.documentElement.style.setProperty(k,p[i]));document.documentElement.style.setProperty("--user-accent",p[1]);document.documentElement.dataset.accent=themeName;LS("noirtheme",themeName);}
+applyTheme();
 let FAV=[];try{FAV=JSON.parse(LS("noirfav")||"[]")}catch(x){}
 let RECENT=[];try{RECENT=JSON.parse(LS("noirrecent")||"[]")}catch(x){}
 let NOTIFICATIONS=[];try{NOTIFICATIONS=JSON.parse(LS("noir_ntfs")||"[]")}catch(x){}
@@ -417,7 +452,7 @@ function createLocalDB() {
 }
 
 let userAuth = null; try { userAuth = JSON.parse(LS("noir_user") || "null"); } catch(e){}
-let db, usr, as, uid = userAuth ? userAuth.uid : (LS("noir_uid") || ("usr_" + Date.now().toString(36))), owner = true, L = [], TH = {}, STAFF = {}, names = {}, TK = [], view = { t: "home" }, cat = "all", q = "", srt = "new", ph = [], unsub = null, uT = null, lastS = null, draft = "";
+let db, usr, as, uid = userAuth ? userAuth.uid : (LS("noir_uid") || ("usr_" + Date.now().toString(36))), owner = true, L = [], TH = {}, STAFF = {}, names = {}, TK = [], view = { t: "home" }, cat = "all", q = "", srt = "new", ph = [], vid = [], unsub = null, uT = null, lastS = null, draft = "";
 let DEALS = {}, R = [], BAN = {}, REP = [], SEEN = {}, F = { min: "", max: "", ph: 0, tr: 0 }, BNR = null, fo = 0, bnrHide = 0;
 
 try { SEEN = JSON.parse(LS("noirseen") || "{}"); } catch(x) {}
@@ -432,6 +467,8 @@ const stars = n => "★".repeat(Math.round(n)) + "☆".repeat(5 - Math.round(n))
 
 const $ = s => document.querySelector(s), e = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const img = u => typeof u === "string" && (u.startsWith("/_blob/") || u.startsWith("data:image/")) ? u : "";
+const videoSrc = u => typeof u === "string" && (u.startsWith("/_blob/") || u.startsWith("data:video/")) ? u : "";
+const safeHttp = value => { try { const u=new URL(value); return u.protocol==="https:"||u.protocol==="http:"?u.href:""; } catch(x) { return ""; } };
 const rub = n => new Intl.NumberFormat(["ru-RU", "en-US", "uk-UA"][LI]).format(n) + " ₽";
 const nm = id => names[id] || (id === uid ? (userAuth ? userAuth.name : t("you")) : t("user"));
 const isS = () => STAFF[uid] !== undefined || owner;
@@ -460,9 +497,9 @@ function applyStatic() {
    $("#lp").innerHTML = LN.map((l, i) => `<button class="gh ${i === LI ? "on" : ""}" data-l="${i}">${["Русский", "English", "Українська"][i]}</button>`).join("");
   document.querySelectorAll("[data-l]").forEach(b => b.onclick = () => { LI = +b.dataset.l; LS("noirlang", LI); $("#lp").classList.remove("o"); fillSel(); applyStatic(); render(); });
   
-  const n = unreadChats(), sb = supBadge(), v = view.t, G = (k, i, l, x) => `<button data-g="${k}" class="${x || ""} ${v === k || (k === "home" && v === "item") || (k === "support" && v === "ticket") || (k === "inbox" && v === "chat") ? "on" : ""}"><i>${i}</i>${l}${k === "inbox" && n ? `<span class="nb">${n}</span>` : k === "support" && sb ? `<span class="nb">${sb}</span>` : ""}</button>`;
+   const n = unreadChats(), sb = supBadge(), v = view.t, active = k => k === "home" ? ["home","item","sellers"].includes(v) : k === "inbox" ? ["inbox","chat"].includes(v) : k === "settings" ? ["settings","support","ticket"].includes(v) : v === k, G = (k, i, l, x) => `<button data-g="${k}" class="${x || ""} ${active(k) ? "on" : ""}"><i>${i}</i>${l}${k === "inbox" && n ? `<span class="nb">${n}</span>` : k === "settings" && sb ? `<span class="nb">${sb}</span>` : ""}</button>`;
   document.title = (n + sb ? "(" + (n + sb) + ") " : "") + "NOIR MARKET";
-  $("#nv").innerHTML = G("home", "🏠", t("catalog")) + G("sellers", "👥", t("sellers")) + `<button class="sl" data-g="sell" aria-label="${t("sell")}">＋</button>` + G("inbox", "💬", t("chats")) + G("support", "🛟", t("support"));
+   $("#nv").innerHTML = G("inbox", "💬", t("chats")) + G("mine", "▣", t("mine")) + `<button class="sl" data-g="sell" aria-label="${t("sell")}">＋</button>` + G("settings", "⚙", t("settings")) + G("home", "☰", t("menu"));
   $("#nv").querySelectorAll("[data-g]").forEach(b => b.onclick = () => b.dataset.g === "sell" ? openForm() : go(b.dataset.g));
   renderNtfs();
 }
@@ -519,17 +556,31 @@ async function boot() {
 function render() {
   const a = $("#app"); applyStatic();
   if(!db || !uid) { a.innerHTML = `<div class="hero"><h1 class="ti">NOIR MARKET</h1><p class="su">${t("login")}</p></div>`; return; }
-  ({ home, item, mine: mineV, chat, inbox, support, ticket, profile, deals: dealsV, sellers }[view.t] || home)(a);
+  ({ home, item, mine: mineV, chat, inbox, support, ticket, profile, deals: dealsV, sellers, settings }[view.t] || home)(a);
   if(isBan()) a.insertAdjacentHTML("afterbegin", `<div class="tip" style="margin:0 0 14px;border-color:var(--dg);color:var(--dg)">⛔ ${t("banned")}${BAN[uid].reason ? " — " + e(BAN[uid].reason) : ""}</div>`);
+}
+
+function settings(a) {
+  const options = [["orange",t("themeOrange"),"#ff9b12"],["blue",t("themeBlue"),"#36b8ff"],["purple",t("themePurple"),"#bd62ff"]];
+  a.innerHTML = `<div class="bar"><h2>⚙ ${t("settingsTitle")}</h2></div>
+  <div class="pan"><h3>${t("themeColor")}</h3><p class="mu">${t("settingsIntro")}</p><div class="theme-options">${options.map(([id,label,color]) => `<button class="theme-choice ${themeName === id ? "on" : ""}" data-theme="${id}" aria-pressed="${themeName === id}"><i class="theme-dot" style="background:${color}"></i>${label}</button>`).join("")}</div></div>
+  <div class="pan"><h3>${t("supportTitle")}</h3><button class="gh w" id="settingsSupport">🛟 ${t("goSupport")}</button></div>
+  <div class="pan"><h3>${t("disclaimerTitle")}</h3><div class="disclaimer">${t("disclaimer")}</div></div>
+  <div class="row"><button class="gh w" id="settingsMine">▣ ${t("mine")}</button><button class="gh w" id="settingsDeals">🧾 ${t("hist")}</button></div>`;
+  a.querySelectorAll("[data-theme]").forEach(b => b.onclick = () => { applyTheme(b.dataset.theme); settings(a); });
+  $("#settingsSupport").onclick = () => go("support");
+  $("#settingsMine").onclick = () => go("mine");
+  $("#settingsDeals").onclick = () => go("deals");
 }
 
 const pm = x => x.premium === "on";
 function card(x) {
   const p = img((x.photos || [])[0]), f = FAV.includes(x.id);
+  const v = videoSrc((x.videos || [])[0]);
   const oldP = x.oldPrice && x.oldPrice > x.price ? x.oldPrice : 0;
   const disc = oldP ? Math.round((1 - x.price / oldP) * 100) : 0;
   
-  return `<div class="card ${pm(x) ? "pm" : ""}" data-i="${e(x.id)}">${pm(x) ? '<span class="tg">PREMIUM</span>' : ""}<button class="hr" data-f="${e(x.id)}" aria-label="${t("fav")}">${f ? "❤️" : "🤍"}</button><div class="im">${p ? `<img src="${p}" alt="" loading="lazy">` : ci(x.cat)}</div><div class="cb"><span class="ct">${ci(x.cat)} ${e(cn(x.cat))}</span><span class="nm">${e(x.title)}</span><div class="pr"><span>${rub(x.price)}</span>${oldP ? `<span class="old-pr">${rub(oldP)}</span><span class="disc-badge">-${disc}%</span>` : ""}</div><span class="mu">${e(nm(x.seller))} · ${rate(x.seller)}</span></div></div>`;
+  return `<div class="card ${pm(x) ? "pm" : ""}" data-i="${e(x.id)}">${pm(x) ? '<span class="tg">PREMIUM</span>' : ""}<button class="hr" data-f="${e(x.id)}" aria-label="${t("fav")}">${f ? "❤️" : "🤍"}</button><div class="im ${!p && v ? "video-thumb" : ""}">${p ? `<img src="${p}" alt="" loading="lazy">` : v ? `<video src="${e(v)}" muted playsinline preload="metadata"></video>` : ci(x.cat)}</div><div class="cb"><span class="ct">${ci(x.cat)} ${e(cn(x.cat))}</span><span class="nm">${e(x.title)}</span><div class="pr"><span>${rub(x.price)}</span>${oldP ? `<span class="old-pr">${rub(oldP)}</span><span class="disc-badge">-${disc}%</span>` : ""}</div><span class="mu">${e(nm(x.seller))} · ${rate(x.seller)}</span><span class="mu published">🕒 ${t("posted")}: ${dt(x.ts)}</span></div></div>`;
 }
 
 function bindCards(a) {
@@ -576,10 +627,11 @@ function home(a) {
   const sh = cat === "all" && !q ? act.filter(pm) : [];
   const recItems = RECENT.map(id => act.find(x => x.id === id)).filter(Boolean);
   const tk = CATS.map(c => `<span>${c[1]} ${e(c[2][LI])}</span>`).join("");
+  const showBanner = BNR && BNR.on && BNR.text && !bnrHide, adUrl = showBanner ? safeHttp(BNR.link || "") : "";
   
-  a.innerHTML = `${(BNR && BNR.on && BNR.text && !bnrHide) ? `<div class="bnr"><span>📣 ${e(BNR.text)}</span><button class="gh ib" id="bx" aria-label="x">✕</button></div>` : ""}<section class="hero"><h1 class="ti">NOIR MARKET</h1><p class="su">${t("hero")}</p>
+  a.innerHTML = `${showBanner ? `<div class="bnr"><span>📣 ${e(BNR.text)}</span>${adUrl ? `<a href="${e(adUrl)}" target="_blank" rel="noopener noreferrer">${t("adOpen")} ↗</a>` : ""}<button class="gh ib" id="bx" aria-label="x">✕</button></div>` : `<div class="ad-slot"><div><b>📣 ${t("adSlot")}</b><span>${t("adPrompt")}</span></div><button class="gh sm" id="adContact">${t("adContact")}</button></div>`}<section class="hero"><h1 class="ti">NOIR MARKET</h1><p class="su">${t("hero")}</p>
  <div class="sts"><div class="st"><b>${act.length}</b><span>${t("stA")}</span></div><div class="st"><b>${new Set(act.map(x => x.seller)).size}</b><span>${t("stS")}</span></div><div class="st"><b>${act.filter(pm).length}</b><span>${t("stP")}</span></div></div></section>
-  <div class="home-categories">${HOME_CATS.map(c => `<button class="home-cat ${cat === c ? "on" : ""}" data-c="${c}"><i>${ci(c)}</i><span>${e(cn(c))}</span></button>`).join("")}</div>
+  <div class="bar"><h2>${t("categories")}</h2></div><div class="home-categories">${HOME_CATS.map(c => `<button class="home-cat ${cat === c ? "on" : ""}" data-c="${c}"><i>${ci(c)}</i><span>${e(cn(c))}</span></button>`).join("")}</div>
   <section class="promo-banner"><div class="promo-copy"><span class="eyebrow">${t("promoEyebrow")}</span><h2>${t("promoTitle")}</h2><p>${t("promoDesc")}</p><button id="promoGo">${t("promoCta")} <span aria-hidden="true">→</span></button></div><div class="promo-art" aria-hidden="true"><span>N</span></div></section>
   <div class="trust-strip"><div class="trust-item"><i>⬡</i><div><b>${t("trustSafe")}</b><span>${t("trustSafeSub")}</span></div></div><div class="trust-item"><i>⚡</i><div><b>${t("trustFast")}</b><span>${t("trustFastSub")}</span></div></div><div class="trust-item"><i>✓</i><div><b>${t("trustSeller")}</b><span>${t("trustSellerSub")}</span></div></div><div class="trust-item"><i>◉</i><div><b>${t("trustSupport")}</b><span>${t("trustSupportSub")}</span></div></div></div>
  ${sh.length ? `<div class="bar"><h2>✦ ${t("shelf")}</h2></div><div class="shelf">${sh.map(card).join("")}</div>` : ""}
@@ -594,8 +646,8 @@ function home(a) {
   <div class="grid">${r.map(card).join("")}</div>${r.length ? "" : `<div class="emp">${t("empty")}</div>`}`;
   $("#so").value = srt; $("#so").onchange = x => { srt = x.target.value; render(); };
    a.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { cat = b.dataset.c; render(); }); bindCards(a);
-   const pg = $("#promoGo"); if(pg) pg.onclick = () => $("#catalogArea")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  const bx = $("#bx"); if(bx) bx.onclick = () => { bnrHide = 1; render(); }; $("#ft2").onclick = () => { fo = !fo; render(); };
+    const pg = $("#promoGo"); if(pg) pg.onclick = () => $("#catalogArea")?.scrollIntoView({ behavior: "smooth", block: "start" });
+   const bx = $("#bx"); if(bx) bx.onclick = () => { bnrHide = 1; render(); }; const ac = $("#adContact"); if(ac) ac.onclick = () => go("support"); $("#ft2").onclick = () => { fo = !fo; render(); };
   if(fo) { $("#fmin").onchange = x => { F.min = x.target.value; render(); }; $("#fmax").onchange = x => { F.max = x.target.value; render(); }; $("#fph").onchange = x => { F.ph = x.target.checked ? 1 : 0; render(); }; $("#ftr").onchange = x => { F.tr = x.target.checked ? 1 : 0; render(); }; $("#frs").onclick = () => { F = { min: "", max: "", ph: 0, tr: 0 }; render(); }; }
 }
 
@@ -605,22 +657,25 @@ function item(a) {
   RECENT = [x.id, ...RECENT.filter(i => i !== x.id)].slice(0, 10);
   LS("noirrecent", JSON.stringify(RECENT));
 
-  const ps = (x.photos || []).map(img).filter(Boolean), k = view.k || 0, my = x.seller === uid;
+  const ps = (x.photos || []).map(img).filter(Boolean), vs = (x.videos || []).map(videoSrc).filter(Boolean), k = view.k || 0, my = x.seller === uid;
   const oldP = x.oldPrice && x.oldPrice > x.price ? x.oldPrice : 0;
   const disc = oldP ? Math.round((1 - x.price / oldP) * 100) : 0;
 
   a.innerHTML = `<button class="gh sm" id="bk">← ${t("back")}</button><div class="det" style="margin-top:14px"><div><div class="ga">${ps[k] ? `<img src="${ps[k]}" alt="">` : ci(x.cat)}</div>${ps.length > 1 ? `<div class="th">${ps.map((p, i) => `<img src="${p}" class="${i === k ? "on" : ""}" data-k="${i}" alt="">`).join("")}</div>` : ""}</div>
  <div><span class="ct">${ci(x.cat)} ${e(cn(x.cat))}</span>${pm(x) ? ' <span class="pill g">PREMIUM</span>' : ""}${x.sold ? ` <span class="pill o">${t("stSold")}</span>` : ""}
  <h1 style="font:600 24px/1.2 var(--d);margin:6px 0 10px;overflow-wrap:anywhere">${e(x.title)}</h1>
- <div class="pr" style="font-size:30px"><span>${rub(x.price)}</span>${oldP ? `<span class="old-pr" style="font-size:20px">${rub(oldP)}</span><span class="disc-badge" style="font-size:14px">Скидка ${disc}%</span>` : ""}</div>
+  <div class="pr" style="font-size:30px"><span>${rub(x.price)}</span>${oldP ? `<span class="old-pr" style="font-size:20px">${rub(oldP)}</span><span class="disc-badge" style="font-size:14px">Скидка ${disc}%</span>` : ""}</div><div class="mu published">🕒 ${t("posted")}: ${dt(x.ts)}</div>
+  ${vs.map(src => `<video class="video-player" src="${e(src)}" controls playsinline preload="metadata"></video>`).join("")}
  <div class="pan" style="margin-top:16px"><div class="mu">${t("seller")}</div><div id="sp" style="cursor:pointer;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b>${e(nm(x.seller))}</b>${rate(x.seller)}<span class="pill g">${t("profile")} →</span></div><div class="mu" style="margin-top:10px">${t("how")}</div>${e(t(x.how))}</div>
  <div class="pan"><div class="mu">${t("desc")}</div><div style="white-space:pre-wrap;overflow-wrap:anywhere">${e(x.desc || t("noDesc"))}</div></div>
- ${my ? `<div class="tip">${t("own")}${x.premium === "req" ? " " + t("premWait") : ""}</div>` : `<button class="w" id="wr" style="padding:15px">💬 ${t("write")}</button>`}
+  ${my ? `<div class="tip">${t("own")}${x.premium === "req" ? " " + t("premWait") : ""}</div>` : `<div class="row"><button class="w" id="buyNow" style="padding:15px">🛒 ${t("buy")}</button><button class="gh w" id="wr" style="padding:15px">💬 ${t("write")}</button></div>`}
  <div class="row" style="margin-top:12px">${my || isS() ? `<button class="gh" id="sd">${x.sold ? t("relist") : t("soldB")}</button><button class="dg" id="dl">${t("del")}</button>` : `<button class="gh sm" id="rp">${t("report")}</button>`}</div>
  ${isS() && x.premium === "req" ? `<button class="w" id="ap" style="margin-top:12px">${t("approve")}</button>` : ""}
  <div class="tip">${t("safe")}</div></div></div>`;
   $("#bk").onclick = () => go("home"); a.querySelectorAll("[data-k]").forEach(i => i.onclick = () => { view.k = +i.dataset.k; render(); }); $("#sp").onclick = () => go("profile", { id: x.seller });
-  const w = $("#wr"); if(w) w.onclick = () => go("chat", { tid: x.id + "_" + uid, lid: x.id, title: x.title, buyer: uid, seller: x.seller });
+  const chatArgs = initialMessage => ({ tid: x.id + "_" + uid, lid: x.id, title: x.title, buyer: uid, seller: x.seller, initialMessage });
+  const w = $("#wr"); if(w) w.onclick = () => go("chat", chatArgs(""));
+  const buy = $("#buyNow"); if(buy) buy.onclick = () => { if(isBan()) { toast(t("banned")); return; } const key = "noir_buy_" + x.id + "_" + uid, sent = LS(key) === "1"; go("chat", chatArgs(sent ? "" : `${t("buyMessage")}: «${x.title}»`)); };
   const rp = $("#rp"); if(rp) rp.onclick = () => reportSheet({ target: x.seller, lid: x.id, title: x.title });
   const sd = $("#sd"); if(sd) sd.onclick = async () => { await db.collection("listings").doc(x.id).update({ sold: !x.sold }); go("mine"); };
   const dl = $("#dl"); if(dl) dl.onclick = async () => { if(await ask(t("conf"))) { await db.collection("listings").doc(x.id).delete(); go("mine"); } };
@@ -631,7 +686,7 @@ function mineV(a) {
   const r = L.filter(x => x.seller === uid).sort((x, y) => y.ts - x.ts), ac = r.filter(x => !x.sold);
   a.innerHTML = `<div class="bar"><h2>${t("mine")}</h2><button class="gh" id="mdh">🧾 ${t("hist")}</button><button class="gh" id="mpf">👤 ${t("myProf")}</button><button id="nw">＋ ${t("sell")}</button></div>
  <div class="sts" style="margin-bottom:16px"><div class="st"><b>${r.length}</b><span>${t("views")}</span></div><div class="st"><b>${ac.length}</b><span>${t("stAct")}</span></div><div class="st"><b>${r.length - ac.length}</b><span>${t("stSold")}</span></div></div>
- ${r.map(x => { const p = img((x.photos || [])[0]); return `<div class="pan li"><div class="t" data-i="${e(x.id)}">${p ? `<img src="${p}" alt="">` : ci(x.cat)}</div><div data-i="${e(x.id)}" style="cursor:pointer"><b>${e(x.title)}</b><div class="pr" style="font-size:16px">${rub(x.price)}</div><div>${x.sold ? `<span class="pill o">${t("stSold")}</span>` : expired(x) ? `<span class="pill o">${t("expired")}</span>` : `<span class="pill g">${t("stAct")}</span>`}${pm(x) ? '<span class="pill g">PREMIUM</span>' : x.premium === "req" ? `<span class="pill o">Premium · ${t("soon")}</span>` : ""}</div></div>
+  ${r.map(x => { const p = img((x.photos || [])[0]), hasVideo = videoSrc((x.videos || [])[0]); return `<div class="pan li"><div class="t" data-i="${e(x.id)}">${p ? `<img src="${p}" alt="">` : hasVideo ? "▶" : ci(x.cat)}</div><div data-i="${e(x.id)}" style="cursor:pointer"><b>${e(x.title)}</b><div class="pr" style="font-size:16px">${rub(x.price)}</div><div>${x.sold ? `<span class="pill o">${t("stSold")}</span>` : expired(x) ? `<span class="pill o">${t("expired")}</span>` : `<span class="pill g">${t("stAct")}</span>`}${pm(x) ? '<span class="pill g">PREMIUM</span>' : x.premium === "req" ? `<span class="pill o">Premium · ${t("soon")}</span>` : ""}</div></div>
  <div style="display:flex;flex-direction:column;gap:6px">${!x.sold ? `<button class="gh sm" data-bp="${e(x.id)}">${expired(x) ? "↻ " + t("renew") : "⬆ " + t("bump")}</button>` : ""}${!pm(x) && !x.sold ? `<button class="sm" data-pr="${e(x.id)}">✦ ${t("promote")}</button>` : ""}<button class="gh sm" data-so="${e(x.id)}">${x.sold ? "↺" : "✓"}</button><button class="dg sm" data-dl="${e(x.id)}">✕</button></div></div>`; }).join("") || `<div class="emp">${t("mineE")}</div>`}`;
   $("#nw").onclick = openForm; $("#mpf").onclick = () => go("profile", { id: uid }); $("#mdh").onclick = () => go("deals"); a.querySelectorAll("[data-i]").forEach(b => b.onclick = () => go("item", { id: b.dataset.i }));
   a.querySelectorAll("[data-pr]").forEach(b => b.onclick = async () => { await db.collection("listings").doc(b.dataset.pr).update({ premium: "req" }); $("#mp").classList.add("o"); });
@@ -642,6 +697,7 @@ function mineV(a) {
 
 function chat(a) {
   const v = view, peer = uid === v.buyer ? v.seller : v.buyer; need([peer]);
+  const initialMessage = v.initialMessage || "";
   const qReplies = ["Привет! Ещё продаёшь?", "Готов купить", "Сделай скидку?", "Жду передачи"];
   
   a.innerHTML = `<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><button class="gh sm" id="bk">←</button><div style="min-width:0;cursor:pointer" id="pn"><b>${e(nm(peer))}</b><div class="mu" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e(v.title)}</div></div><button class="gh sm" style="margin-left:auto" id="rpc">⚠</button><button class="gh sm" id="ov">${t("item")}</button></div>
@@ -663,6 +719,11 @@ function chat(a) {
     await db.collection("threads").doc(v.tid).set({ lid: v.lid, title: v.title, buyer: v.buyer, seller: v.seller, last: text || "📷", by: uid, ts: n }); 
     playBeep(700, 0.08);
   };
+  if(initialMessage) {
+    view.initialMessage = "";
+    const key = "noir_buy_" + v.lid + "_" + uid;
+    if(LS(key) !== "1") send(initialMessage).then(() => { LS(key, "1"); toast(t("buySent")); }).catch(() => toast(t("nsent")));
+  }
   
   $("#cf").onsubmit = async ev => { ev.preventDefault(); const i = $("#mt"), x = i.value.trim(); if(!x) return; if(isBan()) { toast(t("banned")); return; } i.value = ""; try { await send(x); } catch(z) { toast(t("nsent")); } };
   $("#cp").onchange = async ev => { const f = ev.target.files[0]; if(!f) return; try { const u = await upl(f); await send("", u); } catch(z) { toast(t("pFail")); } ev.target.value = ""; };
@@ -682,7 +743,7 @@ function inbox(a) {
 }
 
 function tkList(list, pan) {
-  return list.map(k => `<div class="pan" style="cursor:pointer" data-k="${e(k.id)}"><span class="pill ${k.status === "closed" ? "" : "g"}">${k.status === "closed" ? t("closedS") : t("openS")}</span><span class="mu">${pan ? e(nm(k.uid)) + " · " : ""}${dt(k.last)}</span> ${(pan ? awaitS(k) : tkUn(k)) ? '<span style="color:var(--c)">●</span>' : ""}<div style="margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e(k.text)}</div></div>`).join("") || (pan ? `<div class="emp">${t("noT")}</div>` : "");
+  return list.map(k => `<div class="pan" style="cursor:pointer" data-k="${e(k.id)}"><span class="pill ${k.status === "closed" ? "" : "g"}">${k.status === "closed" ? t("closedS") : t("openS")}</span> <span class="pill">${t("kind_" + (k.kind || "other"))}</span><span class="mu">${pan ? e(nm(k.uid)) + " · " : ""}${dt(k.last)}</span> ${(pan ? awaitS(k) : tkUn(k)) ? '<span style="color:var(--c)">●</span>' : ""}<div style="margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e(k.text)}</div></div>`).join("") || (pan ? `<div class="emp">${t("noT")}</div>` : "");
 }
 
 function repList() {
@@ -696,7 +757,7 @@ function banList() {
 
 function setV() {
   if(!owner) return `<div class="emp">${t("ownerOnly")}</div>`;
-  return `<div class="pan"><h3 style="font:500 16px var(--d);margin:0 0 10px">📣 ${t("bnr")}</h3><textarea id="bt" rows="2" maxlength="200" placeholder="${t("bnrPh")}">${e(BNR ? BNR.text : "")}</textarea><label style="display:flex;gap:10px;align-items:center;margin:12px 0"><input type="checkbox" id="bo" style="width:20px;height:20px" ${BNR && BNR.on ? "checked" : ""}> ${t("bnrOn")}</label><button class="w" id="bsv">${t("save")}</button></div>` + team();
+  return `<div class="pan"><h3 style="font:500 16px var(--d);margin:0 0 10px">📣 ${t("bnr")}</h3><textarea id="bt" rows="2" maxlength="200" placeholder="${t("bnrPh")}">${e(BNR ? BNR.text : "")}</textarea><label class="l" for="bu">${t("adLink")}</label><input id="bu" type="url" maxlength="500" placeholder="https://example.com" value="${e(BNR ? BNR.link || "" : "")}"><label style="display:flex;gap:10px;align-items:center;margin:12px 0"><input type="checkbox" id="bo" style="width:20px;height:20px" ${BNR && BNR.on ? "checked" : ""}> ${t("bnrOn")}</label><button class="w" id="bsv">${t("save")}</button></div>` + team();
 }
 
 function support(a) {
@@ -704,7 +765,7 @@ function support(a) {
   const nR = REP.filter(r => r.status === "new").length, nT = TK.filter(awaitS).length;
   a.innerHTML = `<div class="bar"><h2>${t("support")}</h2></div>${S ? `<div class="tabs"><button class="gh ${pan ? "" : "on"}" id="t1">${t("mySup")}</button><button class="gh ${pan ? "on" : ""}" id="t2">🛡 ${t("panel")}${nT + nR ? " (" + (nT + nR) + ")" : ""}</button><button class="dg sm" id="lv" style="margin-left:auto">${t("staffOut")}</button></div>` : `<div style="margin-bottom:12px"><button class="gh sm" id="sg">🛡 ${t("staffIn")}</button></div>`}
  ${pan ? `<div class="tabs">${[["tk", "📨", t("ticketsT") + (nT ? " " + nT : "")], ["rp", "⚠", t("reps") + (nR ? " " + nR : "")], ["bn", "⛔", t("bannedL")], ["st", "⚙", t("settings")]].map(([k, i, l]) => `<button class="gh sm ${pt === k ? "on" : ""}" data-pt="${k}">${i} ${l}</button>`).join("")}</div>${pt === "tk" ? tkList(list, true) : pt === "rp" ? repList() : pt === "bn" ? banList() : setV()}`
- : `<div class="pan"><div class="mu">${t("supHint")}</div><form id="sf"><textarea id="stx" rows="4" required maxlength="1000" placeholder="${t("supPh")}" style="margin-top:10px">${e(draft)}</textarea><button class="w" style="margin-top:12px">${t("send")}</button></form></div>${tkList(list, false)}`}`; draft = "";
+ : `<div class="pan"><div class="mu">${t("supHint")}</div><form id="sf"><label class="l" for="stype">${t("requestType")}</label><select id="stype"><option value="bug">${t("kind_bug")}</option><option value="idea">${t("kind_idea")}</option><option value="other">${t("kind_other")}</option></select><textarea id="stx" rows="4" required maxlength="1000" placeholder="${t("supPh")}" style="margin-top:10px">${e(draft)}</textarea><button class="w" style="margin-top:12px">${t("send")}</button></form></div>${tkList(list, false)}`}`; draft = "";
   
   const t1 = $("#t1"); if(t1) { t1.onclick = () => go("support"); $("#t2").onclick = () => go("support", { pan: 1 }); }
   const sg = $("#sg"); if(sg) sg.onclick = staffGate;
@@ -715,8 +776,8 @@ function support(a) {
   a.querySelectorAll("[data-bn]").forEach(b => b.onclick = () => banToggle(b.dataset.bn));
   a.querySelectorAll("[data-ub]").forEach(b => b.onclick = () => banToggle(b.dataset.ub));
   a.querySelectorAll("[data-rd]").forEach(b => b.onclick = () => db.collection("reports").doc(b.dataset.rd).update({ status: "done" }));
-  const sf = $("#sf"); if(sf) sf.onsubmit = async ev => { ev.preventDefault(); const x = $("#stx").value.trim(), n = Date.now(); if(!x) return; await db.collection("tickets").doc(uidn()).set({ uid, text: x, ts: n, last: n, status: "open" }); toast(t("sent")); $("#stx").value = ""; };
-  const bsv = $("#bsv"); if(bsv) bsv.onclick = async () => { await db.collection("settings").doc("banner").set({ text: $("#bt").value.trim(), on: $("#bo").checked, ts: Date.now() }); toast(t("saved")); };
+  const sf = $("#sf"); if(sf) sf.onsubmit = async ev => { ev.preventDefault(); const x = $("#stx").value.trim(), kind = $("#stype").value, n = Date.now(); if(!x) return; await db.collection("tickets").doc(uidn()).set({ uid, kind, text: x, ts: n, last: n, status: "open" }); toast(t("sent")); $("#stx").value = ""; };
+  const bsv = $("#bsv"); if(bsv) bsv.onclick = async () => { await db.collection("settings").doc("banner").set({ text: $("#bt").value.trim(), link: safeHttp($("#bu").value.trim()), on: $("#bo").checked, ts: Date.now() }); toast(t("saved")); };
   if(pan && pt === "st" && owner) bindTeam(a);
 }
 
@@ -758,7 +819,7 @@ function bindTeam(a) {
 function ticket(a) {
   const k = TK.find(z => z.id === view.id); if(!k) { a.innerHTML = `<div class="emp"><button id="bk">${t("back")}</button></div>`; $("#bk").onclick = () => go("support"); return; }
   const S = isS(), mine = k.uid === uid; need([k.uid]); seen("t_" + k.id);
-  a.innerHTML = `<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><button class="gh sm" id="bk">←</button><div><b>${t("ticket")}</b> <span class="pill ${k.status === "closed" ? "" : "g"}">${k.status === "closed" ? t("closedS") : t("openS")}</span><div class="mu">${e(nm(k.uid))}</div></div>${S ? `<button class="gh sm" style="margin-left:auto" id="cl">${k.status === "closed" ? t("reopen") : t("close")}</button>` : ""}</div>
+  a.innerHTML = `<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><button class="gh sm" id="bk">←</button><div><b>${t("ticket")}</b> <span class="pill ${k.status === "closed" ? "" : "g"}">${k.status === "closed" ? t("closedS") : t("openS")}</span><div class="mu">${e(nm(k.uid))} · ${t("kind_" + (k.kind || "other"))}</div></div>${S ? `<button class="gh sm" style="margin-left:auto" id="cl">${k.status === "closed" ? t("reopen") : t("close")}</button>` : ""}</div>
  <div class="pan chat" style="padding:12px"><div class="ms" id="ms"><div class="m ${mine ? "me" : ""}">${e(k.text)}<small>${dt(k.ts)}</small></div></div>
  ${k.status === "closed" ? "" : `<form class="cf" id="cf"><input id="mt" placeholder="${S && !mine ? t("repl") : t("msgPh")}" maxlength="1000" autocomplete="off"><button class="ib" aria-label="${t("send")}">➤</button></form>`}</div>`;
   $("#bk").onclick = () => go("support", { pan: view.pan });
@@ -880,10 +941,20 @@ async function upl(f) {
   if(as) { try { const r = await as.upload(await prep(f, 1100, .82)); return "/_blob/" + r.id; } catch(x) {} }
   const bl = await prep(f, 400, .5); return await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(bl); });
 }
+async function uplVideo(f) {
+  if(!as) throw new Error("storage unavailable");
+  if(!/^video\/(mp4|webm|quicktime)$/.test(f.type) || f.size > 20 * 1024 * 1024) throw new Error("unsupported video");
+  const r = await as.upload(f);
+  return "/_blob/" + r.id;
+}
 
 function ups() {
   $("#up").innerHTML = ph.map((u, i) => `<div class="p"><img src="${u}" alt=""><b data-x="${i}">✕</b></div>`).join("") + (ph.length < 5 ? '<label class="add" for="fl">＋</label>' : "");
   $("#up").querySelectorAll("[data-x]").forEach(b => b.onclick = () => { ph.splice(+b.dataset.x, 1); ups(); });
+}
+function renderVideos() {
+  $("#videoPreview").innerHTML = vid.map((u,i) => `<video src="${e(videoSrc(u))}" muted controls playsinline preload="metadata"></video><button type="button" class="dg sm" data-vx="${i}" aria-label="Remove video">✕</button>`).join("");
+  $("#videoPreview").querySelectorAll("[data-vx]").forEach(b => b.onclick = () => { vid.splice(+b.dataset.vx,1); renderVideos(); });
 }
 
 $("#fl").onchange = async ev => {
@@ -896,8 +967,16 @@ $("#fl").onchange = async ev => {
     } catch(x) { toast(t("pFail")); }
   }
 };
+$("#videoFile").onchange = async ev => {
+  const f = ev.target.files && ev.target.files[0]; ev.target.value = "";
+  if(!f) return;
+  if(!as) { toast(t("videoStorage")); return; }
+  if(vid.length) vid = [];
+  try { vid.push(await uplVideo(f)); renderVideos(); }
+  catch(x) { toast(t("videoError")); }
+};
 
-function openForm() { if(!db || !uid) { toast(t("login")); return; } if(isBan()) { toast(t("banned")); return; } ph = []; $("#fm").reset(); $("#pay").classList.remove("o"); fillSel(); ups(); $("#mo").classList.add("o"); }
+function openForm() { if(!db || !uid) { toast(t("login")); return; } if(isBan()) { toast(t("banned")); return; } ph = []; vid = []; $("#fm").reset(); $("#pay").classList.remove("o"); fillSel(); ups(); renderVideos(); $("#mo").classList.add("o"); }
 $("#fpm").onchange = ev => $("#pay").classList.toggle("o", ev.target.checked);
 $("#fx").onclick = () => $("#mo").classList.remove("o"); $("#mo").onclick = ev => { if(ev.target.id === "mo") $("#mo").classList.remove("o"); };
 $("#mpx").onclick = () => $("#mp").classList.remove("o"); $("#mp").onclick = ev => { if(ev.target.id === "mp") $("#mp").classList.remove("o"); };
@@ -906,7 +985,7 @@ $("#fm").onsubmit = async ev => {
   ev.preventDefault(); const b = $("#fg"); b.disabled = true;
   const oldPriceVal = +$("#fOldP").value;
   try {
-    await db.collection("listings").doc(uidn()).set({ title: $("#ft").value.trim(), cat: $("#fc").value, price: +$("#fp").value, oldPrice: oldPriceVal > 0 ? oldPriceVal : 0, desc: $("#fs").value.trim(), how: $("#fh").value, photos: ph, seller: uid, premium: $("#fpm").checked ? "req" : "", sold: false, ts: Date.now() });
+    await db.collection("listings").doc(uidn()).set({ title: $("#ft").value.trim(), cat: $("#fc").value, price: +$("#fp").value, oldPrice: oldPriceVal > 0 ? oldPriceVal : 0, desc: $("#fs").value.trim(), how: $("#fh").value, photos: ph, videos: vid, seller: uid, premium: $("#fpm").checked ? "req" : "", sold: false, ts: Date.now() });
     $("#mo").classList.remove("o"); toast(t("done")); go("mine");
   } catch(x) { toast("!"); }
   b.disabled = false;
