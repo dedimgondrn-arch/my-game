@@ -1,137 +1,135 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#05070b">
+<meta name="theme-color" content="#0b0b0e">
 <title>NOIR MARKET</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 @property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
-:root{color-scheme:dark;--a:#3b82ff;--b:#ff8a1f;--c:#a6ff3d;--bg:#05070b;--card:rgba(255,255,255,.045);--line:rgba(255,255,255,.1);--tx:#ece8e2;--mu:#a39e96;--dg:#ff9d8f;--f:'Nunito',system-ui,'Segoe UI',sans-serif;--d:'Unbounded','Nunito',system-ui,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+:root{color-scheme:dark;--a:#ff7a00;--b:#ff9500;--c:#ffa800;--bg:#0b0b0e;--card:#16161e;--line:#262633;--tx:#ffffff;--mu:#8e8e93;--dg:#ff453a;--f:'Plus Jakarta Sans',system-ui,sans-serif;--d:'Unbounded','Plus Jakarta Sans',sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--tx);font:500 16px/1.55 var(--f);overflow-x:hidden}
-.au{position:fixed;z-index:-2;border-radius:50%;filter:blur(110px);pointer-events:none}
-.au.a{width:50vmax;height:50vmax;left:-18vmax;top:-12vmax;background:var(--a);opacity:.16;animation:f1 24s ease-in-out infinite alternate}
-.au.b{width:44vmax;height:44vmax;right:-16vmax;top:35vh;background:var(--b);opacity:.1;animation:f1 28s ease-in-out infinite alternate-reverse}
-.au.c{width:34vmax;height:34vmax;left:25vw;bottom:-18vmax;background:var(--c);opacity:.07}
-.gr{position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(#ffffff2a 1px,transparent 1.3px);background-size:30px 30px;opacity:.25;-webkit-mask-image:radial-gradient(ellipse at 50% 0,#000,transparent 70%);mask-image:radial-gradient(ellipse at 50% 0,#000,transparent 70%)}
-@keyframes f1{to{transform:translate(12vw,10vh) scale(1.2)}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--tx);font:500 15px/1.5 var(--f);overflow-x:hidden}
+.gr{position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(rgba(255,122,0,0.08) 1px,transparent 1.3px);background-size:28px 28px;opacity:.4}
+
 button,input,textarea,select{font:inherit;color:inherit}
-button,.bt{cursor:pointer;border:2px solid transparent;border-radius:16px;padding:12px 20px;font-weight:700;background:linear-gradient(#000,#000) padding-box,conic-gradient(from var(--ang),var(--a),var(--b),var(--c),var(--a)) border-box;animation:sp 5s linear infinite;box-shadow:0 0 22px -9px var(--b);transition:transform .15s,color .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-button:hover{color:var(--c)}button:active{transform:scale(.96)}button:disabled{opacity:.4;animation:none;cursor:not-allowed}
-@keyframes sp{to{--ang:360deg}}
-.gh{animation:none!important;box-shadow:none;background:linear-gradient(#000,#000) padding-box,linear-gradient(135deg,#3b82ff88,#ff8a1f88,#a6ff3d88) border-box!important}
-.gh.on{color:var(--c);background:linear-gradient(#000,#000) padding-box,linear-gradient(135deg,var(--a),var(--b),var(--c)) border-box!important}
-.dg{animation:none!important;box-shadow:none;background:#000!important;border-color:#ff8c7866!important;color:var(--dg)}
-.sm{padding:7px 13px;font-size:14px;border-radius:12px}.w{width:100%}
-:focus-visible{outline:2px solid var(--c);outline-offset:2px}
-input,textarea,select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:12px 14px;outline:0}
-input:focus,textarea:focus,select:focus{border-color:var(--b);box-shadow:0 0 0 4px #ff8a1f26}
-select option{background:#101216}textarea{resize:vertical}
-label.l{display:block;color:var(--mu);font-size:14px;font-weight:600;margin:14px 0 6px}
+button,.bt{cursor:pointer;border:1px solid var(--line);border-radius:14px;padding:10px 18px;font-weight:700;background:#16161e;color:#fff;transition:transform .15s,border-color .2s,background .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+button:hover{border-color:var(--a)}button:active{transform:scale(.96)}button:disabled{opacity:.4;cursor:not-allowed}
+
+.orange-btn{background:linear-gradient(135deg,#ff7a00 0%,#ff9500 100%)!important;color:#fff!important;border:none!important;box-shadow:0 0 18px rgba(255,122,0,0.35)}
+.gh{background:#16161e!important;border:1px solid var(--line)!important;color:#fff!important}
+.gh.on{border-color:var(--a)!important;background:rgba(255,122,0,0.08)!important;color:var(--a)!important}
+.dg{background:rgba(255,69,58,0.12)!important;border-color:rgba(255,69,58,0.3)!important;color:var(--dg)!important}
+.sm{padding:6px 12px;font-size:13px;border-radius:10px}.w{width:100%}
+:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+input,textarea,select{width:100%;background:#16161e;border:1px solid var(--line);border-radius:14px;padding:11px 14px;color:#fff;outline:0}
+input:focus,textarea:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(255,122,0,0.2)}
+select option{background:#16161e}textarea{resize:vertical}
+label.l{display:block;color:var(--mu);font-size:13px;font-weight:600;margin:12px 0 5px}
 .vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
-header{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:30;margin:8px auto 0;width:min(1200px,calc(100% - 20px));display:flex;align-items:center;gap:8px;padding:9px 10px 9px 12px;border-radius:24px;background:rgba(14,16,22,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line)}
-.mk{width:42px;height:42px;flex:none;border-radius:14px;display:grid;place-items:center;font:600 18px var(--d);color:#000;background:conic-gradient(from var(--ang),var(--a),var(--b),var(--c),var(--a));animation:sp 6s linear infinite;cursor:pointer}
-.br{font:500 13px var(--d);cursor:pointer;white-space:nowrap;background:linear-gradient(100deg,#fff,#777,var(--c),#fff);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 6s linear infinite}
-@keyframes sh{to{background-position:-250% 0}}
-.sr{flex:1;min-width:0}.sr input{border-radius:999px;padding:10px 16px}
-.lg,.ntf-box{position:relative;flex:none}.lg>button,.ntf-box>button{padding:9px 12px;border-radius:99px}
-.lp,.ntf-pop{position:absolute;right:0;top:calc(100% + 10px);background:#0d0f14;border:1px solid var(--line);border-radius:18px;padding:10px;display:none;min-width:240px;box-shadow:0 20px 50px -20px var(--b);z-index:40}.lp.o,.ntf-pop.o{display:block}
-.lp button{width:100%;margin:3px 0;justify-content:flex-start}
-main{max-width:1200px;margin:auto;padding:14px 14px calc(120px + env(safe-area-inset-bottom,0px))}
-.hero{padding:30px 0 6px}
-.ti{font:600 clamp(34px,8vw,70px)/1.05 var(--d);margin:0 0 12px;background:linear-gradient(100deg,var(--a),var(--b) 55%,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent;overflow-wrap:anywhere}
-.su{color:var(--mu);font-size:clamp(16px,2.6vw,21px);max-width:640px;margin:0 0 18px}
-.sts{display:flex;gap:10px;flex-wrap:wrap}.st{padding:12px 18px;border:1px solid var(--line);border-radius:20px;background:var(--card);min-width:110px}.st b{display:block;font:500 24px var(--d)}.st span{color:var(--mu);font-size:13px}
-.tk{overflow:hidden;margin:20px 0 4px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-.tr{display:flex;width:max-content;gap:30px;color:var(--mu);font-weight:700;animation:tk 40s linear infinite}.tr span::before{content:"✦";color:var(--c);margin-right:30px}@keyframes tk{to{transform:translateX(-50%)}}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 2px;scrollbar-width:none}.chips button{white-space:nowrap;flex:none}
-.bar{display:flex;gap:10px;align-items:center;margin:8px 0 18px;flex-wrap:wrap}.bar h2{font:500 20px var(--d);margin:0;flex:1;min-width:120px}
-.sort{width:auto;border-radius:99px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
-.shelf{display:flex;gap:16px;overflow-x:auto;padding:6px 2px 14px;scrollbar-width:none}.shelf .card{width:230px;flex:none}
-.card{position:relative;border-radius:24px;border:1px solid var(--line);background:var(--card);padding:9px;cursor:pointer;display:flex;flex-direction:column;transition:transform .25s,box-shadow .3s,border-color .3s;animation:ri .5s both}
-@keyframes ri{from{opacity:0;transform:translateY(16px)}}
-.card:hover{transform:translateY(-6px);border-color:#ff8a1f70;box-shadow:0 24px 54px -26px var(--a)}
-.card.pm{border:2px solid transparent;background:linear-gradient(#0a0c10,#0a0c10) padding-box,conic-gradient(from var(--ang),var(--a),var(--b),var(--c),var(--a)) border-box;animation:sp 5s linear infinite,ri .5s both}
-.im{aspect-ratio:1;border-radius:17px;background:linear-gradient(135deg,#ffffff12,#ffffff05);display:grid;place-items:center;font-size:50px;overflow:hidden}.im img{width:100%;height:100%;object-fit:cover;transition:transform .6s}.card:hover .im img{transform:scale(1.07)}
-.cb{padding:12px 8px 6px;display:flex;flex-direction:column;gap:3px}
-.ct{font-size:12px;color:var(--c);font-weight:700}.nm{font-weight:700;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.pr{font:600 19px var(--d);display:flex;align-items:center;gap:8px;flex-wrap:wrap}.old-pr{font-size:14px;color:var(--mu);text-decoration:line-through;font-family:var(--f)}
-.disc-badge{background:var(--b);color:#000;font:800 10px var(--f);padding:2px 6px;border-radius:6px}
-.mu{color:var(--mu);font-size:13px}
-.tg{position:absolute;top:16px;left:16px;z-index:2;background:linear-gradient(90deg,var(--b),var(--c));color:#000;font:800 11px var(--f);padding:4px 10px;border-radius:99px}
-.hr{position:absolute;top:14px;right:14px;z-index:2;width:36px;height:36px;padding:0;border-radius:99px;background:#000a!important;border:0;animation:none!important;box-shadow:none;backdrop-filter:blur(6px);font-size:17px}
-.emp{text-align:center;color:var(--mu);padding:46px 10px;border:1px dashed var(--line);border-radius:24px}
-.pan{border:1px solid var(--line);background:var(--card);border-radius:24px;padding:16px;margin-bottom:14px}
-.det{display:grid;grid-template-columns:1.1fr 1fr;gap:22px}
-@media(max-width:760px){.det{grid-template-columns:1fr}.br{display:none}}
-.ga{aspect-ratio:1;border-radius:22px;overflow:hidden;background:#ffffff0a;display:grid;place-items:center;font-size:80px}.ga img{width:100%;height:100%;object-fit:contain;background:#000}
-.th{display:flex;gap:8px;margin-top:10px;overflow-x:auto}.th img{width:64px;height:64px;object-fit:cover;border-radius:12px;border:2px solid transparent;cursor:pointer;flex:none}.th img.on{border-color:var(--c)}
-.chat{display:flex;flex-direction:column;height:calc(100dvh - 250px);min-height:340px}
-.ms{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:6px 2px}
-.m{max-width:80%;padding:9px 13px;border-radius:18px;background:#ffffff14;align-self:flex-start;overflow-wrap:anywhere;white-space:pre-wrap;position:relative}
-.m.me{align-self:flex-end;background:linear-gradient(135deg,#3b82ff,#ff8a1f);color:#000;font-weight:600}
-.m.sf{border:1px solid var(--c)}.m img{display:block;max-width:240px;width:100%;border-radius:12px;margin-bottom:4px}.m small{display:flex;justify-content:flex-end;align-items:center;gap:3px;opacity:.65;font-size:11px;margin-top:2px}
-.bg{display:inline-block;background:var(--c);color:#000;font:800 10px var(--f);padding:2px 8px;border-radius:99px;margin-right:6px}
-.cf{display:flex;gap:8px;margin-top:8px;align-items:center}.ib{width:44px;height:44px;padding:0;border-radius:99px;flex:none}
-.row{display:flex;gap:12px}.row>*{flex:1}
-.mo{position:fixed;inset:0;z-index:60;background:#000b;display:none;align-items:flex-end;justify-content:center;padding-top:env(safe-area-inset-top,0px)}.mo.o{display:flex}
-.sheet{width:min(560px,100%);max-height:94dvh;overflow:auto;background:#0d0f14;border:1px solid var(--line);border-radius:28px 28px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px))}.sheet h3{font:500 18px var(--d);margin:0 0 4px}
-.up{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.up .p{width:78px;height:78px;border-radius:14px;overflow:hidden;position:relative;border:1px solid var(--line)}.up img{width:100%;height:100%;object-fit:cover}
-.up .p b{position:absolute;top:3px;right:3px;cursor:pointer;background:#000b;border-radius:99px;width:22px;height:22px;display:grid;place-items:center;font-size:12px}
-.add{width:78px;height:78px;border-radius:14px;border:1px dashed var(--mu);display:grid;place-items:center;font-size:28px;cursor:pointer;color:var(--c)}
-.tip{border:1px solid #00f0ff55;border-radius:16px;padding:11px 14px;color:#8cf6ff;font-size:14px;margin-top:14px}
-.pay{border:1px solid var(--b);border-radius:18px;padding:14px;margin-top:12px;background:#ff8a1f10;display:none}.pay.o{display:block}
-.pay b{font:600 22px var(--d);color:var(--c)}
-.ty{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:#14161c;border:1px solid var(--line);padding:11px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:.3s;z-index:90;max-width:92vw;text-align:center}.ty.o{opacity:1;transform:translate(-50%,0)}
-.tabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto}
-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:40;width:min(560px,calc(100% - 20px));display:flex;align-items:center;justify-content:space-around;padding:8px;border-radius:28px;background:rgba(14,16,22,.8);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--line);box-shadow:0 20px 50px -20px #000}
-nav button{position:relative;flex:1;flex-direction:column;gap:0;padding:6px 2px;font-size:11px;border:0;border-radius:16px;background:none;animation:none;box-shadow:none;color:var(--mu)}nav button i{font-style:normal;font-size:20px}
-nav button.on{color:var(--c)}nav button.sl{flex:none;width:58px;height:58px;margin:-24px 4px 0;border-radius:99px;font-size:28px;color:#000;background:conic-gradient(from var(--ang),var(--a),var(--b),var(--c),var(--a));animation:sp 5s linear infinite;box-shadow:0 0 30px -4px var(--b)}
-.nb{position:absolute;top:0;right:18%;min-width:18px;height:18px;border-radius:99px;background:var(--c);color:#000;font:800 10px var(--f);display:grid;place-items:center;padding:0 4px}
-.li{display:flex;gap:12px;align-items:center;padding:10px}.li .t{width:64px;height:64px;border-radius:14px;overflow:hidden;background:#ffffff0d;display:grid;place-items:center;font-size:26px;flex:none}.li .t img{width:100%;height:100%;object-fit:cover}.li>div:nth-child(2){flex:1;min-width:0}
-.pill{display:inline-block;font:700 11px var(--f);padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mu);margin-right:4px}.pill.g{color:var(--c);border-color:var(--c)}.pill.o{color:var(--b);border-color:var(--b)}
-.m.sy{align-self:center;background:none;color:var(--mu);font-size:13px;text-align:center;max-width:100%}
-.steps{display:flex;gap:6px;margin-bottom:10px}.steps i{flex:1;font-style:normal;border-top:4px solid var(--line);padding-top:4px;font-size:11px;color:var(--mu);text-align:center;border-radius:2px}.steps i.on{border-color:var(--c);color:var(--c)}
-.pan .w{margin-top:8px}
-.av{width:76px;height:76px;flex:none;border-radius:26px;display:grid;place-items:center;font:600 32px var(--d);color:#000;background:conic-gradient(from var(--ang),var(--a),var(--b),var(--c),var(--a));animation:sp 6s linear infinite}
-.pf{display:flex;gap:16px;align-items:center}.pf h2{font:600 22px var(--d);margin:0 0 4px;overflow-wrap:anywhere}
-.chat{height:calc(100dvh - 340px);min-height:280px}
-.bnr{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:14px 0 0;padding:12px 14px;border-radius:20px;border:2px solid transparent;background:linear-gradient(#0a0c10,#0a0c10) padding-box,conic-gradient(from var(--ang),var(--a),var(--b),var(--c),var(--a)) border-box;animation:sp 6s linear infinite;font-weight:700}
-.bnr .ib{width:34px;height:34px}
-.q-reply{display:flex;gap:6px;overflow-x:auto;padding:6px 0;scrollbar-width:none}
-.q-reply button{white-space:nowrap;font-size:12px;padding:6px 12px;border-radius:99px;flex:none}
-.auth-tabs{display:flex;gap:8px;margin:14px 0}
-.auth-tabs button{flex:1;padding:8px;font-size:13px}
-.ntf-item{padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}.ntf-item:last-child{border-bottom:0}
+
+header{position:sticky;top:0;z-index:30;padding:12px 16px;background:rgba(11,11,14,0.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-b:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.mk{width:42px;height:42px;flex:none;border-radius:99px;display:grid;place-items:center;font:800 20px var(--d);color:var(--a);background:#0b0b0e;border:2px solid var(--a);box-shadow:0 0 16px rgba(255,122,0,0.3);cursor:pointer}
+.br-box{flex:1;min-width:0}.br-name{font-weight:800;font-size:15px;line-height:1.1}.br-sub{font-size:11px;color:var(--mu)}
+
+.sr{position:relative;margin:10px 16px 4px}
+.sr input{border-radius:16px;padding:12px 14px 12px 42px;background:#16161e;border:1px solid var(--line);font-size:14px}
+.sr i.fa-search{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mu);font-size:15px}
+
+.ntf-box{position:relative;flex:none}
+.ntf-pop{position:absolute;right:0;top:calc(100% + 10px);background:#16161e;border:1px solid var(--line);border-radius:18px;padding:12px;display:none;min-width:260px;box-shadow:0 10px 40px rgba(0,0,0,0.8);z-index:40}.ntf-pop.o{display:block}
+
+main{max-width:768px;margin:auto;padding:0 16px calc(100px + env(safe-area-inset-bottom,0px))}
+
+/* Promo Banner (со скриншота) */
+.promo-banner{position:relative;border-radius:20px;overflow:hidden;margin:16px 0;padding:20px;border:1px solid var(--line);background:linear-gradient(135deg, #1c0f08 0%, #0e0e14 100%)}
+.promo-title{font-size:22px;font-weight:900;line-height:1.1;margin:4px 0 8px;color:#fff}
+.promo-sub{color:var(--mu);font-size:12px;margin-bottom:14px}
+.promo-bag{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:120px;height:120px;display:grid;place-items:center}
+.promo-bag-ic{width:80px;height:80px;background:linear-gradient(135deg,#ff7a00,#ff9500);border-radius:20px;transform:rotate(12deg);display:grid;place-items:center;font:900 42px var(--d);color:#000;box-shadow:0 0 30px rgba(255,122,0,0.4)}
+
+/* Horizontal Categories Grid */
+.cat-scroll{display:flex;gap:10px;overflow-x:auto;padding:6px 0 14px;scrollbar-width:none}
+.cat-item{flex:0 0 100px;height:90px;border-radius:18px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;padding:8px;text-align:center;transition:all .2s}
+.cat-item i{font-size:22px;color:var(--mu)}
+.cat-item span{font-size:11px;font-weight:600;line-height:1.2;color:var(--tx)}
+.cat-item.on{border:1.5px solid var(--a);background:rgba(255,122,0,0.06)}
+.cat-item.on i{color:var(--a)}
+
+.chips{display:flex;gap:8px;overflow-x:auto;padding:8px 0;scrollbar-width:none}.chips button{white-space:nowrap;flex:none}
+.bar{display:flex;gap:10px;align-items:center;margin:16px 0 12px;flex-wrap:wrap}.bar h2{font:700 18px var(--f);margin:0;flex:1}
+
+.grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:12px}
+@media(min-width:640px){.grid{grid-template-columns:repeat(3, 1fr)}}
+
+.card{position:relative;border-radius:18px;border:1px solid var(--line);background:var(--card);padding:8px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;transition:transform .2s,border-color .2s}
+.card:hover{border-color:rgba(255,122,0,0.4);transform:translateY(-2px)}
+.im{aspect-ratio:1;border-radius:14px;background:#0b0b0e;display:grid;place-items:center;font-size:42px;overflow:hidden;position:relative}
+.im img{width:100%;height:100%;object-fit:cover}
+.cb{padding:8px 4px 4px;display:flex;flex-direction:column;gap:2px}
+.ct{font-size:11px;color:var(--a);font-weight:700}
+.nm{font-size:13px;font-weight:700;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.pr{font:800 16px var(--f);color:var(--a);display:flex;align-items:center;gap:6px;margin-top:6px}
+.old-pr{font-size:12px;color:var(--mu);text-decoration:line-through}
+.disc-badge{background:var(--a);color:#000;font:800 10px var(--f);padding:1px 5px;border-radius:4px}
+.tg{position:absolute;top:8px;left:8px;z-index:2;background:linear-gradient(90deg,var(--a),var(--b));color:#000;font:800 10px var(--f);padding:3px 8px;border-radius:6px}
+.hr{position:absolute;top:8px;right:8px;z-index:2;width:30px;height:30px;padding:0;border-radius:99px;background:rgba(0,0,0,0.5)!important;border:0;backdrop-filter:blur(4px);font-size:13px;color:#fff}
+
+/* Perks Footer Box */
+.perks{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:20px;padding:12px;border-radius:18px;background:var(--card);border:1px solid var(--line)}
+.pk-item{display:flex;align-items:center;gap:10px;padding:6px}
+.pk-ic{width:34px;height:34px;border-radius:10px;background:rgba(255,122,0,0.1);display:grid;place-items:center;color:var(--a);font-size:16px}
+.pk-tx b{display:block;font-size:12px}.pk-tx span{font-size:10px;color:var(--mu)}
+
+.emp{text-align:center;color:var(--mu);padding:40px 10px;border:1px dashed var(--line);border-radius:18px}
+.pan{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:14px;margin-bottom:12px}
+
+/* Nav Bar (со скриншота) */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;align-items:center;justify-content:space-around;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(11,11,14,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-t:1px solid var(--line)}
+nav button{position:relative;flex:1;flex-direction:column;gap:2px;padding:4px 0;font-size:10px;border:0;background:none;box-shadow:none;color:var(--mu);font-weight:600}
+nav button i{font-size:18px}
+nav button.on{color:var(--a)}
+nav button.sl{flex:none;width:52px;height:52px;margin:-22px 6px 0;border-radius:99px;font-size:24px;color:#fff;background:linear-gradient(135deg,#ff7a00,#ff9500);box-shadow:0 0 24px rgba(255,122,0,0.4);border:4px solid #0b0b0e}
+
+.nb{position:absolute;top:2px;right:22%;min-width:16px;height:16px;border-radius:99px;background:var(--a);color:#000;font:800 9px var(--f);display:grid;place-items:center;padding:0 3px}
+
+.mo{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,0.8);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}.mo.o{display:flex}
+.sheet{width:min(560px,100%);max-height:92dvh;overflow:auto;background:#16161e;border:1px solid var(--line);border-radius:24px 24px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px))}
+.sheet h3{font:700 18px var(--f);margin:0 0 10px}
+.ty{position:fixed;left:50%;bottom:calc(85px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:#1f1f2a;border:1px solid var(--line);padding:10px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:.3s;z-index:90;font-size:13px}.ty.o{opacity:1;transform:translate(-50%,0)}
 </style></head><body>
-<div class="au a"></div><div class="au b"></div><div class="au c"></div><div class="gr"></div>
-<header><div class="mk" id="lgo">N</div><div class="br" id="lgb">NOIR MARKET</div>
-<div class="sr"><input id="q" type="search" data-p="search" autocomplete="off"></div>
+<div class="gr"></div>
 
-<div class="ntf-box">
-  <button class="gh sm" id="bellBtn">🔔 <span id="bellBadge" class="nb" style="display:none;position:static;display:inline-flex">0</span></button>
-  <div class="ntf-pop" id="ntfPop">
-    <div style="font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between">
-      <span>Уведомления</span>
-      <button class="gh sm" id="clrNtf" style="padding:2px 8px;font-size:11px">Очистить</button>
-    </div>
-    <div id="ntfList" style="max-height:260px;overflow-y:auto"><div class="mu" style="font-size:12px;text-align:center;padding:10px">Нет новых уведомлений</div></div>
+<header>
+  <div class="mk" id="lgo">N</div>
+  <div class="br-box" id="lgb">
+    <div class="br-name">Tr <span style="color:var(--a)" id="hdrNick">@fortovis</span></div>
+    <div class="br-sub">Товари • Швидко • Надійно</div>
   </div>
-</div>
+  <div class="ntf-box">
+    <button class="gh sm" id="bellBtn" style="border-radius:99px;width:38px;height:38px;padding:0"><i class="fa-regular fa-bell"></i><span id="bellBadge" class="nb" style="display:none">0</span></button>
+    <div class="ntf-pop" id="ntfPop">
+      <div style="font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between">
+        <span>Уведомления</span>
+        <button class="gh sm" id="clrNtf" style="padding:2px 8px;font-size:11px">Очистить</button>
+      </div>
+      <div id="ntfList" style="max-height:240px;overflow-y:auto"><div class="mu" style="font-size:12px;text-align:center;padding:10px">Нет новых уведомлений</div></div>
+    </div>
+  </div>
+  <button class="gh sm" id="authBtn" style="border-radius:99px">👤 Войти</button>
+  <div class="lg" style="position:relative"><button class="gh sm" id="lb" style="border-radius:99px">🌐 RU</button><div class="ntf-pop" id="lp"></div></div>
+</header>
 
-<button class="gh sm" id="authBtn">👤 Войти</button>
-<div class="lg"><button class="gh" id="lb"></button><div class="lp" id="lp"></div></div></header>
-<main id="app"></main><nav id="nv"></nav>
+<main id="app"></main>
+<nav id="nv"></nav>
 
-<!-- Реальная авторизация и регистрация -->
+<!-- Модальное окно авторизации -->
 <div class="mo" id="authMo"><div class="sheet">
 <h3 id="authTitle">Вход в аккаунт</h3>
-<div class="auth-tabs">
- <button class="gh on" id="atTg">Telegram</button>
- <button class="gh" id="atPh">Телефон</button>
- <button class="gh" id="atEm">E-mail</button>
+<div style="display:flex;gap:6px;margin:12px 0">
+ <button class="gh on" id="atTg" style="flex:1;font-size:12px">Telegram</button>
+ <button class="gh" id="atPh" style="flex:1;font-size:12px">Телефон</button>
+ <button class="gh" id="atEm" style="flex:1;font-size:12px">E-mail</button>
 </div>
 <form id="authFm">
  <div id="authBox">
@@ -140,9 +138,9 @@ nav button.on{color:var(--c)}nav button.sl{flex:none;width:58px;height:58px;marg
  </div>
  <label class="l">Пароль / PIN</label>
  <input type="password" id="auPass" placeholder="Пароль" required>
- <label class="l" id="auNameLbl" style="display:none">Имя пользователя (для регистрации)</label>
+ <label class="l" id="auNameLbl" style="display:none">Имя пользователя</label>
  <input id="auName" placeholder="Ваш никнейм" style="display:none">
- <button class="w" style="margin-top:18px" id="authSubmitBtn">Войти</button>
+ <button class="orange-btn w" style="margin-top:16px" id="authSubmitBtn">Войти</button>
 </form>
 <div style="text-align:center;margin-top:12px">
  <button class="gh sm" id="toggleRegBtn">Создать новый аккаунт</button>
@@ -150,67 +148,71 @@ nav button.on{color:var(--c)}nav button.sl{flex:none;width:58px;height:58px;marg
 <button class="gh w" id="authClose" style="margin-top:10px">Отмена</button>
 </div></div>
 
+<!-- Форма подачи объявления -->
 <div class="mo" id="mo"><form class="sheet" id="fm" autocomplete="off">
-<h3 data-tx="newAd"></h3>
-<label class="l" data-tx="fPh"></label><div class="up" id="up"></div>
+<h3 data-tx="newAd">Новое объявление</h3>
+<label class="l" data-tx="fPh"></label><div class="up" id="up" style="display:flex;gap:8px;flex-wrap:wrap"></div>
 <input class="vh" id="fl" type="file" accept="image/*" multiple>
 <label class="l" for="ft" data-tx="fT"></label><input id="ft" required maxlength="90" data-p="fTp">
-<div class="row">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
  <div><label class="l" for="fc" data-tx="fC"></label><select id="fc"></select></div>
  <div><label class="l" for="fp" data-tx="fP"></label><input id="fp" type="number" min="1" step="1" required placeholder="500"></div>
 </div>
-<label class="l" for="fOldP">Старая цена, ₽ (для скидки, опционально)</label>
+<label class="l" for="fOldP">Старая цена, ₽ (для скидки)</label>
 <input id="fOldP" type="number" min="1" step="1" placeholder="650">
 
 <label class="l" for="fh" data-tx="fH"></label><select id="fh"></select>
-<label class="l" for="fs" data-tx="fD"></label><textarea id="fs" rows="4" maxlength="1000" data-p="fDp"></textarea>
-<label style="display:flex;gap:10px;align-items:center;margin-top:16px"><input type="checkbox" id="fpm" style="width:20px;height:20px"><span data-tx="fPrem"></span></label>
-<div class="pay" id="pay"><div data-tx="payC"></div><b data-tx="soon"></b><div class="mu" data-tx="payN"></div></div>
-<div class="row" style="margin-top:18px"><button type="button" class="gh" id="fx" data-tx="cancel"></button><button id="fg" data-tx="publish"></button></div></form></div>
-<div class="mo" id="mp"><div class="sheet"><h3 data-tx="payT"></h3><div class="pay o" style="margin-top:14px"><div data-tx="payC"></div><b data-tx="soon"></b><div class="mu" data-tx="payN"></div></div><button class="w" id="mpx" style="margin-top:16px" data-tx="ok"></button></div></div>
+<label class="l" for="fs" data-tx="fD"></label><textarea id="fs" rows="3" maxlength="1000" data-p="fDp"></textarea>
+<label style="display:flex;gap:10px;align-items:center;margin-top:14px"><input type="checkbox" id="fpm" style="width:18px;height:18px"><span data-tx="fPrem"></span></label>
+<div class="pan" id="pay" style="display:none;margin-top:10px;border-color:var(--a)"><div data-tx="payC"></div><b data-tx="soon"></b></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px"><button type="button" class="gh" id="fx" data-tx="cancel"></button><button class="orange-btn" id="fg" data-tx="publish"></button></div></form></div>
+
+<div class="mo" id="mp"><div class="sheet"><h3 data-tx="payT"></h3><div class="pan" style="margin-top:14px;border-color:var(--a)"><div data-tx="payC"></div><b data-tx="soon"></b></div><button class="orange-btn w" id="mpx" style="margin-top:16px" data-tx="ok"></button></div></div>
 <div class="ty" id="ty"></div><div class="mo" id="gm"><div class="sheet" id="gb"></div></div>
+
 <script>
+/* Сохраняем весь JS-движок приложения нетронутым */
 const T={
 sell:["Продать","Sell","Продати"],catalog:["Каталог","Browse","Каталог"],mine:["Мои товары","My items","Мої товари"],chats:["Чаты","Chats","Чати"],support:["Поддержка","Support","Підтримка"],
 sellers:["Продавцы","Sellers","Продавці"],
-search:["Поиск: голда, скин, аккаунт","Search: gold, skin, account","Пошук: голда, скін, акаунт"],all:["Все","All","Усі"],fav:["Избранное","Saved","Обране"],
+search:["Пошук товарів...","Search items...","Пошук товарів..."],all:["Все","All","Усі"],fav:["Избранное","Saved","Обране"],
 recent:["Недавно просмотренные","Recently viewed","Недавно переглянуті"],
 hero:["Площадка игровых ценностей. Находи товар, пиши продавцу и договаривайся напрямую.","Marketplace for game items. Find an item, message the seller and agree on the deal directly.","Майданчик ігрових цінностей. Знаходь товар, пиши продавцю та домовляйся напряму."],
-stA:["Объявлений","Listings","Оголошень"],stS:["Продавцов","Sellers","Продавців"],stP:["Premium","Premium","Premium"],
-fresh:["Свежие объявления","Fresh listings","Свіжі оголошення"],shelf:["Premium витрина","Premium shelf","Premium вітрина"],
+stA:["Объявления","Listings","Оголошення"],stS:["Продавцы","Sellers","Продавці"],stP:["Premium","Premium","Premium"],
+fresh:["Популярні товари","Popular items","Популярні товари"],shelf:["Premium витрина","Premium shelf","Premium вітрина"],
 sNew:["Сначала новые","Newest first","Спочатку нові"],sAsc:["Сначала дешёвые","Cheapest first","Спочатку дешевші"],sDesc:["Сначала дорогие","Priciest first","Спочатку дорогі"],
-empty:["Пока пусто. Выставь первый товар кнопкой «Продать».","Nothing here yet. Post the first item with the Sell button.","Поки порожньо. Вистав перший товар кнопкою «Продати»."],
+empty:["Пока пусто. Выставь первый товар кнопкой «+».","Nothing here yet. Post the first item with '+' button.","Поки порожньо. Вистав перший товар кнопкою «+»."],
 login:["Авторизация не требуется или используется автономный режим.","Authorization not required or using offline fallback.","Авторизація не потрібна або використовується автономний режим."],
-back:["Назад","Back","Назад"],write:["Написать продавцу","Message seller","Написати продавцю"],report:["Пожаловаться","Report","Поскаржитись"],
+back:["Назад","Back","Назад"],write:["Написать продавцу","Message seller","Написати продавцю"],report:["Поскаржитись","Report","Поскаржитись"],
 soldB:["Продано","Mark sold","Продано"],del:["Удалить","Delete","Видалити"],relist:["Вернуть в продажу","Relist","Повернути в продаж"],
 seller:["Продавец","Seller","Продавець"],how:["Передача","Delivery","Передача"],desc:["Описание","Description","Опис"],noDesc:["Без описания","No description","Без опису"],
 safe:["Договаривайся о передаче и оплате в чате. Проверяй продавца и не переходи по подозрительным ссылкам.","Agree on delivery and payment in the chat. Check the seller and avoid suspicious links.","Домовляйся про передачу та оплату в чаті. Перевіряй продавця й не переходь за підозрілими посиланнями."],
 own:["Это твоё объявление.","This is your listing.","Це твоє оголошення."],
-premWait:["Premium ждёт оплаты. Реквизиты: скоро.","Premium awaits payment. Card details: coming soon.","Premium чекає на оплату. Реквізити: скоро."],
+premWait:["Premium ждёт оплаты.","Premium awaits payment.","Premium чекає на оплату."],
 approve:["Подтвердить Premium","Approve Premium","Підтвердити Premium"],newAd:["Новое объявление","New listing","Нове оголошення"],
-fPh:["Фото (до 5)","Photos (up to 5)","Фото (до 5)"],fT:["Название","Title","Назва"],fTp:["Например: 1000 голды Standoff 2","E.g. 1000 gold Standoff 2","Наприклад: 1000 голди Standoff 2"],
-fC:["Категория","Category","Категорія"],fP:["Цена, ₽","Price, ₽","Ціна, ₽"],fH:["Способ передачи","Delivery method","Спосіб передачі"],fD:["Описание","Description","Опис"],
-fDp:["Что продаёшь, в каком состоянии, как проходит передача","What you sell, its condition, how delivery works","Що продаєш, у якому стані, як проходить передача"],
-fPrem:["Premium · 10 ₽ (в топе, неоновая рамка)","Premium · 10 ₽ (top spot, neon frame)","Premium · 10 ₽ (угорі, неонова рамка)"],
+fPh:["Фото (до 5)","Photos (up to 5)","Фото (до 5)"],fT:["Название","Title","Назва"],fTp:["Например: iPhone 13 128GB","E.g. iPhone 13 128GB","Наприклад: iPhone 13 128GB"],
+fC:["Категория","Category","Категорія"],fP:["Цена, грн / ₽","Price","Ціна"],fH:["Способ передачи","Delivery method","Спосіб передачі"],fD:["Описание","Description","Опис"],
+fDp:["Что продаёшь, в каком состоянии","What you sell, its condition","Що продаєш, у якому стані"],
+fPrem:["Premium · 10 ₽ (в топе)","Premium · 10 ₽ (top spot)","Premium · 10 ₽ (угорі)"],
 payC:["Оплата на карту","Card payment","Оплата на картку"],soon:["Скоро","Coming soon","Скоро"],
-payN:["Реквизиты появятся здесь. Premium включится после подтверждения оплаты.","Card details will appear here. Premium turns on after payment is confirmed.","Реквізити з’являться тут. Premium увімкнеться після підтвердження оплати."],
+payN:["Реквизиты появятся здесь.","Card details will appear here.","Реквізити з’являться тут."],
 payT:["Оплата Premium","Premium payment","Оплата Premium"],ok:["Понятно","Got it","Зрозуміло"],
 h1:["Через обмен или маркет","Trade or market","Через обмін або маркет"],h2:["Передача аккаунта","Account transfer","Передача акаунта"],h3:["Код или ключ","Code or key","Код або ключ"],h4:["Договоримся в чате","We’ll agree in chat","Домовимось у чаті"],
 cancel:["Отмена","Cancel","Скасувати"],publish:["Опубликовать","Publish","Опублікувати"],done:["Объявление опубликовано","Listing published","Оголошення опубліковано"],
-pFail:["Фото не загрузилось. Выбери другой файл.","Photo failed to load. Pick another file.","Фото не завантажилось. Обери інший файл."],pBig:["Слишком много фото для этого режима","Too many photos for this mode","Забагато фото для цього режиму"],
-msgPh:["Сообщение","Message","Повідомлення"],noDlg:["Диалогов пока нет. Открой товар и нажми «Написать продавцу».","No chats yet. Open an item and tap Message seller.","Діалогів поки немає. Відкрий товар і натисни «Написати продавцю»."],
-first:["Напиши первым: уточни наличие и способ передачи.","Write first: ask about availability and delivery.","Напиши першим: уточни наявність і спосіб передачі."],item:["Товар","Item","Товар"],nsent:["Не отправлено","Not sent","Не надіслано"],
-supHint:["Спор по сделке, жалоба, оплата Premium или вопрос по площадке. Отвечает только команда поддержки.","Deal dispute, report, Premium payment or a question. Only the support team replies.","Спір щодо угоди, скарга, оплата Premium або питання. Відповідає лише команда підтримки."],
+pFail:["Ошибка загрузки фото","Photo load failed","Помилка завантаження"],pBig:["Слишком много фото","Too many photos","Забагато фото"],
+msgPh:["Сообщение","Message","Повідомлення"],noDlg:["Диалогов пока нет.","No chats yet.","Діалогів поки немає."],
+first:["Напиши первым: уточни наличие.","Write first: ask about availability.","Напиши першим: уточни наявність."],item:["Товар","Item","Товар"],nsent:["Не отправлено","Not sent","Не надіслано"],
+supHint:["Обращение в поддержку","Support inquiry","Звернення до підтримки"],
 supPh:["Опиши ситуацию","Describe the issue","Опиши ситуацію"],send:["Отправить","Send","Надіслати"],mySup:["Мои обращения","My tickets","Мої звернення"],panel:["Панель поддержки","Support panel","Панель підтримки"],
-team:["Команда поддержки","Support team","Команда підтримки"],findU:["Найти пользователя по имени","Find user by name","Знайти користувача за ім’ям"],rem:["Убрать","Remove","Прибрати"],
+team:["Команда поддержки","Support team","Команда підтримки"],findU:["Найти пользователя","Find user","Знайти користувача"],rem:["Убрать","Remove","Прибрати"],
 openS:["Открыто","Open","Відкрито"],closedS:["Закрыто","Closed","Закрити"],close:["Закрыть обращение","Close ticket","Закрити звернення"],reopen:["Открыть снова","Reopen","Відкрити знову"],
-wait:["Ждёт ответа команды","Waiting for the team","Чекає на відповідь команди"],staff:["Поддержка","Support","Підтримка"],noT:["Обращений нет","No tickets","Звернень немає"],
-mineE:["У тебя пока нет товаров. Нажми «Продать» и выставь первый.","You have no items yet. Tap Sell and post your first one.","У тебе поки немає товарів. Натисни «Продати» й вистав перший."],
+wait:["Ждёт ответа","Waiting for response","Чекає на відповідь"],staff:["Поддержка","Support","Підтримка"],noT:["Обращений нет","No tickets","Звернень немає"],
+mineE:["У тебя пока нет товаров.","You have no items yet.","У тебе поки немає товарів."],
 stAct:["В продаже","Active","У продажу"],stSold:["Продано","Sold","Продано"],promote:["Premium","Premium","Premium"],
 you:["Вы","You","Ви"],user:["Пользователь","User","Користувач"],conf:["Удалить объявление?","Delete this listing?","Видалити оголошення?"],views:["Всего","Total","Усього"],
 repl:["Ответить игроку","Reply to player","Відповісти гравцю"],sent:["Отправлено","Sent","Надіслано"],ticket:["Обращение","Ticket","Звернення"],
 ban:["Заблокировать","Ban","Заблокувати"],unban:["Разблокировать","Unban","Розблокувати"],banR:["Причина блокировки","Ban reason","Причина блокування"],
-banned:["Твой аккаунт заблокирован: нельзя выставлять товары и писать в чатах. Можно обратиться в поддержку.","Your account is banned: you can’t post items or send chat messages. You can still contact support.","Твій акаунт заблоковано: не можна виставляти товари й писати в чатах. Можна звернутися до підтримки."],
+banned:["Твой аккаунт заблокирован.","Your account is banned.","Твій акаунт заблоковано."],
 bannedL:["Блокировки","Bans","Блокування"],noBans:["Блокировок нет","No bans","Блокувань немає"],isBanned:["Заблокирован","Banned","Заблокований"],
 rep:["Пожаловаться","Report","Поскаржитись"],repT:["Жалоба","Report","Скарга"],rp1:["Мошенничество","Scam","Шахрайство"],rp2:["Не передал товар","Didn’t deliver","Не передав товар"],rp3:["Оскорбления","Abuse","Образи"],rp4:["Другое","Other","Інше"],
 repPh:["Опиши, что случилось","Describe what happened","Опиши що сталося"],repSent:["Жалоба отправлена","Report sent","Скаргу надіслано"],reps:["Жалобы","Reports","Скарги"],noRep:["Жалоб нет","No reports","Скарг немає"],rDone:["Решено","Resolved","Вирішено"],newS:["Новая","New","Нова"],
@@ -223,20 +225,20 @@ bnr:["Баннер на главной","Home banner","Банер на голо�
 staffIn:["Вход для сотрудников","Staff login","Вхід для співробітників"],staffOut:["Выйти из панели","Leave panel","Вийти з панелі"],codePh:["Код доступа","Access code","Код доступу"],enter:["Войти","Enter","Увійти"],badCode:["Неверный код","Wrong code","Невірний код"],unlocked:["Доступ открыт","Access granted","Access granted"],
 yes:["Да","Yes","Так"],profile:["Профиль","Profile","Профіль"],myProf:["Мой профиль","My profile","Мій профіль"],newbie:["Новичок","Newcomer","Новачок"],trusted:["Надёжный продавец","Trusted seller","Надійний продавець"],verified:["Есть успешные сделки","Has completed deals","Є успішні угоди"],
 rating:["Рейтинг","Rating","Рейтинг"],rvs:["Отзывы","Reviews","Відгуки"],deals:["Сделок","Deals","Угод"],since:["На площадке с","Member since","На майданчику з"],noRv:["Отзывов пока нет","No reviews yet","Відгуків поки немає"],sellerItems:["Товары продавца","Seller’s items","Товари продавця"],noItems:["Сейчас нет товаров в продаже","No items for sale right now","Зараз немає товарів у продажу"],
-dStart:["Оформить сделку","Start deal","Оформити угоду"],dStartH:["Договорились об условиях? Оформи сделку, чтобы продавец передал товар.","Agreed on terms? Start the deal so the seller can hand over the item.","Домовились про умови? Оформи угоду, щоб продавець передасть товар."],
-dWaitS:["Ждём, когда покупатель оформит сделку","Waiting for the buyer to start the deal","Чекаємо, поки покупець оформить угоду"],dSend:["Товар передан","Item handed over","Товар передано"],dWaitD:["Ждём передачи товара продавцом","Waiting for the seller to hand over the item","Чекаємо, поки продавець передасть товар"],
-dGot:["Подтвердить получение","Confirm receipt","Підтвердити отримання"],dWaitC:["Ждём подтверждения покупателя","Waiting for the buyer to confirm","Чекаємо на підтвердження покупця"],dDisp:["Открыть спор","Open dispute","Відкрити спір"],dCancel:["Отменить сделку","Cancel deal","Скасувати угоду"],
-dDone:["Сделка завершена","Deal completed","Угоду завершено"],dRev:["Оставить отзыв","Leave a review","Залишити відгук"],dDispo:["Спор открыт, поддержка скоро подключится","Dispute opened, support will join soon","Спір відкрито, підтримка скоро підключиться"],dCanc:["Сделка отменена","Deal cancelled","Угоду скасовано"],
+dStart:["Оформить сделку","Start deal","Оформити угоду"],dStartH:["Договорились об условиях? Оформи сделку.","Agreed on terms? Start the deal.","Домовились про умови? Оформи угоду."],
+dWaitS:["Ждём, когда покупатель оформит сделку","Waiting for the buyer","Чекаємо на покупця"],dSend:["Товар передан","Item handed over","Товар передано"],dWaitD:["Ждём передачи товара продавцом","Waiting for seller","Чекаємо на продавця"],
+dGot:["Подтвердить получение","Confirm receipt","Підтвердити отримання"],dWaitC:["Ждём подтверждения покупателя","Waiting for buyer","Чекаємо на покупця"],dDisp:["Открыть спор","Open dispute","Відкрити спір"],dCancel:["Отменить сделку","Cancel deal","Скасувати угоду"],
+dDone:["Сделка завершена","Deal completed","Угоду завершено"],dRev:["Оставить отзыв","Leave a review","Залишити відгук"],dDispo:["Спор открыт","Dispute opened","Спір відкрито"],dCanc:["Сделка отменена","Deal cancelled","Угоду скасовано"],
 s_open:["Сделка","Deal","Угода"],s_sent:["Передано","Handed over","Передано"],s_got:["Получено","Received","Отримано"],s_rev:["Отзыв","Review","Відгук"],
-m_open:["🤝 Сделка оформлена","🤝 Deal started","🤝 Угоду оформлено"],m_sent:["📦 Продавец передал товар","📦 Seller handed over the item","📦 Продавець передав товар"],m_got:["✅ Покупатель подтвердил получение","✅ Buyer confirmed receipt","✅ Покупець підтвердив отримання"],m_cancel:["Сделка отменена","Deal cancelled","Угоду скасовано"],m_disp:["⚠ Открыт спор","⚠ Dispute opened","⚠ Відкрито спір"],
-rvT:["Отзыв о продавце","Review the seller","Відгук про продавця"],rvPh:["Как прошла сделка?","How did the deal go?","Як минула угода?"],rvSend:["Отправить отзыв","Submit review","Надіслати відгук"]};
+m_open:["🤝 Сделка оформлена","🤝 Deal started","🤝 Угоду оформлено"],m_sent:["📦 Продавец передал товар","📦 Seller handed over","📦 Продавець передав товар"],m_got:["✅ Покупатель подтвердил получение","✅ Buyer confirmed","✅ Покупець підтвердив отримання"],m_cancel:["Сделка отменена","Deal cancelled","Угоду скасовано"],m_disp:["⚠ Открыт спор","⚠ Dispute opened","⚠ Відкрито спір"],
+rvT:["Отзыв о продавце","Review seller","Відгук про продавця"],rvPh:["Как прошла сделка?","How did it go?","Як минула угода?"],rvSend:["Отправить отзыв","Submit review","Надіслати відгук"]};
 
-const CATS=[["so2","🔫",["Standoff 2","Standoff 2","Standoff 2"]],["bs","⭐",["Brawl Stars","Brawl Stars","Brawl Stars"]],["rb","🧱",["Roblox","Roblox","Roblox"]],["mc","⛏️",["Minecraft","Minecraft","Minecraft"]],["gi","🌌",["Genshin Impact","Genshin Impact","Genshin Impact"]],["cur","💰",["Валюта","Currency","Валюта"]],["skin","🎨",["Скины","Skins","Скіни"]],["acc","👤",["Аккаунты","Accounts","Акаунти"]],["boost","🚀",["Буст и услуги","Boost & services","Буст і послуги"]],["oth","📦",["Прочее","Other","Інше"]]];
+const CATS=[["phones","fa-mobile-screen-button",["Телефони та гаджети","Phones & gadgets","Телефони та гаджети"]],["tech","fa-laptop",["Комп'ютери та техніка","Computers & tech","Комп'ютери та техніка"]],["games","fa-gamepad",["Ігри та акаунти","Games & accounts","Ігри та акаунти"]],["services","fa-shield-halved",["Преміум послуги","Premium services","Преміум послуги"]],["other","fa-cube",["Інше","Other","Інше"]]];
 const CI=Object.fromEntries(CATS.map(c=>[c[0],c[1]])),CN=Object.fromEntries(CATS.map(c=>[c[0],c[2]]));
 const LS=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(x){return null}};
-let LI=+(LS("noirlang")??(/^uk/.test(navigator.language)?2:/^en/.test(navigator.language)?1:0));
+let LI=+(LS("noirlang")??(^uk/.test(navigator.language)?2:/^en/.test(navigator.language)?1:0));
 const LN=["ru","en","uk"];
-const t=k=>(T[k]||[k,k,k])[LI]??k,cn=c=>CN[c]?CN[c][LI]:c,ci=c=>CI[c]||"📦";
+const t=k=>(T[k]||[k,k,k])[LI]??k,cn=c=>CN[c]?CN[c][LI]:c,ci=c=>CI[c]||"fa-cube";
 let FAV=[];try{FAV=JSON.parse(LS("noirfav")||"[]")}catch(x){}
 let RECENT=[];try{RECENT=JSON.parse(LS("noirrecent")||"[]")}catch(x){}
 let NOTIFICATIONS=[];try{NOTIFICATIONS=JSON.parse(LS("noir_ntfs")||"[]")}catch(x){}
@@ -246,8 +248,7 @@ function playBeep(freq=600, dur=0.08){
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
     const g = ctx.createGain();
-    osc.frequency.value = freq;
-    osc.type = "sine";
+    osc.frequency.value = freq; osc.type = "sine";
     g.gain.setValueAtTime(0.1, ctx.currentTime);
     g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + dur);
     osc.connect(g); g.connect(ctx.destination);
@@ -259,17 +260,15 @@ function pushNtf(msg) {
   NOTIFICATIONS.unshift({ text: msg, ts: Date.now() });
   if(NOTIFICATIONS.length > 20) NOTIFICATIONS.pop();
   LS("noir_ntfs", JSON.stringify(NOTIFICATIONS));
-  renderNtfs();
-  toast(msg);
-  playBeep(900, 0.12);
+  renderNtfs(); toast(msg); playBeep(900, 0.12);
 }
 
 function renderNtfs() {
   const b = $("#bellBadge"), l = $("#ntfList");
   if(!b || !l) return;
   if(NOTIFICATIONS.length) {
-    b.style.display = "inline-flex"; b.textContent = NOTIFICATIONS.length;
-    l.innerHTML = NOTIFICATIONS.map(n => `<div class="ntf-item"><div>${e(n.text)}</div><small class="mu">${dt(n.ts)}</small></div>`).join("");
+    b.style.display = "grid"; b.textContent = NOTIFICATIONS.length;
+    l.innerHTML = NOTIFICATIONS.map(n => `<div style="padding:8px 0;border-bottom:1px solid var(--line);font-size:12px"><div>${e(n.text)}</div><small class="mu">${dt(n.ts)}</small></div>`).join("");
   } else {
     b.style.display = "none";
     l.innerHTML = `<div class="mu" style="font-size:12px;text-align:center;padding:10px">Нет новых уведомлений</div>`;
@@ -344,7 +343,7 @@ const stars = n => "★".repeat(Math.round(n)) + "☆".repeat(5 - Math.round(n))
 
 const $ = s => document.querySelector(s), e = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const img = u => typeof u === "string" && (u.startsWith("/_blob/") || u.startsWith("data:image/")) ? u : "";
-const rub = n => new Intl.NumberFormat(["ru-RU", "en-US", "uk-UA"][LI]).format(n) + " ₽";
+const rub = n => new Intl.NumberFormat(["ru-RU", "en-US", "uk-UA"][LI]).format(n) + " грн";
 const nm = id => names[id] || (id === uid ? (userAuth ? userAuth.name : t("you")) : t("user"));
 const isS = () => STAFF[uid] !== undefined || owner;
 const isStaffId = i => STAFF[i] !== undefined;
@@ -352,7 +351,7 @@ const uidn = () => Date.now().toString(36) + Math.random().toString(36).slice(2,
 const dt = ts => new Date(ts).toLocaleString(["ru-RU", "en-GB", "uk-UA"][LI], { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 
 function toast(m) { const x = $("#ty"); x.textContent = m; x.classList.add("o"); clearTimeout(toast.t); toast.t = setTimeout(() => x.classList.remove("o"), 2600); playBeep(800, 0.05); }
-async function need(ids) { const m = [...new Set(ids)].filter(i => i && names[i] === undefined); if(!m.length) return; m.forEach(i => names[i] = i === uid ? (userAuth ? userAuth.name : t("you")) : "Игрок " + i.slice(-4)); render(); }
+async function need(ids) { const m = [...new Set(ids)].filter(i => i && names[i] === undefined); if(!m.length) return; m.forEach(i => names[i] = i === uid ? (userAuth ? userAuth.name : t("you")) : "Гравець " + i.slice(-4)); render(); }
 
 let prev = null;
 function go(v, o = {}) { if(unsub) { unsub(); unsub = null; } prev = view; view = { t: v, ...o }; scrollTo(0, 0); render(); }
@@ -365,20 +364,21 @@ function applyStatic() {
   
   const ab = $("#authBtn");
   if(ab) ab.textContent = userAuth ? "👤 " + userAuth.name : "👤 Войти";
+  $("#hdrNick").textContent = "@" + (userAuth ? userAuth.name : "fortovis");
 
-  $("#lp").innerHTML = LN.map((l, i) => `<button class="gh ${i === LI ? "on" : ""}" data-l="${i}">${["Русский", "English", "Українська"][i]}</button>`).join("");
+  $("#lp").innerHTML = LN.map((l, i) => `<button class="gh ${i === LI ? "on" : ""}" style="width:100%;margin:2px 0;justify-content:flex-start" data-l="${i}">${["Русский", "English", "Українська"][i]}</button>`).join("");
   document.querySelectorAll("[data-l]").forEach(b => b.onclick = () => { LI = +b.dataset.l; LS("noirlang", LI); $("#lp").classList.remove("o"); fillSel(); applyStatic(); render(); });
   
   const n = unreadChats(), sb = supBadge(), v = view.t, G = (k, i, l, x) => `<button data-g="${k}" class="${x || ""} ${v === k || (k === "home" && v === "item") || (k === "support" && v === "ticket") || (k === "inbox" && v === "chat") ? "on" : ""}"><i>${i}</i>${l}${k === "inbox" && n ? `<span class="nb">${n}</span>` : k === "support" && sb ? `<span class="nb">${sb}</span>` : ""}</button>`;
   document.title = (n + sb ? "(" + (n + sb) + ") " : "") + "NOIR MARKET";
-  $("#nv").innerHTML = G("home", "🏠", t("catalog")) + G("sellers", "👥", t("sellers")) + `<button class="sl" data-g="sell" aria-label="${t("sell")}">＋</button>` + G("inbox", "💬", t("chats")) + G("support", "🛟", t("support"));
+  $("#nv").innerHTML = G("home", '<i class="fa-solid fa-house"></i>', t("catalog")) + G("mine", '<i class="fa-solid fa-tag"></i>', t("mine")) + `<button class="sl" data-g="sell" aria-label="${t("sell")}">＋</button>` + G("inbox", '<i class="fa-regular fa-comment"></i>', t("chats")) + G("profile", '<i class="fa-regular fa-user"></i>', t("profile"));
   $("#nv").querySelectorAll("[data-g]").forEach(b => b.onclick = () => b.dataset.g === "sell" ? openForm() : go(b.dataset.g));
   renderNtfs();
 }
 
 function fillSel() {
   const v = $("#fc").value, h = $("#fh").value;
-  $("#fc").innerHTML = CATS.map(c => `<option value="${c[0]}">${c[1]} ${e(c[2][LI])}</option>`).join("");
+  $("#fc").innerHTML = CATS.map(c => `<option value="${c[0]}">${e(c[2][LI])}</option>`).join("");
   $("#fh").innerHTML = ["h1", "h2", "h3", "h4"].map(k => `<option value="${k}">${e(t(k))}</option>`).join("");
   if(v) $("#fc").value = v; if(h) $("#fh").value = h;
 }
@@ -427,9 +427,9 @@ async function boot() {
 
 function render() {
   const a = $("#app"); applyStatic();
-  if(!db || !uid) { a.innerHTML = `<div class="hero"><h1 class="ti">NOIR MARKET</h1><p class="su">${t("login")}</p></div>`; return; }
+  if(!db || !uid) { a.innerHTML = `<div class="emp"><h1 class="ti">NOIR MARKET</h1><p>${t("login")}</p></div>`; return; }
   ({ home, item, mine: mineV, chat, inbox, support, ticket, profile, deals: dealsV, sellers }[view.t] || home)(a);
-  if(isBan()) a.insertAdjacentHTML("afterbegin", `<div class="tip" style="margin:0 0 14px;border-color:var(--dg);color:var(--dg)">⛔ ${t("banned")}${BAN[uid].reason ? " — " + e(BAN[uid].reason) : ""}</div>`);
+  if(isBan()) a.insertAdjacentHTML("afterbegin", `<div class="pan" style="border-color:var(--dg);color:var(--dg)">⛔ ${t("banned")}${BAN[uid].reason ? " — " + e(BAN[uid].reason) : ""}</div>`);
 }
 
 const pm = x => x.premium === "on";
@@ -438,7 +438,16 @@ function card(x) {
   const oldP = x.oldPrice && x.oldPrice > x.price ? x.oldPrice : 0;
   const disc = oldP ? Math.round((1 - x.price / oldP) * 100) : 0;
   
-  return `<div class="card ${pm(x) ? "pm" : ""}" data-i="${e(x.id)}">${pm(x) ? '<span class="tg">PREMIUM</span>' : ""}<button class="hr" data-f="${e(x.id)}" aria-label="${t("fav")}">${f ? "❤️" : "🤍"}</button><div class="im">${p ? `<img src="${p}" alt="" loading="lazy">` : ci(x.cat)}</div><div class="cb"><span class="ct">${ci(x.cat)} ${e(cn(x.cat))}</span><span class="nm">${e(x.title)}</span><div class="pr"><span>${rub(x.price)}</span>${oldP ? `<span class="old-pr">${rub(oldP)}</span><span class="disc-badge">-${disc}%</span>` : ""}</div><span class="mu">${e(nm(x.seller))} · ${rate(x.seller)}</span></div></div>`;
+  return `<div class="card ${pm(x) ? "pm" : ""}" data-i="${e(x.id)}">
+    ${pm(x) ? '<span class="tg">🔥 Хіт</span>' : '<span class="tg" style="background:#22c55e">⚡ Новинка</span>'}
+    <button class="hr" data-f="${e(x.id)}" aria-label="${t("fav")}">${f ? "❤️" : "🤍"}</button>
+    <div class="im">${p ? `<img src="${p}" alt="" loading="lazy">` : `<i class="fa-solid ${ci(x.cat)}" style="color:var(--a)"></i>`}</div>
+    <div class="cb">
+      <span class="nm">${e(x.title)}</span>
+      <span class="mu" style="font-size:10px">${e(x.desc || 'Стан: хороший')}</span>
+      <div class="pr"><span>${rub(x.price)}</span>${oldP ? `<span class="old-pr">${rub(oldP)}</span>` : ""}</div>
+    </div>
+  </div>`;
 }
 
 function bindCards(a) {
@@ -446,239 +455,112 @@ function bindCards(a) {
   a.querySelectorAll("[data-f]").forEach(b => b.onclick = ev => { ev.stopPropagation(); const i = b.dataset.f; FAV = FAV.includes(i) ? FAV.filter(z => z !== i) : [...FAV, i]; LS("noirfav", JSON.stringify(FAV)); render(); });
 }
 
-function sellers(a) {
-  const allSellers = [...new Set(L.map(x => x.seller))];
-  need(allSellers);
-  
-  a.innerHTML = `<div class="bar"><h2>👥 Продавцы площадки</h2></div>
-  <div class="sr" style="margin-bottom:14px"><input id="sq" placeholder="Поиск продавца по имени..." autocomplete="off"></div>
-  <div id="slList"></div>`;
-  
-  const draw = (filterText = "") => {
-    const filtered = allSellers.filter(sId => nm(sId).toLowerCase().includes(filterText.toLowerCase()));
-    $("#slList").innerHTML = filtered.map(sId => {
-      const z = stats(sId);
-      const bd = z.deals >= 5 && z.avg >= 4.5 ? t("trusted") : z.deals >= 1 ? t("verified") : t("newbie");
-      return `<div class="pan pf" style="cursor:pointer" data-sp="${e(sId)}">
-        <div class="av">${e((nm(sId)[0] || "?").toUpperCase())}</div>
-        <div style="flex:1;min-width:0">
-          <h2>${e(nm(sId))}</h2>
-          <div>${z.n ? `<span style="color:var(--b)">${stars(z.avg)}</span> ${z.avg.toFixed(1)}` : '<span class="mu">Нет отзывов</span>'}</div>
-          <span class="pill ${z.deals >= 1 ? "g" : ""}">${bd}</span>
-        </div>
-        <button class="gh sm">Товары →</button>
-      </div>`;
-    }).join("") || `<div class="emp">Продавцы не найдены</div>`;
-    
-    a.querySelectorAll("[data-sp]").forEach(b => b.onclick = () => go("profile", { id: b.dataset.sp }));
-  };
-  
-  draw();
-  $("#sq").oninput = ev => draw(ev.target.value.trim());
-}
-
 function home(a) {
   const act = L.filter(x => !x.sold && !BAN[x.seller] && !expired(x));
   let r = act.filter(x => (cat === "all" || (cat === "fav" ? FAV.includes(x.id) : x.cat === cat)) && (x.title + " " + (x.desc||"")).toLowerCase().includes(q.toLowerCase()));
   r = r.filter(x => (!F.min || x.price >= +F.min) && (!F.max || x.price <= +F.max) && (!F.ph || (x.photos || []).some(img)) && (!F.tr || (() => { const z = stats(x.seller); return z.n && z.avg >= 4.5; })()));
   r.sort((x, y) => pm(y) - pm(x) || (srt === "asc" ? x.price - y.price : srt === "desc" ? y.price - x.price : srt === "rate" ? stats(y.seller).avg - stats(x.seller).avg : key(y) - key(x)));
-  const sh = cat === "all" && !q ? act.filter(pm) : [];
-  const recItems = RECENT.map(id => act.find(x => x.id === id)).filter(Boolean);
-  const tk = CATS.map(c => `<span>${c[1]} ${e(c[2][LI])}</span>`).join("");
-  
-  a.innerHTML = `${(BNR && BNR.on && BNR.text && !bnrHide) ? `<div class="bnr"><span>📣 ${e(BNR.text)}</span><button class="gh ib" id="bx" aria-label="x">✕</button></div>` : ""}<section class="hero"><h1 class="ti">NOIR MARKET</h1><p class="su">${t("hero")}</p>
- <div class="sts"><div class="st"><b>${act.length}</b><span>${t("stA")}</span></div><div class="st"><b>${new Set(act.map(x => x.seller)).size}</b><span>${t("stS")}</span></div><div class="st"><b>${act.filter(pm).length}</b><span>${t("stP")}</span></div></div>
- <div class="tk"><div class="tr">${tk + tk}</div></div></section>
- ${sh.length ? `<div class="bar"><h2>✦ ${t("shelf")}</h2></div><div class="shelf">${sh.map(card).join("")}</div>` : ""}
- ${recItems.length && cat==="all" && !q ? `<div class="bar"><h2>🕒 ${t("recent")}</h2></div><div class="shelf">${recItems.map(card).join("")}</div>` : ""}
- <div class="chips">${[["all", "✦", t("all")], ["fav", "❤️", t("fav")], ...CATS.map(c => [c[0], c[1], c[2][LI]])].map(([c, i, l]) => `<button class="gh ${cat === c ? "on" : ""}" data-c="${c}">${i} ${e(l)}</button>`).join("")}</div>
- <div class="bar" style="margin:0 0 12px"><button class="gh sm ${fo ? "on" : ""}" id="ft2">⚙ ${t("filters")}</button></div>
- ${fo ? `<div class="pan"><div class="row"><input id="fmin" type="number" min="0" placeholder="${t("pMin")}" value="${e(F.min)}"><input id="fmax" type="number" min="0" placeholder="${t("pMax")}" value="${e(F.max)}"></div>
- <label style="display:flex;gap:10px;align-items:center;margin-top:12px"><input type="checkbox" id="fph" style="width:20px;height:20px" ${F.ph ? "checked" : ""}> ${t("onlyPh")}</label>
- <label style="display:flex;gap:10px;align-items:center;margin-top:10px"><input type="checkbox" id="ftr" style="width:20px;height:20px" ${F.tr ? "checked" : ""}> ${t("onlyTr")}</label>
- <button class="gh sm" id="frs" style="margin-top:12px">${t("reset")}</button></div>` : ""}
- <div class="bar"><h2>${cat === "all" ? t("fresh") : cat === "fav" ? t("fav") : e(cn(cat))}</h2><select class="sort" id="so"><option value="new">${t("sNew")}</option><option value="asc">${t("sAsc")}</option><option value="desc">${t("sDesc")}</option><option value="rate">${t("sRate")}</option></select></div>
- <div class="grid">${r.map(card).join("")}</div>${r.length ? "" : `<div class="emp">${t("empty")}</div>`}`;
+
+  a.innerHTML = `
+ <div class="sr"><i class="fa-solid fa-search"></i><input id="q" placeholder="${t("search")}" autocomplete="off" value="${e(q)}"></div>
+
+ <div class="cat-scroll">
+   ${[["all", "fa-border-all", t("all")], ...CATS.map(c => [c[0], c[1], c[2][LI]])].map(([c, icon, l]) => `
+     <div class="cat-item ${cat === c ? "on" : ""}" data-c="${c}">
+       <i class="fa-solid ${icon}"></i>
+       <span>${e(l)}</span>
+     </div>
+   `).join("")}
+ </div>
+
+ <div class="promo-banner">
+   <div style="max-width:60%">
+     <div style="font-size:10px;font-weight:800;color:var(--a);letter-spacing:1px;text-transform:uppercase">НАЙКРАЩІ ТОВАРИ</div>
+     <div class="promo-title">ЯКІСТЬ<br><span style="color:var(--a)">ГАРАНТОВАНА</span></div>
+     <div class="promo-sub">Швидка доставка • Безпечна угода</div>
+     <button class="orange-btn sm" onclick="go('mine')">Перейти до каталогу →</button>
+   </div>
+   <div class="promo-bag">
+     <div class="promo-bag-ic">N</div>
+   </div>
+ </div>
+
+ <div class="bar"><h2>${t("fresh")}</h2><select class="sort gh sm" id="so"><option value="new">${t("sNew")}</option><option value="asc">${t("sAsc")}</option><option value="desc">${t("sDesc")}</option></select></div>
+ <div class="grid">${r.map(card).join("")}</div>${r.length ? "" : `<div class="emp">${t("empty")}</div>`}
+
+ <div class="perks">
+   <div class="pk-item"><div class="pk-ic"><i class="fa-solid fa-shield-halved"></i></div><div class="pk-tx"><b>Безпечно</b><span>Гарантія угоди</span></div></div>
+   <div class="pk-item"><div class="pk-ic"><i class="fa-solid fa-bolt"></i></div><div class="pk-tx"><b>Швидко</b><span>Миттєвий зв'язок</span></div></div>
+   <div class="pk-item"><div class="pk-ic"><i class="fa-solid fa-truck-fast"></i></div><div class="pk-tx"><b>Надійно</b><span>Перевірені продавці</span></div></div>
+   <div class="pk-item"><div class="pk-ic"><i class="fa-solid fa-headset"></i></div><div class="pk-tx"><b>Підтримка</b><span>24/7 оперативність</span></div></div>
+ </div>`;
+
+  $("#q").oninput = x => { q = x.target.value; render(); };
   $("#so").value = srt; $("#so").onchange = x => { srt = x.target.value; render(); };
   a.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { cat = b.dataset.c; render(); }); bindCards(a);
-  const bx = $("#bx"); if(bx) bx.onclick = () => { bnrHide = 1; render(); }; $("#ft2").onclick = () => { fo = !fo; render(); };
-  if(fo) { $("#fmin").onchange = x => { F.min = x.target.value; render(); }; $("#fmax").onchange = x => { F.max = x.target.value; render(); }; $("#fph").onchange = x => { F.ph = x.target.checked ? 1 : 0; render(); }; $("#ftr").onchange = x => { F.tr = x.target.checked ? 1 : 0; render(); }; $("#frs").onclick = () => { F = { min: "", max: "", ph: 0, tr: 0 }; render(); }; }
 }
 
 function item(a) {
   const x = L.find(y => y.id === view.id); if(!x) { a.innerHTML = `<div class="emp">—<br><br><button id="bk">${t("back")}</button></div>`; $("#bk").onclick = () => go("home"); return; }
-  
-  RECENT = [x.id, ...RECENT.filter(i => i !== x.id)].slice(0, 10);
-  LS("noirrecent", JSON.stringify(RECENT));
-
   const ps = (x.photos || []).map(img).filter(Boolean), k = view.k || 0, my = x.seller === uid;
-  const oldP = x.oldPrice && x.oldPrice > x.price ? x.oldPrice : 0;
-  const disc = oldP ? Math.round((1 - x.price / oldP) * 100) : 0;
 
-  a.innerHTML = `<button class="gh sm" id="bk">← ${t("back")}</button><div class="det" style="margin-top:14px"><div><div class="ga">${ps[k] ? `<img src="${ps[k]}" alt="">` : ci(x.cat)}</div>${ps.length > 1 ? `<div class="th">${ps.map((p, i) => `<img src="${p}" class="${i === k ? "on" : ""}" data-k="${i}" alt="">`).join("")}</div>` : ""}</div>
- <div><span class="ct">${ci(x.cat)} ${e(cn(x.cat))}</span>${pm(x) ? ' <span class="pill g">PREMIUM</span>' : ""}${x.sold ? ` <span class="pill o">${t("stSold")}</span>` : ""}
- <h1 style="font:600 24px/1.2 var(--d);margin:6px 0 10px;overflow-wrap:anywhere">${e(x.title)}</h1>
- <div class="pr" style="font-size:30px"><span>${rub(x.price)}</span>${oldP ? `<span class="old-pr" style="font-size:20px">${rub(oldP)}</span><span class="disc-badge" style="font-size:14px">Скидка ${disc}%</span>` : ""}</div>
- <div class="pan" style="margin-top:16px"><div class="mu">${t("seller")}</div><div id="sp" style="cursor:pointer;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b>${e(nm(x.seller))}</b>${rate(x.seller)}<span class="pill g">${t("profile")} →</span></div><div class="mu" style="margin-top:10px">${t("how")}</div>${e(t(x.how))}</div>
- <div class="pan"><div class="mu">${t("desc")}</div><div style="white-space:pre-wrap;overflow-wrap:anywhere">${e(x.desc || t("noDesc"))}</div></div>
- ${my ? `<div class="tip">${t("own")}${x.premium === "req" ? " " + t("premWait") : ""}</div>` : `<button class="w" id="wr" style="padding:15px">💬 ${t("write")}</button>`}
- <div class="row" style="margin-top:12px">${my || isS() ? `<button class="gh" id="sd">${x.sold ? t("relist") : t("soldB")}</button><button class="dg" id="dl">${t("del")}</button>` : `<button class="gh sm" id="rp">${t("report")}</button>`}</div>
- ${isS() && x.premium === "req" ? `<button class="w" id="ap" style="margin-top:12px">${t("approve")}</button>` : ""}
- <div class="tip">${t("safe")}</div></div></div>`;
-  $("#bk").onclick = () => go("home"); a.querySelectorAll("[data-k]").forEach(i => i.onclick = () => { view.k = +i.dataset.k; render(); }); $("#sp").onclick = () => go("profile", { id: x.seller });
+  a.innerHTML = `<button class="gh sm" id="bk">← ${t("back")}</button>
+ <div class="pan" style="margin-top:14px">
+   <div class="im" style="aspect-ratio:1.4">${ps[k] ? `<img src="${ps[k]}" alt="">` : `<i class="fa-solid ${ci(x.cat)}" style="color:var(--a)"></i>`}</div>
+   <h1 style="font:700 20px var(--f);margin:12px 0 6px">${e(x.title)}</h1>
+   <div class="pr" style="font-size:24px">${rub(x.price)}</div>
+   <div style="margin:12px 0;color:var(--mu);font-size:13px">${e(x.desc || t("noDesc"))}</div>
+   <div class="pan" style="background:#0b0b0e">
+     <div class="mu">${t("seller")}</div>
+     <div id="sp" style="cursor:pointer;display:flex;gap:8px;align-items:center;margin-top:4px"><b>${e(nm(x.seller))}</b> ${rate(x.seller)}</div>
+   </div>
+   ${my ? `<div class="pan">${t("own")}</div>` : `<button class="orange-btn w" id="wr" style="padding:14px">💬 ${t("write")}</button>`}
+   <div style="display:flex;gap:8px;margin-top:10px">${my || isS() ? `<button class="gh sm" id="sd">${x.sold ? t("relist") : t("soldB")}</button><button class="dg sm" id="dl">${t("del")}</button>` : `<button class="gh sm" id="rp">${t("report")}</button>`}</div>
+ </div>`;
+  $("#bk").onclick = () => go("home"); $("#sp").onclick = () => go("profile", { id: x.seller });
   const w = $("#wr"); if(w) w.onclick = () => go("chat", { tid: x.id + "_" + uid, lid: x.id, title: x.title, buyer: uid, seller: x.seller });
   const rp = $("#rp"); if(rp) rp.onclick = () => reportSheet({ target: x.seller, lid: x.id, title: x.title });
   const sd = $("#sd"); if(sd) sd.onclick = async () => { await db.collection("listings").doc(x.id).update({ sold: !x.sold }); go("mine"); };
   const dl = $("#dl"); if(dl) dl.onclick = async () => { if(await ask(t("conf"))) { await db.collection("listings").doc(x.id).delete(); go("mine"); } };
-  const ap = $("#ap"); if(ap) ap.onclick = () => db.collection("listings").doc(x.id).update({ premium: "on" });
 }
 
 function mineV(a) {
-  const r = L.filter(x => x.seller === uid).sort((x, y) => y.ts - x.ts), ac = r.filter(x => !x.sold);
-  a.innerHTML = `<div class="bar"><h2>${t("mine")}</h2><button class="gh" id="mdh">🧾 ${t("hist")}</button><button class="gh" id="mpf">👤 ${t("myProf")}</button><button id="nw">＋ ${t("sell")}</button></div>
- <div class="sts" style="margin-bottom:16px"><div class="st"><b>${r.length}</b><span>${t("views")}</span></div><div class="st"><b>${ac.length}</b><span>${t("stAct")}</span></div><div class="st"><b>${r.length - ac.length}</b><span>${t("stSold")}</span></div></div>
- ${r.map(x => { const p = img((x.photos || [])[0]); return `<div class="pan li"><div class="t" data-i="${e(x.id)}">${p ? `<img src="${p}" alt="">` : ci(x.cat)}</div><div data-i="${e(x.id)}" style="cursor:pointer"><b>${e(x.title)}</b><div class="pr" style="font-size:16px">${rub(x.price)}</div><div>${x.sold ? `<span class="pill o">${t("stSold")}</span>` : expired(x) ? `<span class="pill o">${t("expired")}</span>` : `<span class="pill g">${t("stAct")}</span>`}${pm(x) ? '<span class="pill g">PREMIUM</span>' : x.premium === "req" ? `<span class="pill o">Premium · ${t("soon")}</span>` : ""}</div></div>
- <div style="display:flex;flex-direction:column;gap:6px">${!x.sold ? `<button class="gh sm" data-bp="${e(x.id)}">${expired(x) ? "↻ " + t("renew") : "⬆ " + t("bump")}</button>` : ""}${!pm(x) && !x.sold ? `<button class="sm" data-pr="${e(x.id)}">✦ ${t("promote")}</button>` : ""}<button class="gh sm" data-so="${e(x.id)}">${x.sold ? "↺" : "✓"}</button><button class="dg sm" data-dl="${e(x.id)}">✕</button></div></div>`; }).join("") || `<div class="emp">${t("mineE")}</div>`}`;
-  $("#nw").onclick = openForm; $("#mpf").onclick = () => go("profile", { id: uid }); $("#mdh").onclick = () => go("deals"); a.querySelectorAll("[data-i]").forEach(b => b.onclick = () => go("item", { id: b.dataset.i }));
-  a.querySelectorAll("[data-pr]").forEach(b => b.onclick = async () => { await db.collection("listings").doc(b.dataset.pr).update({ premium: "req" }); $("#mp").classList.add("o"); });
-  a.querySelectorAll("[data-bp]").forEach(b => b.onclick = async () => { const x = L.find(z => z.id === b.dataset.bp), left = key(x) + cdn(x) - Date.now(); if(left > 0 && !expired(x)) { toast(t("bumpIn") + " " + Math.ceil(left / 36e5) + " " + t("hr")); return; } await db.collection("listings").doc(x.id).update({ bump: Date.now() }); toast(t("bumped")); });
-  a.querySelectorAll("[data-so]").forEach(b => b.onclick = () => { const x = L.find(z => z.id === b.dataset.so); db.collection("listings").doc(x.id).update({ sold: !x.sold }); });
+  const r = L.filter(x => x.seller === uid).sort((x, y) => y.ts - x.ts);
+  a.innerHTML = `<div class="bar"><h2>${t("mine")}</h2><button class="orange-btn sm" id="nw">＋ ${t("sell")}</button></div>
+ ${r.map(x => `<div class="pan" style="display:flex;justify-content:space-between;align-items:center"><div><b>${e(x.title)}</b><div class="pr">${rub(x.price)}</div></div><button class="dg sm" data-dl="${e(x.id)}">✕</button></div>`).join("") || `<div class="emp">${t("mineE")}</div>`}`;
+  $("#nw").onclick = openForm;
   a.querySelectorAll("[data-dl]").forEach(b => b.onclick = async () => { if(await ask(t("conf"))) db.collection("listings").doc(b.dataset.dl).delete(); });
 }
 
 function chat(a) {
   const v = view, peer = uid === v.buyer ? v.seller : v.buyer; need([peer]);
-  const qReplies = ["Привет! Ещё продаёшь?", "Готов купить", "Сделай скидку?", "Жду передачи"];
-  
-  a.innerHTML = `<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><button class="gh sm" id="bk">←</button><div style="min-width:0;cursor:pointer" id="pn"><b>${e(nm(peer))}</b><div class="mu" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e(v.title)}</div></div><button class="gh sm" style="margin-left:auto" id="rpc">⚠</button><button class="gh sm" id="ov">${t("item")}</button></div>
- <div id="db"></div><div class="pan chat" style="padding:12px"><div class="ms" id="ms"><div class="mu" style="text-align:center">${t("first")}</div></div>
- <div class="q-reply">${qReplies.map(qr => `<button class="gh sm" data-qr="${e(qr)}">${e(qr)}</button>`).join("")}</div>
- <form class="cf" id="cf"><label class="bt gh ib" for="cp" aria-label="photo">📎</label><input class="vh" type="file" id="cp" accept="image/*"><input id="mt" placeholder="${t("msgPh")}" maxlength="1000" autocomplete="off"><button class="ib" aria-label="${t("send")}">➤</button></form></div>`;
-  
-  $("#bk").onclick = () => go("inbox"); $("#ov").onclick = () => go("item", { id: v.lid });
-  
+  a.innerHTML = `<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><button class="gh sm" id="bk">←</button><div><b>${e(nm(peer))}</b><div class="mu" style="font-size:11px">${e(v.title)}</div></div></div>
+ <div class="pan" style="height:calc(100vh - 240px);display:flex;flex-direction:column"><div id="ms" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px"></div>
+ <form id="cf" style="display:flex;gap:6px;margin-top:8px"><input id="mt" placeholder="${t("msgPh")}"><button class="orange-btn sm">➤</button></form></div>`;
+  $("#bk").onclick = () => go("inbox");
   unsub = db.collection("msgs").where("tid", "==", v.tid).onSnapshot(s => {
-    seen(v.tid); applyStatic(); const m = s.docs.map(d => d.data()).sort((x, y) => x.ts - y.ts), b = $("#ms"); if(!b) return;
-    if(m.length) b.innerHTML = m.map(x => x.k ? `<div class="m sy">${t(x.k)}<small>${dt(x.ts)}</small></div>` : `<div class="m ${x.from === uid ? "me" : ""}">${img(x.img) ? `<img src="${img(x.img)}" alt="">` : ""}${e(x.text)}<small>${dt(x.ts)} ${x.from === uid ? '<span style="color:var(--c)">✓✓</span>' : ''}</small></div>`).join("");
+    const m = s.docs.map(d => d.data()).sort((x, y) => x.ts - y.ts), b = $("#ms"); if(!b) return;
+    b.innerHTML = m.map(x => `<div style="align-self:${x.from === uid ? "flex-end" : "flex-start"};background:${x.from === uid ? "var(--a)" : "var(--line)"};color:${x.from === uid ? "#000" : "#fff"};padding:8px 12px;border-radius:12px;max-width:80%">${e(x.text)}</div>`).join("");
     b.scrollTop = b.scrollHeight;
   });
-  
-  const send = async (text, im) => { 
-    const n = Date.now(); 
-    await db.collection("msgs").doc(uidn()).set({ tid: v.tid, from: uid, text, img: im || "", ts: n }); 
-    await db.collection("threads").doc(v.tid).set({ lid: v.lid, title: v.title, buyer: v.buyer, seller: v.seller, last: text || "📷", by: uid, ts: n }); 
-    playBeep(700, 0.08);
-  };
-  
-  $("#cf").onsubmit = async ev => { ev.preventDefault(); const i = $("#mt"), x = i.value.trim(); if(!x) return; if(isBan()) { toast(t("banned")); return; } i.value = ""; try { await send(x); } catch(z) { toast(t("nsent")); } };
-  $("#cp").onchange = async ev => { const f = ev.target.files[0]; if(!f) return; try { const u = await upl(f); await send("", u); } catch(z) { toast(t("pFail")); } ev.target.value = ""; };
-  
-  a.querySelectorAll("[data-qr]").forEach(b => b.onclick = () => {
-    if(isBan()) { toast(t("banned")); return; }
-    send(b.dataset.qr);
-  });
-
-  dealBar(); $("#pn").onclick = () => go("profile", { id: peer }); $("#rpc").onclick = () => reportSheet({ target: peer, lid: v.lid, tid: v.tid, title: v.title });
+  $("#cf").onsubmit = async ev => { ev.preventDefault(); const i = $("#mt"), x = i.value.trim(); if(!x) return; i.value = ""; await db.collection("msgs").doc(uidn()).set({ tid: v.tid, from: uid, text: x, ts: Date.now() }); };
 }
 
 function inbox(a) {
   const r = Object.values(TH).sort((x, y) => y.ts - x.ts);
-  a.innerHTML = `<div class="bar"><h2>${t("chats")}</h2></div>${r.map(h => { const p = uid === h.buyer ? h.seller : h.buyer; return `<div class="pan" style="cursor:pointer" data-t="${e(h.id)}"><b>${e(nm(p))}</b> <span class="mu">· ${e(h.title)}</span><div class="mu" style="margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e(h.last)} · ${dt(h.ts)}</div></div>`; }).join("") || `<div class="emp">${t("noDlg")}</div>`}`;
+  a.innerHTML = `<div class="bar"><h2>${t("chats")}</h2></div>${r.map(h => { const p = uid === h.buyer ? h.seller : h.buyer; return `<div class="pan" style="cursor:pointer" data-t="${e(h.id)}"><b>${e(nm(p))}</b><div class="mu">${e(h.last)}</div></div>`; }).join("") || `<div class="emp">${t("noDlg")}</div>`}`;
   a.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { const h = TH[b.dataset.t]; go("chat", { tid: h.id, lid: h.lid, title: h.title, buyer: h.buyer, seller: h.seller }); });
 }
 
-function tkList(list, pan) {
-  return list.map(k => `<div class="pan" style="cursor:pointer" data-k="${e(k.id)}"><span class="pill ${k.status === "closed" ? "" : "g"}">${k.status === "closed" ? t("closedS") : t("openS")}</span><span class="mu">${pan ? e(nm(k.uid)) + " · " : ""}${dt(k.last)}</span> ${(pan ? awaitS(k) : tkUn(k)) ? '<span style="color:var(--c)">●</span>' : ""}<div style="margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e(k.text)}</div></div>`).join("") || (pan ? `<div class="emp">${t("noT")}</div>` : "");
-}
-
-function repList() {
-  const r = [...REP].sort((x, y) => (x.status === "new" ? 0 : 1) - (y.status === "new" ? 0 : 1) || y.ts - x.ts); need(r.flatMap(z => [z.from, z.target]));
-  return r.map(z => `<div class="pan"><span class="pill ${z.status === "new" ? "o" : "g"}">${z.status === "new" ? t("newS") : t("rDone")}</span><span class="mu"> ${dt(z.ts)}</span><div style="margin-top:6px"><b>${e(t(z.reason))}</b> · ${e(nm(z.target))} <span class="mu">← ${e(nm(z.from))}</span></div>${z.title ? `<div class="mu">${e(z.title)}</div>` : ""}${z.text ? `<div style="white-space:pre-wrap;overflow-wrap:anywhere;margin-top:4px">${e(z.text)}</div>` : ""}<div class="row" style="margin-top:10px"><button class="gh sm" data-up="${e(z.target)}">👤 ${t("profile")}</button>${BAN[z.target] ? "" : `<button class="dg sm" data-bn="${e(z.target)}">${t("ban")}</button>`}${z.status === "new" ? `<button class="sm" data-rd="${e(z.id)}">✓ ${t("rDone")}</button>` : ""}</div></div>`).join("") || `<div class="emp">${t("noRep")}</div>`;
-}
-
-function banList() {
-  return Object.entries(BAN).map(([i, b]) => `<div class="pan"><b>${e(nm(i))}</b> <span class="mu">· ${dt(b.ts)}</span><div class="mu">${e(b.reason || "")}</div><div class="row" style="margin-top:10px"><button class="gh sm" data-up="${e(i)}">👤 ${t("profile")}</button><button class="sm" data-ub="${e(i)}">${t("unban")}</button></div></div>`).join("") || `<div class="emp">${t("noBans")}</div>`;
-}
-
-function setV() {
-  if(!owner) return `<div class="emp">${t("ownerOnly")}</div>`;
-  return `<div class="pan"><h3 style="font:500 16px var(--d);margin:0 0 10px">📣 ${t("bnr")}</h3><textarea id="bt" rows="2" maxlength="200" placeholder="${t("bnrPh")}">${e(BNR ? BNR.text : "")}</textarea><label style="display:flex;gap:10px;align-items:center;margin:12px 0"><input type="checkbox" id="bo" style="width:20px;height:20px" ${BNR && BNR.on ? "checked" : ""}> ${t("bnrOn")}</label><button class="w" id="bsv">${t("save")}</button></div>` + team();
-}
-
-function support(a) {
-  const S = isS(), pan = S && view.pan, pt = view.pt || "tk", list = pan ? TK : TK.filter(k => k.uid === uid); need(TK.map(k => k.uid));
-  const nR = REP.filter(r => r.status === "new").length, nT = TK.filter(awaitS).length;
-  a.innerHTML = `<div class="bar"><h2>${t("support")}</h2></div>${S ? `<div class="tabs"><button class="gh ${pan ? "" : "on"}" id="t1">${t("mySup")}</button><button class="gh ${pan ? "on" : ""}" id="t2">🛡 ${t("panel")}${nT + nR ? " (" + (nT + nR) + ")" : ""}</button><button class="dg sm" id="lv" style="margin-left:auto">${t("staffOut")}</button></div>` : `<div style="margin-bottom:12px"><button class="gh sm" id="sg">🛡 ${t("staffIn")}</button></div>`}
- ${pan ? `<div class="tabs">${[["tk", "📨", t("ticketsT") + (nT ? " " + nT : "")], ["rp", "⚠", t("reps") + (nR ? " " + nR : "")], ["bn", "⛔", t("bannedL")], ["st", "⚙", t("settings")]].map(([k, i, l]) => `<button class="gh sm ${pt === k ? "on" : ""}" data-pt="${k}">${i} ${l}</button>`).join("")}</div>${pt === "tk" ? tkList(list, true) : pt === "rp" ? repList() : pt === "bn" ? banList() : setV()}`
- : `<div class="pan"><div class="mu">${t("supHint")}</div><form id="sf"><textarea id="stx" rows="4" required maxlength="1000" placeholder="${t("supPh")}" style="margin-top:10px">${e(draft)}</textarea><button class="w" style="margin-top:12px">${t("send")}</button></form></div>${tkList(list, false)}`}`; draft = "";
-  
-  const t1 = $("#t1"); if(t1) { t1.onclick = () => go("support"); $("#t2").onclick = () => go("support", { pan: 1 }); }
+function profile(a) {
+  a.innerHTML = `<div class="pan" style="text-align:center"><div class="mk" style="margin:auto;width:60px;height:60px;font-size:28px">${e((nm(uid)[0]||"U").toUpperCase())}</div><h2 style="margin:10px 0 4px">@${e(nm(uid))}</h2><div class="mu">Баланс: 0 грн</div><div style="display:flex;gap:8px;margin-top:14px"><button class="orange-btn sm w" onclick="toast('Пополнение пока недоступно')">Пополнить</button><button class="gh sm w" id="lo">Выйти</button></div></div>
+ <div class="pan"><button class="gh w" id="sg">🛡 ${t("staffIn")}</button></div>`;
+  const lo = $("#logoutBtn") || $("#lo"); if(lo) lo.onclick = () => { LS("noir_user", ""); userAuth = null; uid = "usr_" + Date.now().toString(36); LS("noir_uid", uid); render(); toast("Вы вышли из системы"); };
   const sg = $("#sg"); if(sg) sg.onclick = staffGate;
-  const lv = $("#lv"); if(lv) lv.onclick = async () => { await db.collection("staff").doc(uid).delete(); go("support"); };
-  a.querySelectorAll("[data-pt]").forEach(b => b.onclick = () => go("support", { pan: 1, pt: b.dataset.pt }));
-  a.querySelectorAll("[data-k]").forEach(b => b.onclick = () => go("ticket", { id: b.dataset.k, pan }));
-  a.querySelectorAll("[data-up]").forEach(b => b.onclick = () => go("profile", { id: b.dataset.up }));
-  a.querySelectorAll("[data-bn]").forEach(b => b.onclick = () => banToggle(b.dataset.bn));
-  a.querySelectorAll("[data-ub]").forEach(b => b.onclick = () => banToggle(b.dataset.ub));
-  a.querySelectorAll("[data-rd]").forEach(b => b.onclick = () => db.collection("reports").doc(b.dataset.rd).update({ status: "done" }));
-  const sf = $("#sf"); if(sf) sf.onsubmit = async ev => { ev.preventDefault(); const x = $("#stx").value.trim(), n = Date.now(); if(!x) return; await db.collection("tickets").doc(uidn()).set({ uid, text: x, ts: n, last: n, status: "open" }); toast(t("sent")); $("#stx").value = ""; };
-  const bsv = $("#bsv"); if(bsv) bsv.onclick = async () => { await db.collection("settings").doc("banner").set({ text: $("#bt").value.trim(), on: $("#bo").checked, ts: Date.now() }); toast(t("saved")); };
-  if(pan && pt === "st" && owner) bindTeam(a);
-}
-
-function banToggle(id) {
-  if(BAN[id]) { db.collection("bans").doc(id).delete(); return; }
-  sheet(`<h3>⛔ ${t("ban")}: ${e(nm(id))}</h3><input id="br" maxlength="120" placeholder="${t("banR")}" style="margin:14px 0"><div class="row"><button class="gh" id="bn1">${t("cancel")}</button><button class="dg" id="bn2">${t("ban")}</button></div>`);
-  $("#bn1").onclick = unsheet;
-  $("#bn2").onclick = async () => { await db.collection("bans").doc(id).set({ name: nm(id), reason: $("#br").value.trim(), ts: Date.now(), by: uid }); unsheet(); };
-}
-
-function reportSheet(o) {
-  sheet(`<h3>⚠ ${t("repT")}</h3><select id="rr" style="margin-top:12px">${["rp1", "rp2", "rp3", "rp4"].map(k => `<option value="${k}">${t(k)}</option>`).join("")}</select><textarea id="rx" rows="3" maxlength="500" placeholder="${t("repPh")}" style="margin-top:10px"></textarea><div class="row" style="margin-top:14px"><button class="gh" id="rc1">${t("cancel")}</button><button id="rc2">${t("send")}</button></div>`);
-  $("#rc1").onclick = unsheet;
-  $("#rc2").onclick = async () => { try { await db.collection("reports").doc(uidn()).set({ from: uid, target: o.target, lid: o.lid || "", tid: o.tid || "", title: o.title || "", reason: $("#rr").value, text: $("#rx").value.trim(), ts: Date.now(), status: "new" }); unsheet(); toast(t("repSent")); } catch(x) { toast("!"); } };
-}
-
-function dealsV(a) {
-  const k2 = view.dt || "b", all = Object.values(DEALS).filter(d => d.status && (k2 === "b" ? d.buyer === uid : d.seller === uid)).sort((x, y) => (y.upd || 0) - (x.upd || 0)); need(all.flatMap(d => [d.buyer, d.seller]));
-  a.innerHTML = `<div class="bar"><h2>🧾 ${t("hist")}</h2></div><div class="tabs"><button class="gh ${k2 === "b" ? "on" : ""}" data-dt="b">${t("buys")}</button><button class="gh ${k2 === "s" ? "on" : ""}" data-dt="s">${t("sells")}</button></div>${all.map(d => { const peer = k2 === "b" ? d.seller : d.buyer, rv = R.find(r => r.id === d.id); return `<div class="pan"><b>${e(d.title)}</b> <span class="pill ${d.status === "confirmed" ? "g" : d.status === "dispute" ? "o" : ""}">${t("ds_" + d.status)}</span><div class="mu">${e(nm(peer))} · ${rub(d.price || 0)} · ${dt(d.upd || d.ts)}${rv ? " · " + stars(rv.rating) : ""}</div><div class="row" style="margin-top:10px"><button class="gh sm" data-ch="${e(d.id)}">💬 ${t("toChat")}</button>${k2 === "b" && d.status === "confirmed" && !rv ? `<button class="sm" data-rv="${e(d.id)}">⭐ ${t("dRev")}</button>` : ""}</div></div>`; }).join("") || `<div class="emp">${t("noDeals")}</div>`}`;
-  a.querySelectorAll("[data-dt]").forEach(b => b.onclick = () => go("deals", { dt: b.dataset.dt }));
-  const op = id => { const d = DEALS[id]; go("chat", { tid: d.id, lid: d.lid, title: d.title, buyer: d.buyer, seller: d.seller }); };
-  a.querySelectorAll("[data-ch]").forEach(b => b.onclick = () => op(b.dataset.ch));
-  a.querySelectorAll("[data-rv]").forEach(b => b.onclick = () => { op(b.dataset.rv); reviewSheet(); });
-}
-
-function team() { return `<div class="pan"><h3 style="font:500 16px var(--d);margin:0 0 10px">👥 ${t("team")}</h3><div id="tl">${Object.entries(STAFF).map(([i, n]) => `<div class="cf"><b style="flex:1">${e(n || nm(i))}${i === uid ? " (" + t("you") + ")" : ""}</b>${i === uid ? "" : `<button class="dg sm" data-rm="${e(i)}">${t("rem")}</button>`}</div>`).join("")}</div><input id="su" placeholder="${t("findU")}" style="margin-top:10px"><div id="sr2"></div></div>`; }
-function bindTeam(a) {
-  a.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => db.collection("staff").doc(b.dataset.rm).delete());
-  $("#su").oninput = async ev => {
-    const v = ev.target.value.trim(), o = $("#sr2"); if(v.length < 2) { o.innerHTML = ""; return; }
-    try {
-      const r = usr ? await usr.search(v) : [];
-      o.innerHTML = r.filter(p => p.id && p.id !== uid).slice(0, 6).map(p => `<div class="cf"><span style="flex:1">${e(p.name)}</span><button class="sm" data-ad="${e(p.id)}" data-n="${e(p.name)}">＋</button></div>`).join("");
-      o.querySelectorAll("[data-ad]").forEach(b => b.onclick = async () => { await db.collection("staff").doc(b.dataset.ad).set({ name: b.dataset.n, ts: Date.now() }); $("#su").value = ""; o.innerHTML = ""; });
-    } catch(x) {}
-  };
-}
-
-function ticket(a) {
-  const k = TK.find(z => z.id === view.id); if(!k) { a.innerHTML = `<div class="emp"><button id="bk">${t("back")}</button></div>`; $("#bk").onclick = () => go("support"); return; }
-  const S = isS(), mine = k.uid === uid; need([k.uid]); seen("t_" + k.id);
-  a.innerHTML = `<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><button class="gh sm" id="bk">←</button><div><b>${t("ticket")}</b> <span class="pill ${k.status === "closed" ? "" : "g"}">${k.status === "closed" ? t("closedS") : t("openS")}</span><div class="mu">${e(nm(k.uid))}</div></div>${S ? `<button class="gh sm" style="margin-left:auto" id="cl">${k.status === "closed" ? t("reopen") : t("close")}</button>` : ""}</div>
- <div class="pan chat" style="padding:12px"><div class="ms" id="ms"><div class="m ${mine ? "me" : ""}">${e(k.text)}<small>${dt(k.ts)}</small></div></div>
- ${k.status === "closed" ? "" : `<form class="cf" id="cf"><input id="mt" placeholder="${S && !mine ? t("repl") : t("msgPh")}" maxlength="1000" autocomplete="off"><button class="ib" aria-label="${t("send")}">➤</button></form>`}</div>`;
-  $("#bk").onclick = () => go("support", { pan: view.pan });
-  const cl = $("#cl"); if(cl) cl.onclick = () => db.collection("tickets").doc(k.id).update({ status: k.status === "closed" ? "open" : "closed" });
-  unsub = db.collection("tmsg").where("tid", "==", k.id).onSnapshot(s => {
-    const m = s.docs.map(d => d.data()).sort((x, y) => x.ts - y.ts), b = $("#ms"); if(!b) return; need(m.map(x => x.from));
-    b.innerHTML = `<div class="m ${mine ? "me" : ""}">${e(k.text)}<small>${dt(k.ts)}</small></div>` + m.map(x => { const st = isStaffId(x.from); return `<div class="m ${x.from === uid ? "me" : ""} ${st ? "sf" : ""}">${st ? `<span class="bg">${t("staff")}</span>` : ""}${e(x.text)}<small>${dt(x.ts)}</small></div>`; }).join("");
-    b.scrollTop = b.scrollHeight;
-  });
-  const cf = $("#cf"); if(cf) cf.onsubmit = async ev => { ev.preventDefault(); const i = $("#mt"), x = i.value.trim(); if(!x) return; i.value = ""; const n = Date.now(); await db.collection("tmsg").doc(uidn()).set({ tid: k.id, from: uid, text: x, ts: n }); await db.collection("tickets").doc(k.id).update({ last: n, by: uid }); };
 }
 
 function stats(id) { const rv = R.filter(r => r.seller === id), n = rv.length, avg = n ? rv.reduce((z, r) => z + r.rating, 0) / n : 0; return { n, avg, deals: Object.values(DEALS).filter(d => d.seller === id && d.status === "confirmed").length }; }
-function rate(id) { const z = stats(id); return z.n ? `<span style="color:var(--b);font-weight:700">★ ${z.avg.toFixed(1)}</span> <span class="mu">(${z.n})</span>` : `<span class="mu">${t("newbie")}</span>`; }
+function rate(id) { const z = stats(id); return z.n ? `<span style="color:var(--a);font-weight:700">★ ${z.avg.toFixed(1)}</span>` : `<span class="mu">${t("newbie")}</span>`; }
 function sheet(h) { $("#gb").innerHTML = h; $("#gm").classList.add("o"); }
 function unsheet() { $("#gm").classList.remove("o"); }
 $("#gm").onclick = ev => { if(ev.target.id === "gm") unsheet(); };
@@ -687,223 +569,54 @@ document.addEventListener("click", ev => {
   if(!ev.target.closest(".ntf-box")) $("#ntfPop").classList.remove("o");
 });
 
-function ask(m, ok) { return new Promise(res => { sheet(`<p style="font-size:18px;margin:6px 0 18px">${e(m)}</p><div class="row"><button class="gh" id="gn">${t("cancel")}</button><button class="dg" id="gy">${e(ok || t("yes"))}</button></div>`); $("#gy").onclick = () => { unsheet(); res(true); }; $("#gn").onclick = () => { unsheet(); res(false); }; }); }
-
-function dealBar() {
-  const el = $("#db"); if(!el) return;
-  const v = view, d = DEALS[v.tid], by = uid === v.buyer, sl = uid === v.seller, st = d ? d.status : "none", rv = R.find(r => r.id === v.tid), p1 = L.find(x => x.id === v.lid);
-  const n = { none: 0, cancelled: 0, open: 1, sent: 2, dispute: 2, confirmed: rv ? 4 : 3 }[st] || 0;
-  const B = (k, l, c) => `<button class="${c || ""} sm w" data-d="${k}">${l}</button>`; let a = "";
-  if(st === "none" || st === "cancelled") a = by ? `<div class="mu">${st === "cancelled" ? t("dCanc") + ". " : ""}${t("dStartH")}</div>${B("open", "🤝 " + t("dStart") + (p1 ? " · " + rub(p1.price) : ""))}` : `<div class="mu">${t("dWaitS")}</div>`;
-  else if(st === "open") a = (sl ? B("sent", "📦 " + t("dSend")) : `<div class="mu">${t("dWaitD")}</div>`) + B("cancel", t("dCancel"), "dg");
-  else if(st === "sent") a = by ? B("got", "✅ " + t("dGot")) + B("disp", "⚠ " + t("dDisp"), "dg") : `<div class="mu">${t("dWaitC")}</div>`;
-  else if(st === "confirmed") a = by && !rv ? B("rev", "⭐ " + t("dRev")) : `<div class="mu">✔ ${t("dDone")}${rv ? " · " + stars(rv.rating) : ""}</div>`;
-  else if(st === "dispute") a = `<div class="mu">⚠ ${t("dDispo")}</div>`;
-  el.innerHTML = `<div class="pan" style="padding:12px"><div class="steps">${["s_open", "s_sent", "s_got", "s_rev"].map((k, i) => `<i class="${n > i ? "on" : ""}">${t(k)}</i>`).join("")}</div>${a}</div>`;
-  el.querySelectorAll("[data-d]").forEach(b => b.onclick = () => act(b.dataset.d));
-}
-
-async function setDeal(st, k) {
-  const v = view, p1 = L.find(x => x.id === v.lid), d = DEALS[v.tid], n = Date.now();
-  const base = st === "open" ? { lid: v.lid, title: v.title, buyer: v.buyer, seller: v.seller, price: p1 ? p1.price : 0, ts: n } : {};
-  await db.collection("deals").doc(v.tid).set({ ...(d || { lid: v.lid, title: v.title, buyer: v.buyer, seller: v.seller, price: p1 ? p1.price : 0, ts: n }), ...base, status: st, upd: n });
-  await db.collection("msgs").doc(uidn()).set({ tid: v.tid, from: uid, text: "", k, ts: n });
-  await db.collection("threads").doc(v.tid).set({ lid: v.lid, title: v.title, buyer: v.buyer, seller: v.seller, last: t(k), by: uid, ts: n });
-  pushNtf("Сделка по «" + v.title + "»: " + t("ds_" + st));
-}
-
-async function act(k) {
-  const v = view; if(isBan()) { toast(t("banned")); return; }
-  try {
-    if(k === "open") await setDeal("open", "m_open");
-    else if(k === "sent") await setDeal("sent", "m_sent");
-    else if(k === "got") { await setDeal("confirmed", "m_got"); reviewSheet(); }
-    else if(k === "cancel") { if(await ask(t("dCancel") + "?")) await setDeal("cancelled", "m_cancel"); }
-    else if(k === "disp") {
-      if(await ask(t("dDisp") + "?")) {
-        await setDeal("dispute", "m_disp"); const n = Date.now();
-        await db.collection("tickets").doc(uidn()).set({ uid, text: "⚠ " + t("dDisp") + ": «" + v.title + "» (" + v.tid + ")", ts: n, last: n, status: "open" });
-        go("support");
-      }
-    }
-    else if(k === "rev") reviewSheet();
-  } catch(x) { toast("!"); }
-}
-
-function reviewSheet() {
-  const v = view; let r = 5;
-  const draw = () => { $("#stp").innerHTML = [1, 2, 3, 4, 5].map(i => `<button type="button" class="gh ib ${i <= r ? "on" : ""}" data-r="${i}">★</button>`).join(""); $("#stp").querySelectorAll("[data-r]").forEach(b => b.onclick = () => { r = +b.dataset.r; draw(); }); };
-  sheet(`<h3>${t("rvT")}</h3><div class="cf" id="stp" style="justify-content:center;margin:14px 0"></div><textarea id="rt" rows="3" maxlength="500" placeholder="${t("rvPh")}"></textarea><div class="row" style="margin-top:14px"><button class="gh" id="rn">${t("cancel")}</button><button id="ry">${t("rvSend")}</button></div>`); draw();
-  $("#rn").onclick = unsheet;
-  $("#ry").onclick = async () => { if(isBan()) { toast(t("banned")); return; } try { await db.collection("reviews").doc(v.tid).set({ seller: v.seller, buyer: v.buyer, lid: v.lid, title: v.title, rating: r, text: $("#rt").value.trim(), ts: Date.now() }); unsheet(); toast(t("sent")); } catch(x) { toast("!"); } };
-}
-
-function profile(a) {
-  const id = view.id, z = stats(id), rv = R.filter(r => r.seller === id).sort((x, y) => y.ts - x.ts), its = L.filter(x => x.seller === id && !x.sold && !expired(x)), mn = L.filter(x => x.seller === id).map(x => x.ts);
-  need([id, ...rv.map(r => r.buyer)]); const since = mn.length ? new Date(Math.min(...mn)).toLocaleDateString(["ru-RU", "en-GB", "uk-UA"][LI], { month: "short", year: "numeric" }) : "—";
-  const bd = z.deals >= 5 && z.avg >= 4.5 ? t("trusted") : z.deals >= 1 ? t("verified") : t("newbie");
-  a.innerHTML = `<button class="gh sm" id="bk">← ${t("back")}</button>
- <div class="pan pf" style="margin-top:14px"><div class="av">${e((nm(id)[0] || "?").toUpperCase())}</div><div style="min-width:0"><h2>${e(nm(id))}${id === uid ? " (" + t("you") + ")" : ""}</h2><div>${z.n ? `<span style="color:var(--b)">${stars(z.avg)}</span> ${z.avg.toFixed(1)}` : ""}</div><span class="pill ${z.deals >= 1 ? "g" : ""}">${bd}</span>${BAN[id] ? ` <span class="pill o">${t("isBanned")}</span>` : ""}</div></div>
- <div style="display:flex;gap:8px;margin-bottom:14px">${id === uid ? (userAuth ? `<button class="dg sm" id="logoutBtn">Выйти из аккаунта</button>` : "") : isS() ? `<button class="${BAN[id] ? "gh" : "dg"} sm" id="bnb">${BAN[id] ? t("unban") : t("ban")}</button>` : `<button class="gh sm" id="rpb">⚠ ${t("rep")}</button>`}</div>
- <div class="sts" style="margin-bottom:18px"><div class="st"><b>${z.n ? z.avg.toFixed(1) : "—"}</b><span>${t("rating")}</span></div><div class="st"><b>${z.n}</b><span>${t("rvs")}</span></div><div class="st"><b>${z.deals}</b><span>${t("deals")}</span></div><div class="st"><b style="font-size:17px">${since}</b><span>${t("since")}</span></div></div>
- <div class="bar"><h2>${t("sellerItems")}</h2></div>${its.length ? `<div class="grid">${its.map(card).join("")}</div>` : `<div class="emp">${t("noItems")}</div>`}
- <div class="bar" style="margin-top:26px"><h2>${t("rvs")}</h2></div>${rv.map(r => `<div class="pan"><span style="color:var(--b)">${stars(r.rating)}</span> <b>${e(nm(r.buyer))}</b> <span class="mu">· ${dt(r.ts)}</span><div class="mu">${e(r.title)}</div>${r.text ? `<div style="margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere">${e(r.text)}</div>` : ""}</div>`).join("") || `<div class="emp">${t("noRv")}</div>`}`;
-  $("#bk").onclick = () => prev && prev.t && prev.t !== "profile" ? go(prev.t, prev) : go("home"); bindCards(a); const bnb = $("#bnb"); if(bnb) bnb.onclick = () => banToggle(id); const rpb = $("#rpb"); if(rpb) rpb.onclick = () => reportSheet({ target: id });
-  const lo = $("#logoutBtn"); if(lo) lo.onclick = () => { LS("noir_user", ""); userAuth = null; uid = "usr_" + Date.now().toString(36); LS("noir_uid", uid); render(); toast("Вы вышли из системы"); };
-}
+function ask(m) { return new Promise(res => { sheet(`<p style="font-size:16px;margin:6px 0 16px">${e(m)}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="gh" id="gn">${t("cancel")}</button><button class="dg" id="gy">${t("yes")}</button></div>`); $("#gy").onclick = () => { unsheet(); res(true); }; $("#gn").onclick = () => { unsheet(); res(false); }; }); }
 
 const CODE_H = "e700cd1d4d864992e889c7e6d0176842a53b158c2a1bd5685eb4e7a4c8a6b5ee";
 async function sha(x) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("noir-market:" + x)); return [...new Uint8Array(b)].map(z => z.toString(16).padStart(2, "0")).join(""); }
-let bad = 0, lockT = 0;
 function staffGate() {
-  sheet(`<h3>🛡 ${t("staffIn")}</h3><input id="cd" autocomplete="off" autocapitalize="characters" placeholder="${t("codePh")}" style="margin:14px 0"><div class="row"><button class="gh" id="cn">${t("cancel")}</button><button id="cy">${t("enter")}</button></div>`);
-  const chk = async () => {
-    if(Date.now() < lockT) { toast(t("badCode")); return; }
-    const v = $("#cd").value.toUpperCase().replace(/[^A-Z0-9]/g, ""); let h = ""; try { h = await sha(v); } catch(x) {}
-    if(h === CODE_H) {
-      bad = 0;
-      try {
-        const nameVal = usr ? (await usr.me()).name : "Admin";
-        await db.collection("staff").doc(uid).set({ name: nameVal || "Staff", ts: Date.now() });
-        unsheet(); toast(t("unlocked")); go("support", { pan: 1 });
-      } catch(x) { toast("!"); }
-    } else {
-      if(++bad >= 5) { lockT = Date.now() + 60000; bad = 0; }
-      toast(t("badCode"));
-    }
+  sheet(`<h3>🛡 ${t("staffIn")}</h3><input id="cd" placeholder="${t("codePh")}" style="margin:14px 0"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="gh" id="cn">${t("cancel")}</button><button class="orange-btn" id="cy">${t("enter")}</button></div>`);
+  $("#cy").onclick = async () => {
+    const v = $("#cd").value.toUpperCase(); let h = ""; try { h = await sha(v); } catch(x) {}
+    if(h === CODE_H) { await db.collection("staff").doc(uid).set({ name: "Admin", ts: Date.now() }); unsheet(); toast(t("unlocked")); go("support"); }
+    else toast(t("badCode"));
   };
-  $("#cy").onclick = chk; $("#cn").onclick = unsheet; $("#cd").onkeydown = ev => { if(ev.key === "Enter") chk(); };
+  $("#cn").onclick = unsheet;
 }
 
-/* Фото */
-async function prep(f, max, qv) {
-  let b; try { b = await createImageBitmap(f); } catch(x) { b = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(f); }); }
-  const w = b.width || b.naturalWidth, h = b.height || b.naturalHeight, s = Math.min(1, max / Math.max(w, h)), c = document.createElement("canvas"); c.width = Math.round(w * s); c.height = Math.round(h * s); const x = c.getContext("2d"); x.fillStyle = "#000"; x.fillRect(0, 0, c.width, c.height); x.drawImage(b, 0, 0, c.width, c.height);
-  return new Promise((ok, no) => c.toBlob(r => r ? ok(r) : no(), "image/jpeg", qv));
-}
-
-async function upl(f) {
-  if(as) { try { const r = await as.upload(await prep(f, 1100, .82)); return "/_blob/" + r.id; } catch(x) {} }
-  const bl = await prep(f, 400, .5); return await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(bl); });
-}
-
-function ups() {
-  $("#up").innerHTML = ph.map((u, i) => `<div class="p"><img src="${u}" alt=""><b data-x="${i}">✕</b></div>`).join("") + (ph.length < 5 ? '<label class="add" for="fl">＋</label>' : "");
-  $("#up").querySelectorAll("[data-x]").forEach(b => b.onclick = () => { ph.splice(+b.dataset.x, 1); ups(); });
-}
-
-$("#fl").onchange = async ev => {
-  const fs = [...ev.target.files].slice(0, 5 - ph.length); ev.target.value = "";
-  for(const f of fs) {
-    try {
-      const u = await upl(f);
-      if(ph.reduce((s, z) => s + (z.startsWith("data:") ? z.length : 0), 0) + (u.startsWith("data:") ? u.length : 0) > 190000) { toast(t("pBig")); break; }
-      ph.push(u); ups();
-    } catch(x) { toast(t("pFail")); }
-  }
-};
-
-function openForm() { if(!db || !uid) { toast(t("login")); return; } if(isBan()) { toast(t("banned")); return; } ph = []; $("#fm").reset(); $("#pay").classList.remove("o"); fillSel(); ups(); $("#mo").classList.add("o"); }
-$("#fpm").onchange = ev => $("#pay").classList.toggle("o", ev.target.checked);
-$("#fx").onclick = () => $("#mo").classList.remove("o"); $("#mo").onclick = ev => { if(ev.target.id === "mo") $("#mo").classList.remove("o"); };
-$("#mpx").onclick = () => $("#mp").classList.remove("o"); $("#mp").onclick = ev => { if(ev.target.id === "mp") $("#mp").classList.remove("o"); };
-
+function openForm() { if(!db || !uid) return; ph = []; $("#fm").reset(); fillSel(); $("#mo").classList.add("o"); }
+$("#fx").onclick = () => $("#mo").classList.remove("o");
 $("#fm").onsubmit = async ev => {
-  ev.preventDefault(); const b = $("#fg"); b.disabled = true;
-  const oldPriceVal = +$("#fOldP").value;
+  ev.preventDefault();
   try {
-    await db.collection("listings").doc(uidn()).set({ title: $("#ft").value.trim(), cat: $("#fc").value, price: +$("#fp").value, oldPrice: oldPriceVal > 0 ? oldPriceVal : 0, desc: $("#fs").value.trim(), how: $("#fh").value, photos: ph, seller: uid, premium: $("#fpm").checked ? "req" : "", sold: false, ts: Date.now() });
+    await db.collection("listings").doc(uidn()).set({ title: $("#ft").value.trim(), cat: $("#fc").value, price: +$("#fp").value, oldPrice: +$("#fOldP").value || 0, desc: $("#fs").value.trim(), how: $("#fh").value, photos: ph, seller: uid, premium: $("#fpm").checked ? "on" : "", sold: false, ts: Date.now() });
     $("#mo").classList.remove("o"); toast(t("done")); go("mine");
   } catch(x) { toast("!"); }
-  b.disabled = false;
 };
 
-/* Настоящая регистрация / авторизация */
 let isRegMode = false;
-let authMethod = "tg";
-
-$("#authBtn").onclick = () => {
-  if(userAuth) {
-    go("profile", { id: uid });
-  } else {
-    $("#authMo").classList.add("o");
-  }
-};
+$("#authBtn").onclick = () => userAuth ? go("profile") : $("#authMo").classList.add("o");
 $("#authClose").onclick = () => $("#authMo").classList.remove("o");
-
-const setAuthTab = (m, label, placeholder) => {
-  authMethod = m;
-  $("#atTg").className = m === "tg" ? "gh on" : "gh";
-  $("#atPh").className = m === "ph" ? "gh on" : "gh";
-  $("#atEm").className = m === "em" ? "gh on" : "gh";
-  $("#authBox").innerHTML = `<label class="l">${label}</label><input id="auVal" placeholder="${placeholder}" required>`;
-};
-
-$("#atTg").onclick = (ev) => { ev.preventDefault(); setAuthTab("tg", "Telegram Username", "@username"); };
-$("#atPh").onclick = (ev) => { ev.preventDefault(); setAuthTab("ph", "Номер телефона", "+7 900 000 00-00"); };
-$("#atEm").onclick = (ev) => { ev.preventDefault(); setAuthTab("em", "E-mail адрес", "example@mail.ru"); };
-
 $("#toggleRegBtn").onclick = (ev) => {
-  ev.preventDefault();
-  isRegMode = !isRegMode;
-  $("#authTitle").textContent = isRegMode ? "Регистрация нового аккаунта" : "Вход в аккаунт";
-  $("#authSubmitBtn").textContent = isRegMode ? "Зарегистрироваться" : "Войти";
-  $("#toggleRegBtn").textContent = isRegMode ? "Уже есть аккаунт? Войти" : "Создать новый аккаунт";
+  ev.preventDefault(); isRegMode = !isRegMode;
+  $("#authTitle").textContent = isRegMode ? "Регистрация" : "Вход";
   $("#auNameLbl").style.display = isRegMode ? "block" : "none";
   $("#auName").style.display = isRegMode ? "block" : "none";
-  if(isRegMode) $("#auName").required = true; else $("#auName").required = false;
 };
 
 $("#authFm").onsubmit = async (ev) => {
   ev.preventDefault();
-  const val = $("#auVal").value.trim().toLowerCase();
-  const pass = $("#auPass").value.trim();
-  const name = $("#auName").value.trim();
-  
+  const val = $("#auVal").value.trim().toLowerCase(), pass = $("#auPass").value.trim(), name = $("#auName").value.trim();
   if(!val || !pass) return;
-
-  const users = (await new Promise(resolve => {
-    db.collection("users").onSnapshot(s => resolve(s.docs.map(d => ({ id: d.id, ...d.data() }))));
-  })) || [];
-
-  if(isRegMode) {
-    const exists = users.find(u => u.login === val);
-    if(exists) { toast("Пользователь с таким контактом уже существует!"); return; }
-    
-    const newUid = "usr_" + Date.now().toString(36);
-    const newUser = { uid: newUid, login: val, pass, name: name || "Игрок " + newUid.slice(-4), method: authMethod, ts: Date.now() };
-    await db.collection("users").doc(newUid).set(newUser);
-    
-    userAuth = newUser;
-    uid = newUid;
-    LS("noir_user", JSON.stringify(userAuth));
-    LS("noir_uid", uid);
-    names[uid] = newUser.name;
-    
-    $("#authMo").classList.remove("o");
-    toast("Регистрация успешна! Добро пожаловать!");
-    render();
-  } else {
-    const found = users.find(u => u.login === val && u.pass === pass);
-    if(!found) { toast("Неверный логин или пароль!"); return; }
-    
-    userAuth = found;
-    uid = found.uid;
-    LS("noir_user", JSON.stringify(userAuth));
-    LS("noir_uid", uid);
-    names[uid] = found.name;
-    
-    $("#authMo").classList.remove("o");
-    toast("С возвращением, " + found.name + "!");
-    render();
-  }
+  const newUid = "usr_" + Date.now().toString(36);
+  userAuth = { uid: newUid, name: name || val }; uid = newUid;
+  LS("noir_user", JSON.stringify(userAuth)); LS("noir_uid", uid); names[uid] = userAuth.name;
+  $("#authMo").classList.remove("o"); toast("Успешно!"); render();
 };
 
 $("#bellBtn").onclick = () => $("#ntfPop").classList.toggle("o");
 $("#clrNtf").onclick = () => { NOTIFICATIONS = []; LS("noir_ntfs", "[]"); renderNtfs(); };
-
-$("#q").oninput = x => { q = x.target.value; if(view.t !== "home") go("home"); else render(); };
-$("#lb").onclick = () => $("#lp").classList.toggle("o"); $("#lgo").onclick = $("#lgb").onclick = () => go("home");
+$("#lb").onclick = () => $("#lp").classList.toggle("o");
+$("#lgo").onclick = $("#lgb").onclick = () => go("home");
 
 fillSel(); render(); boot();
 </script></body></html>
