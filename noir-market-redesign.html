@@ -314,8 +314,8 @@ stAct:["В продаже","Active","У продажу"],stSold:["Продано
 you:["Вы","You","Ви"],user:["Пользователь","User","Користувач"],conf:["Удалить объявление?","Delete this listing?","Видалити оголошення?"],views:["Всего","Total","Усього"],
 repl:["Ответить игроку","Reply to player","Відповісти гравцю"],sent:["Отправлено","Sent","Надіслано"],ticket:["Обращение","Ticket","Звернення"],
 ban:["Заблокировать","Ban","Заблокувати"],unban:["Разблокировать","Unban","Розблокувати"],banR:["Причина блокировки","Ban reason","Причина блокування"],
-banned:["Твой аккаунт заблокирован: нельзя выставлять товары и писать в чатах. Можно обратиться в поддержку.","Your account is banned: you can’t post items or send chat messages. You can still contact support.","Твій акаунт заблоковано: не можна виставляти товари й писати в чатах. Можна звернутися до підтримки."],
-bannedL:["Блокировки","Bans","Блокування"],noBans:["Блокировок нет","No bans","Блокувань немає"],isBanned:["Заблокирован","Banned","Заблокований"],
+banned:["Твой аккаунт заблокирован: нельзя выставлять товары и писать в чатах. Можно обратиться в поддержку.","Your account is banned: you can’t post items or send chat messages. You can still contact support.","Tвій акаунт заблоковано: не можна виставляти товари й писати в чатах. Можна звернутися до підтримки."],
+bannedL:["Блокировки","Bans","Блокування"],noBans:["Блокировок нет","No bans","Блокувань немає"],isBanned:["Заблокирован","Banned","Заблокированный"],
 rep:["Пожаловаться","Report","Поскаржитись"],repT:["Жалоба","Report","Скарга"],rp1:["Мошенничество","Scam","Шахрайство"],rp2:["Не передал товар","Didn’t deliver","Не передав товар"],rp3:["Оскорбления","Abuse","Образи"],rp4:["Другое","Other","Інше"],
 repPh:["Опиши, что случилось","Describe what happened","Опиши що сталося"],repSent:["Жалоба отправлена","Report sent","Скаргу надіслано"],reps:["Жалобы","Reports","Скарги"],noRep:["Жалоб нет","No reports","Скарг немає"],rDone:["Решено","Resolved","Вирішено"],newS:["Новая","New","Нова"],
 ntf:["Новое сообщение","New message","Нове повідомлення"],ticketsT:["Обращения","Tickets","Звернення"],settings:["Настройки","Settings","Налаштування"],ownerOnly:["Доступно только владельцу","Owner only","Лише для власника"],
@@ -399,58 +399,6 @@ function renderNtfs() {
   }
 }
 
-function createLocalDB() {
-  const store = (k, val) => val !== undefined ? LS('db_' + k, JSON.stringify(val)) : JSON.parse(LS('db_' + k) || '[]');
-  const listenMap = {};
-  const notify = (col) => { if(listenMap[col]) listenMap[col].forEach(cb => cb({ docs: store(col).map(d => ({ id: d.id, data: () => d })) })); };
-  return {
-    collection: function(col) {
-      return {
-        onSnapshot: (cb) => {
-          if(!listenMap[col]) listenMap[col] = [];
-          listenMap[col].push(cb);
-          setTimeout(() => cb({ docs: store(col).map(d => ({ id: d.id, data: () => d })) }), 0);
-          return () => { listenMap[col] = listenMap[col].filter(x => x !== cb); };
-        },
-        where: function(field, op, val) {
-          return {
-            onSnapshot: (cb) => {
-              const filterDocs = () => store(col).filter(d => op === '==' ? d[field] === val : true);
-              setTimeout(() => cb({ docs: filterDocs().map(d => ({ id: d.id, data: () => d })) }), 0);
-              return () => {};
-            }
-          };
-        },
-        doc: function(id) {
-          return {
-            set: async (data) => {
-              let arr = store(col);
-              const idx = arr.findIndex(x => x.id === id);
-              if(idx >= 0) arr[idx] = { ...arr[idx], ...data, id };
-              else arr.push({ ...data, id });
-              store(col, arr); notify(col);
-            },
-            update: async (data) => {
-              let arr = store(col);
-              const idx = arr.findIndex(x => x.id === id);
-              if(idx >= 0) { arr[idx] = { ...arr[idx], ...data }; store(col, arr); notify(col); }
-            },
-            delete: async () => {
-              let arr = store(col).filter(x => x.id !== id);
-              store(col, arr); notify(col);
-            },
-            onSnapshot: (cb) => {
-              const d = store(col).find(x => x.id === id);
-              cb({ exists: !!d, data: () => d });
-              return () => {};
-            }
-          };
-        }
-      };
-    }
-  };
-}
-
 let userAuth = null; try { userAuth = JSON.parse(LS("noir_user") || "null"); } catch(e){}
 let db, usr, as, uid = userAuth ? userAuth.uid : (LS("noir_uid") || ("usr_" + Date.now().toString(36))), owner = true, L = [], TH = {}, STAFF = {}, names = {}, TK = [], view = { t: "home" }, cat = "all", q = "", srt = "new", ph = [], vid = [], unsub = null, uT = null, lastS = null, draft = "";
 let DEALS = {}, R = [], BAN = {}, REP = [], SEEN = {}, F = { min: "", max: "", ph: 0, tr: 0 }, BNR = null, fo = 0, bnrHide = 0;
@@ -513,11 +461,55 @@ function fillSel() {
 
 async function boot() {
   LS("noir_uid", uid);
-  const g = n => window.claude ? claude.use(n).catch(() => null) : Promise.resolve(null);
-  [db, usr, as] = await Promise.all([g("db"), g("user"), g("assets")]);
-  if(!db) db = createLocalDB();
-  if(usr) { try { uid = userAuth ? userAuth.uid : await usr.id(); owner = usr.isOwner(); } catch(x) {} }
   
+  // Инициализируем настоящий Firebase с твоим конфигом
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase/app.js");
+  const { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase/firestore.js");
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyC4pMQs3YvfwBxrUPoqE-Mk7BO7FIw7ECM",
+    authDomain: "noir-marketot.firebaseapp.com",
+    projectId: "noir-marketot",
+    storageBucket: "noir-marketot.firebasestorage.app",
+    messagingSenderId: "576848905399",
+    appId: "1:576848905399:web:f9d664c9a8ca2d53d47932",
+    measurementId: "G-TBM4DKBF1S"
+  };
+
+  const firebaseApp = initializeApp(firebaseConfig);
+  const firestoreDb = getFirestore(firebaseApp);
+
+  // Обертка для работы с Firestore в твоем коде
+  db = {
+    collection: (colName) => ({
+      onSnapshot: (callback) => onSnapshot(collection(firestoreDb, colName), snapshot => {
+        callback({ docs: snapshot.docs.map(d => ({ id: d.id, data: () => d.data() })) });
+      }),
+      where: (field, op, val) => ({
+        onSnapshot: (callback) => onSnapshot(query(collection(firestoreDb, colName), where(field, op, val)), snapshot => {
+          callback({ docs: snapshot.docs.map(d => ({ id: d.id, data: () => d.data() })) });
+        })
+      }),
+      doc: (docId) => ({
+        set: (data, opts) => setDoc(doc(firestoreDb, colName, docId), data, opts || {}),
+        update: (data) => updateDoc(doc(firestoreDb, colName, docId), data),
+        delete: () => deleteDoc(doc(firestoreDb, colName, docId)),
+        onSnapshot: (callback) => onSnapshot(doc(firestoreDb, colName, docId), docSnap => {
+          callback({ exists: docSnap.exists(), data: () => docSnap.data() });
+        })
+      })
+    })
+  };
+
+  usr = {
+    search: async (v) => {
+      return [];
+    },
+    me: async () => ({ name: userAuth ? userAuth.name : "Player" })
+  };
+
+  as = null; // Хранилище файлов через base64/локально для картинок
+
   db.collection("listings").onSnapshot(s => { L = s.docs.map(d => ({ id: d.id, ...d.data() })); need(L.map(x => x.seller)); if(["home", "item", "mine", "sellers"].includes(view.t)) render(); }, () => toast("!"));
   
   const mine = () => d => {
@@ -626,7 +618,6 @@ function home(a) {
   r.sort((x, y) => pm(y) - pm(x) || (srt === "asc" ? x.price - y.price : srt === "desc" ? y.price - x.price : srt === "rate" ? stats(y.seller).avg - stats(x.seller).avg : key(y) - key(x)));
   const sh = cat === "all" && !q ? act.filter(pm) : [];
   const recItems = RECENT.map(id => act.find(x => x.id === id)).filter(Boolean);
-  const tk = CATS.map(c => `<span>${c[1]} ${e(c[2][LI])}</span>`).join("");
   const showBanner = BNR && BNR.on && BNR.text && !bnrHide, adUrl = showBanner ? safeHttp(BNR.link || "") : "";
   
   a.innerHTML = `${showBanner ? `<div class="bnr"><span>📣 ${e(BNR.text)}</span>${adUrl ? `<a href="${e(adUrl)}" target="_blank" rel="noopener noreferrer">${t("adOpen")} ↗</a>` : ""}<button class="gh ib" id="bx" aria-label="x">✕</button></div>` : `<div class="ad-slot"><div><b>📣 ${t("adSlot")}</b><span>${t("adPrompt")}</span></div><button class="gh sm" id="adContact">${t("adContact")}</button></div>`}<section class="hero"><h1 class="ti">NOIR MARKET</h1><p class="su">${t("hero")}</p>
